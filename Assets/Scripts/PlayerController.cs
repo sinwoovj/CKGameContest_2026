@@ -47,8 +47,20 @@ namespace PhotonTest
 
             Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
             Vector2 nextPos = rb.position + dir * player.MoveSpeed * Time.fixedDeltaTime;
-
+            PlayerMoveAnimation(dir);
             rb.MovePosition(nextPos);
+        }
+
+        public void PlayerMoveAnimation(Vector2 dir)
+        {
+            Animator anim = player.GetComponent<Animator>();
+            anim.SetBool("dirX", Mathf.Abs(dir.x) > 0);
+            anim.SetBool("dirY", dir.y > 0);
+            anim.SetBool("dir-Y", dir.y < 0);
+            if(dir.x > 0)
+                player.transform.rotation = Quaternion.Euler(0, 0, 0);
+            else if (dir.x < 0)
+                player.transform.rotation = Quaternion.Euler(0, 180, 0);
         }
 
         public void Interaction()
