@@ -10,13 +10,16 @@ namespace PhotonTest
         public string nickname;
         public bool isAlive;
 
-    // Transform & Movement
-        private Vector2 pos;
-        private Vector2 rot;
-        private float velocity;
-        private float moveSpeed;
+        // Transform & Movement
+        public Vector2 Pos => this.gameObject.transform.position;
+        public Quaternion Rot => this.gameObject.transform.rotation;
+        private float defaultSpeed = 5;
+        public float influenceSpeed = 1;
+        public float MoveSpeed => defaultSpeed * influenceSpeed;
+        public float AngularVelocity => this.GetComponent<Rigidbody2D>().angularVelocity;
+        public Vector2 LinearVelocity => this.GetComponent<Rigidbody2D>().linearVelocity;
         public bool isGrounded;
-
+        
     // Vitals
         public float maxHp;
         public float currentHp;
@@ -56,5 +59,5 @@ namespace PhotonTest
 
     // Debug
 
-    }
+    }    
 }

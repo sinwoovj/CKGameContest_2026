@@ -8,40 +8,57 @@ namespace PhotonTest
         [SerializeField]
         private PhotonTest.Player player;
 
+        float h, v;
+
+        KeyCode KeyInteraction = KeyCode.J;
+        KeyCode KeyPickUpOrThrow = KeyCode.K;
+        bool isPickUp = false;
+
         // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        private void Start()
         {
-        
+            
         }
 
-        // Update is called once per frame
-        void Update()
+        private void Update()
         {
-            PlayerMove();
             KeyInput();
         }
 
-        void KeyInput()
+        private void FixedUpdate()
         {
-            if (Input.GetKeyDown(KeyCode.J)) Interaction();
-            if (Input.GetKeyDown(KeyCode.K)) ThrowOrPickUp();
+            PlayerMove();
         }
 
-        void PlayerMove()
+        private void KeyInput()
         {
-            float h = Input.GetAxis("Horizontal");
-            float v = Input.GetAxis("Vertical");
-
+            h = Input.GetAxisRaw("Horizontal");
+            v = Input.GetAxisRaw("Vertical");
+            if (Input.GetKeyDown(KeyInteraction)) Interaction();
+            if (Input.GetKeyDown(KeyPickUpOrThrow)) ThrowOrPickUp();
         }
 
-        void Interaction()
+        private void PlayerMove()
         {
-        
+            Vector2 dir = new Vector2(h, v);
+
+            if (dir.sqrMagnitude > 1f)
+                dir.Normalize();
+
+            Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+            Vector2 nextPos = rb.position + dir * player.MoveSpeed * Time.fixedDeltaTime;
+
+            rb.MovePosition(nextPos);
         }
 
-        void ThrowOrPickUp()
+        public void Interaction()
         {
+            
+        }
 
+        public void ThrowOrPickUp()
+        {
+            
         }
     }
 
