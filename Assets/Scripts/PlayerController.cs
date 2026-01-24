@@ -1,74 +1,48 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 
 namespace PhotonTest
 {
     public class PlayerController : MonoBehaviour
     {
-        [SerializeField]
-        private PhotonTest.Player player;
+        private Movement2D movement2D;
+        private Animator anim;
 
-        float h, v;
-
-        KeyCode KeyInteraction = KeyCode.J;
-        KeyCode KeyPickUpOrThrow = KeyCode.K;
+        private Vector2 moveInput = Vector2.zero;
         bool isPickUp = false;
 
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        private void Start()
+        private void Awake()
         {
-            
+            movement2D = GetComponent<Movement2D>();
+            anim = GetComponent<Animator>();
         }
 
         private void Update()
         {
-            KeyInput();
+            movement2D.MoveDirection = moveInput;
         }
 
-        private void FixedUpdate()
+        public void OnMove(InputAction.CallbackContext context)
         {
-            PlayerMove();
+            anim.SetBool("IsWalking", true);
+            if (context.canceled)
+            {
+                anim.SetBool("IsWalking", false);
+                anim.SetFloat("LastInputX", moveInput.x);
+                anim.SetFloat("LastInputY", moveInput.y);
+            }
+            moveInput = context.ReadValue<Vector2>();
+            anim.SetFloat("InputX", moveInput.x);
+            anim.SetFloat("InputY", moveInput.y);
         }
 
-        private void KeyInput()
-        {
-            h = Input.GetAxisRaw("Horizontal");
-            v = Input.GetAxisRaw("Vertical");
-            if (Input.GetKeyDown(KeyInteraction)) Interaction();
-            if (Input.GetKeyDown(KeyPickUpOrThrow)) ThrowOrPickUp();
-        }
-
-        private void PlayerMove()
-        {
-            Vector2 dir = new Vector2(h, v);
-
-            if (dir.sqrMagnitude > 1f)
-                dir.Normalize();
-
-            Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
-            Vector2 nextPos = rb.position + dir * player.MoveSpeed * Time.fixedDeltaTime;
-            PlayerMoveAnimation(dir);
-            rb.MovePosition(nextPos);
-        }
-
-        public void PlayerMoveAnimation(Vector2 dir)
-        {
-            Animator anim = player.GetComponent<Animator>();
-            anim.SetBool("dirX", Mathf.Abs(dir.x) > 0);
-            anim.SetBool("dirY", dir.y > 0);
-            anim.SetBool("dir-Y", dir.y < 0);
-            if(dir.x > 0)
-                player.transform.rotation = Quaternion.Euler(0, 0, 0);
-            else if (dir.x < 0)
-                player.transform.rotation = Quaternion.Euler(0, 180, 0);
-        }
-
-        public void Interaction()
+        public void OnInteract(InputAction.CallbackContext context)
         {
             
         }
 
-        public void ThrowOrPickUp()
+        public void OnPickUpOrThrow(InputAction.CallbackContext context)
         {
             
         }
