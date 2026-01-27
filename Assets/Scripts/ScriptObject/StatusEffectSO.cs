@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace PhotonTest
+namespace Shurub
 {
     [CreateAssetMenu(fileName = "StatusEffectSO",
     menuName = "ScriptableObject/StatusEffect", order = int.MaxValue)]

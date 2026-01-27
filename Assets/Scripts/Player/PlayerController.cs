@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+using Photon.Pun;
 
-namespace PhotonTest
+
+namespace Shurub
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : MonoBehaviourPun
     {
         private Movement2D movement2D;
         private Animator anim;
@@ -20,6 +22,7 @@ namespace PhotonTest
 
         private void Update()
         {
+            if (photonView.IsMine == false && PhotonNetwork.IsConnected == true) return;
             movement2D.MoveDirection = moveInput;
         }
 

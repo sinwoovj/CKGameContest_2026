@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace PhotonTest
+namespace Shurub
 {
     public enum StatusEffectType { Poison = 0, Stun = 1, Slow = 2, Shield = 3 }
     public class StatusEffect : MonoBehaviour

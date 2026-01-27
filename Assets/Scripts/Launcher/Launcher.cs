@@ -4,7 +4,7 @@ using Photon.Realtime;
 using System;
 using TMPro;
 
-namespace PhotonTest
+namespace Shurub
 {
     public class Launcher : MonoBehaviourPunCallbacks
     {

@@ -7,10 +7,16 @@ using UnityEngine.SceneManagement;
 using Photon.Pun;
 using Photon.Realtime;
 
-namespace PhotonTest
+namespace Shurub
 {
     public class GameManager : MonoBehaviourPunCallbacks
     {
+        public static GameManager Instance;
+        void Start()
+        {
+            Instance = this;
+        }
+
         // Called when the local player left the room.
         // We need to load the launcher scene.
         public override void OnLeftRoom()

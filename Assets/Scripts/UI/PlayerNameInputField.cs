@@ -7,7 +7,7 @@ using Photon.Realtime;
 using System.Collections;
 using TMPro;
 
-namespace PhotonTest
+namespace Shurub
 {
     [RequireComponent(typeof(TMP_InputField))]
     public class PlayerNameInputField : MonoBehaviour

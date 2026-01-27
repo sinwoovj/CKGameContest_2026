@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace PhotonTest
+namespace Shurub
 {
     public class Player : MonoBehaviour
     {
