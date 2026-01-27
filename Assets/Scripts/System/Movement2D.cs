@@ -14,10 +14,10 @@ namespace Shurub
             rb = GetComponent<Rigidbody2D>();
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             rb.MovePosition(rb.position + (MoveDirection * 
-                GetComponent<Shurub.Player>().MoveSpeed * Time.deltaTime));
+                GetComponent<Shurub.Player>().MoveSpeed * Time.fixedDeltaTime));
         }
     }
 }

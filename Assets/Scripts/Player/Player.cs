@@ -13,7 +13,7 @@ namespace Shurub
         // Transform & Movement
         public Vector2 Pos => this.gameObject.transform.position;
         public Quaternion Rot => this.gameObject.transform.rotation;
-        private float defaultSpeed = 5;
+        private float defaultSpeed = 10;
         public float influenceSpeed = 1;
         public float MoveSpeed => defaultSpeed * influenceSpeed;
         public float AngularVelocity => this.GetComponent<Rigidbody2D>().angularVelocity;

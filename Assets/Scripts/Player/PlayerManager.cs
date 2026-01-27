@@ -3,38 +3,70 @@ using Photon.Pun;
 
 namespace Shurub
 {
-    public class PlayerManager : MonoBehaviourPun
+    public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
-        
-        void Start()
+        public static PlayerManager Instance;
+
+        [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
+        public static GameObject LocalPlayerInstance;
+
+        public bool isCarrible = false;
+
+        public bool isCarry = false;
+        public bool isThrow = false;
+        public bool isIntreact = false;
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-            CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();
-            if (_cameraWork != null)
+            if (stream.IsWriting)
             {
-                if(photonView.IsMine)
-                {
-                    _cameraWork.OnStartFollowing();
-                }
+                // We own this player: send the others our data
+                stream.SendNext(isCarry);
+                stream.SendNext(isThrow);
+                stream.SendNext(isIntreact);
             }
             else
             {
-                Debug.LogError("<Color=Red><a>Missing</a></Color> CameraWork Component on playerPrefab.", this);
+                // Network player, receive data
+                this.isCarry = (bool)stream.ReceiveNext();
+                this.isThrow = (bool)stream.ReceiveNext();
+                this.isIntreact = (bool)stream.ReceiveNext();
             }
         }
 
-        // Update is called once per frame
+        private void Awake()
+        {
+            // #Important
+            // used in GameManager.cs: we keep track of the localPlayer instance to prevent instantiation when levels are synchronized
+            if (photonView.IsMine)
+            {
+                PlayerManager.LocalPlayerInstance = this.gameObject;
+            }
+            // #Critical
+            // we flag as don't destroy on load so that instance survives level synchronization, thus giving a seamless experience when levels load.
+            DontDestroyOnLoad(this.gameObject);
+        }
+
+        void Start()
+        {
+            Instance = this;
+            CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += (scene, loadingMode) =>
+            {
+                this.CalledOnLevelWasLoaded(scene.buildIndex);
+            };
+        }
+
+
         void Update()
         {
 
         }
 
-
-        //void LeaveRoom()
-        //{
-        //    GameManager.Instance.LeaveRoom();
-        //}
-
-        // if(!photonView.IsMine) { return; } <-- 해당 코드르를 통해 로컬 플레이어인지 아닌지를 검사 해야함.
+        void CalledOnLevelWasLoaded(int level)
+        {
+            
+        }
     }
 }
 

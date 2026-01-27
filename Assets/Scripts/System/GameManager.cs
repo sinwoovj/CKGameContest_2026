@@ -12,6 +12,8 @@ namespace Shurub
     public class GameManager : MonoBehaviourPunCallbacks
     {
         public static GameManager Instance;
+
+
         void Start()
         {
             Instance = this;
@@ -22,6 +24,7 @@ namespace Shurub
         public override void OnLeftRoom()
         {
             SceneManager.LoadScene(0);
+            PhotonNetwork.LocalPlayer.TagObject = null;
         }
 
         public void LeaveRoom()

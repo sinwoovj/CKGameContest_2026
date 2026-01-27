@@ -8,14 +8,21 @@ namespace Shurub
 {
     public class PlayerController : MonoBehaviourPun
     {
+        private PlayerInput playerInput;
         private Movement2D movement2D;
         private Animator anim;
 
         private Vector2 moveInput = Vector2.zero;
-        bool isPickUp = false;
 
         private void Awake()
         {
+            playerInput = GetComponent<PlayerInput>();
+
+            if(!photonView.IsMine)
+            {
+                playerInput.enabled = false;
+            }
+
             movement2D = GetComponent<Movement2D>();
             anim = GetComponent<Animator>();
         }
@@ -42,12 +49,28 @@ namespace Shurub
 
         public void OnInteract(InputAction.CallbackContext context)
         {
-            
+            PlayerManager.Instance.isIntreact = context.canceled ? false : true;
         }
 
         public void OnPickUpOrThrow(InputAction.CallbackContext context)
         {
-            
+            if (context.performed)
+            {
+                if(!PlayerManager.Instance.isThrow)
+                {
+                    if (PlayerManager.Instance.isCarry)
+                    {
+                        PlayerManager.Instance.isThrow = true;
+                    }
+                    else
+                    {
+                        if (PlayerManager.Instance.isCarrible)
+                        {
+                            PlayerManager.Instance.isCarry = true;
+                        }
+                    }
+                }
+            }
         }
     }
 

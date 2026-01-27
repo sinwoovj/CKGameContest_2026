@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4596264328177276855}
   - component: {fileID: 7996533809710324138}
   - component: {fileID: 2062758290593414256}
+  - component: {fileID: 1671824807042570286}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -143,6 +144,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8b4fc3800dd7214285bf4c6e7913dfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shurub.PlayerManager
+  isCarrible: 0
+  isCarry: 0
+  isThrow: 0
+  isIntreact: 0
 --- !u!114 &5745876340191178797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -425,8 +430,9 @@ MonoBehaviour:
   prefixField: -1
   Synchronization: 3
   OwnershipTransfer: 0
-  observableSearch: 2
+  observableSearch: 0
   ObservedComponents:
+  - {fileID: 698375528675793719}
   - {fileID: 7996533809710324138}
   - {fileID: 2062758290593414256}
   sceneViewId: 0
@@ -481,3 +487,17 @@ MonoBehaviour:
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
+--- !u!114 &1671824807042570286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1644164552098462632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2db64eb5bea1a8f4b9a10e7eb8dc033b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Shurub.CameraWork
+  offset: {x: 0, y: 0, z: -10}
+  smoothSpeed: 5
