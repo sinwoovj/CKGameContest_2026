@@ -160,6 +160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 283c3fecf9348944fae92e280335053b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhotonTest.PlayerController
+  playerInput: {fileID: 0}
 --- !u!114 &499160806948557619
 MonoBehaviour:
   m_ObjectHideFlags: 0

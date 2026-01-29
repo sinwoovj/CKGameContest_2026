@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.InputSystem;
 
 namespace Shurub
 {
@@ -17,6 +18,11 @@ namespace Shurub
         void Start()
         {
             Instance = this;
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape)) UIManager.Instance.SetPausePanel();
         }
 
         // Called when the local player left the room.

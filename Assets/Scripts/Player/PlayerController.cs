@@ -8,7 +8,9 @@ namespace Shurub
 {
     public class PlayerController : MonoBehaviourPun
     {
-        private PlayerInput playerInput;
+        static public PlayerController Instance;
+        [HideInInspector]
+        public PlayerInput playerInput;
         private Movement2D movement2D;
         private Animator anim;
 
@@ -25,6 +27,11 @@ namespace Shurub
 
             movement2D = GetComponent<Movement2D>();
             anim = GetComponent<Animator>();
+        }
+
+        private void Start()
+        {
+            Instance = this;
         }
 
         private void Update()
