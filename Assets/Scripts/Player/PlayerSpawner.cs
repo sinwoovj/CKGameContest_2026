@@ -1,34 +1,71 @@
 using Photon.Pun;
+using Photon.Pun.Demo.PunBasics;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerSpawner : MonoBehaviourPunCallbacks
+namespace Shurub
 {
-    [SerializeField] private GameObject playerPrefab;
-
-    void Start()
+    public class PlayerSpawner : MonoBehaviourPunCallbacks
     {
-        TrySpawn();
-    }
+        [SerializeField] private GameObject playerPrefab;
+        [SerializeField] private List<GameObject> playerSpawnPointObject;
 
-    public override void OnJoinedRoom()
-    {
-        TrySpawn();
-    }
+        static public PlayerSpawner Instance;
 
-    private void TrySpawn()
-    {
-        if (!PhotonNetwork.InRoom)
-            return;
+        private void Start()
+        {
+            Instance = this;
+            TrySpawnPlayer();
+        }
 
-        if (PhotonNetwork.LocalPlayer.TagObject != null)
-            return;
+        public override void OnJoinedRoom()
+        {
+            TrySpawnPlayer();
+        }
 
-        GameObject player = PhotonNetwork.Instantiate(
-            "Prefabs/" + playerPrefab.name,
-            Vector3.zero,
-            Quaternion.identity
-        );
+        public void TrySpawnPlayer()
+        {
+            if (!PhotonNetwork.InRoom)
+                return;
 
-        PhotonNetwork.LocalPlayer.TagObject = player;
+            if (PhotonNetwork.LocalPlayer.TagObject != null)
+                return;
+
+            int myPNum = playerSpawnPointObject.Count - 1;
+
+            if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("pNum", out object value))
+            {
+                myPNum = (int)value;
+                Debug.Log("MyPNum : " +  myPNum);
+            }
+
+            GameObject player = PhotonNetwork.Instantiate(
+                "Prefabs/" + playerPrefab.name,
+                playerSpawnPointObject[myPNum].transform.position,
+                Quaternion.identity
+            );
+
+            PhotonNetwork.LocalPlayer.TagObject = player;
+        }
+
+        public void ReSpawnPlayer()
+        {
+            if (!PhotonNetwork.InRoom)
+                return;
+
+            int myPNum = 0;
+
+            if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue("pNum", out object value))
+            {
+                myPNum = (int)value;
+                Debug.Log("MyPNum : " + myPNum);
+            }
+            else
+            {
+                Debug.LogError("pNum could not load");
+            }
+            
+            PlayerManager.LocalPlayerInstance.transform.position = playerSpawnPointObject[myPNum].transform.position;
+        }
     }
 }

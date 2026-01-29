@@ -1,12 +1,11 @@
-using System;
-using System.Collections;
-
-using UnityEngine;
-using UnityEngine.SceneManagement;
-
 using Photon.Pun;
 using Photon.Realtime;
-using UnityEngine.InputSystem;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Shurub
 {
@@ -38,16 +37,11 @@ namespace Shurub
             PhotonNetwork.LeaveRoom();
         }
 
-        //private void LoadArena()
-        //{
-        //    if (!PhotonNetwork.IsMasterClient)
-        //    {
-        //        Debug.LogError("PhotonNetwork : Trying to Load a level but we are not the master Client");
-        //        return;
-        //    }
-        //    Debug.LogFormat("PhotonNetwork : Loading Level : {0}", PhotonNetwork.CurrentRoom.PlayerCount);
-        //    PhotonNetwork.LoadLevel("Room for " + PhotonNetwork.CurrentRoom.PlayerCount);
-        //}
+        public override void OnMasterClientSwitched(Photon.Realtime.Player newMasterClient)
+        {
+            ReassignPlayerNumbers();
+        }
+
         public override void OnPlayerEnteredRoom(Photon.Realtime.Player other)
         {
             Debug.LogFormat("OnPlayerEnteredRoom() {0}", other.NickName); // not seen if you're the player connecting
@@ -56,7 +50,7 @@ namespace Shurub
             {
                 Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
 
-                //LoadArena();
+                ReassignPlayerNumbers();
             }
         }
 
@@ -68,7 +62,52 @@ namespace Shurub
             {
                 Debug.LogFormat("OnPlayerLeftRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
 
-                //LoadArena();
+                ReassignPlayerNumbers();
+            }
+        }
+
+        public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+        {
+            int myPNum;
+            if (targetPlayer == PhotonNetwork.LocalPlayer &&
+                changedProps.TryGetValue("pNum", out object value))
+            {
+                myPNum = (int)value;
+                Debug.Log("MyPNum updated: " + myPNum);
+                if (!PlayerManager.LocalPlayerInstance.GetComponent<Player>().isSpawned)
+                {
+                    PlayerSpawner.Instance.ReSpawnPlayer();
+                    PlayerManager.LocalPlayerInstance.GetComponent<Player>().isSpawned = true;
+                }
+            }
+        }
+
+        void ReassignPlayerNumbers()
+        {
+             List<Photon.Realtime.Player> players = PhotonNetwork.PlayerList.ToList();
+
+            // MasterClient
+            Photon.Realtime.Player master = PhotonNetwork.MasterClient;
+            ExitGames.Client.Photon.Hashtable masterProp = new ExitGames.Client.Photon.Hashtable { { "pNum", 0 } };
+            master.SetCustomProperties(masterProp); 
+            Debug.Log("lllllll");
+
+            // Extra Player
+            List<Photon.Realtime.Player> others = players.Where(p => p != master).ToList();
+
+            // Mix Random
+            for (int i = 0; i < others.Count; i++)
+            {
+                int rand = UnityEngine.Random.Range(i, others.Count);
+                (others[i], others[rand]) = (others[rand], others[i]);
+            }
+
+            // if pNum 1~
+            int pNum = 1;
+            foreach (var player in others)
+            {
+                ExitGames.Client.Photon.Hashtable prop = new ExitGames.Client.Photon.Hashtable { { "pNum", pNum++ } };
+                player.SetCustomProperties(prop);
             }
         }
     }

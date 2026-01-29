@@ -114,8 +114,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df9fff7d5bd01bb41bac5de2399a0ef3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhotonTest.Player
-  nickname: 
   isAlive: 0
+  isSpawned: 0
   influenceSpeed: 1
   isGrounded: 0
   maxHp: 0
@@ -131,7 +131,6 @@ MonoBehaviour:
   currentExp: 0
   requiredExp: 0
   lookDirection: {x: 0, y: 0}
-  ping: 0
 --- !u!114 &698375528675793719
 MonoBehaviour:
   m_ObjectHideFlags: 0

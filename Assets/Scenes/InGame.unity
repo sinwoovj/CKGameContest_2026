@@ -544,6 +544,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: CuttingZone_L
       objectReference: {fileID: 0}
+    - target: {fileID: 4003408300203367927, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 28.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4003408300203367927, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 4003408300203367927, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4003408300203367927, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4363144616104432166, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
       propertyPath: m_Name
       value: Map
@@ -865,6 +881,22 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 927819053}
+    - target: {fileID: 6870540689010514724, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6870540689010514724, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6870540689010514724, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6870540689010514724, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6897306807736267274, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

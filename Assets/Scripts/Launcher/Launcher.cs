@@ -90,16 +90,23 @@ namespace Shurub
         {
             Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
             progressLabel.GetComponentInChildren<TMP_Text>().text = "Room Joined";
-            
+
             // #Critical: We only load if we are the first player, else we rely on `PhotonNetwork.AutomaticallySyncScene` to sync our instance scene.
             if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
             {
                 Debug.Log("We load the 'In Game' ");
 
+                AssignInitialPNum();
+
                 // #Critical
                 // Load the Room Level.
                 PhotonNetwork.LoadLevel("InGame");
             }
+        }
+
+        public void AssignInitialPNum()
+        {
+            PhotonNetwork.MasterClient.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { "pNum", 0 } });
         }
     }
 }

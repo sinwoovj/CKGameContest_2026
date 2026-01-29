@@ -6,9 +6,9 @@ namespace Shurub
     public class Player : MonoBehaviour
     {
         // Core State
-        private uint id;
-        public string nickname;
+        // public uint pId; public int pNum; public string nickname; -> Photon.Realtime.Player.CustomProperties
         public bool isAlive;
+        public bool isSpawned = false;
 
         // Transform & Movement
         public Vector2 Pos => this.gameObject.transform.position;
@@ -52,10 +52,12 @@ namespace Shurub
         private Player cameraTarget;
         public Vector2 lookDirection;
 
-    // Network
+    /*
+    Network -> Photon.Realtime.Player.CustomProperties
         private bool isLocalPlayer;
         private uint networkId;
         public int ping;
+    */
 
     // Debug
 
