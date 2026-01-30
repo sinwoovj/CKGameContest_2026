@@ -40,7 +40,7 @@ namespace Shurub
             }
 
             GameObject player = PhotonNetwork.Instantiate(
-                "Prefabs/" + playerPrefab.name,
+                "Prefabs/Player/" + playerPrefab.name,
                 playerSpawnPointObject[myPNum].transform.position,
                 Quaternion.identity
             );
