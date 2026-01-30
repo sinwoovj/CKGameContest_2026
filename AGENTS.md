@@ -2,7 +2,7 @@
 - Project name: CKGameContest_2026
 - Unity version: Unity 6000.2.12f1
 - Active game object:
-  - Name: Cabbage (2)
-  - Tag: Ingredient
-  - Layer: Ingredient
+  - Name: Player(Clone)
+  - Tag: Player
+  - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
