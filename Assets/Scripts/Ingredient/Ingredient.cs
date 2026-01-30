@@ -1,12 +1,24 @@
+using Photon.Pun;
 using UnityEngine;
 
 namespace Shurub
 {
-    public abstract class Ingredient : MonoBehaviour
+    public abstract class Ingredient : MonoBehaviourPun
     {
-        public bool isHeld;
         protected Rigidbody2D rb;
         protected Collider2D col;
+
+        public enum IngredientState
+        {
+            World,     // �ٴڿ� ����
+            Held,      // ������ ��� ����
+            Thrown     // �������� ���ư��� ��
+        }
+        public IngredientState state;
+
+        private const float STOP_SPEED = 0.1f;
+        private const float STOP_TIME = 0.2f;
+        private float stopTimer;
 
         private Vector3 originalScale;
 
@@ -17,20 +29,60 @@ namespace Shurub
             originalScale = transform.localScale;
         }
 
-        public virtual void Pick(Transform holder)
+        protected virtual void FixedUpdate()
         {
-            isHeld = true;
+            if (!photonView.IsMine)
+                return;
+
+            if (state != IngredientState.Thrown)
+                return;
+
+            if (rb.linearVelocity.magnitude < STOP_SPEED)
+            {
+                stopTimer += Time.fixedDeltaTime;
+
+                if (stopTimer >= STOP_TIME)
+                {
+                    OnStopped();
+                }
+            }
+            else
+            {
+                stopTimer = 0f;
+            }
+        }
+
+        public virtual void OnStopped()
+        {
+            state = IngredientState.World;
+            stopTimer = 0f;
+
+            rb.linearVelocity = Vector2.zero;
+
+            col.enabled = true;
+        }
+
+        [PunRPC]
+        public virtual void RPC_Pick(int holderViewId)
+        {
+            PhotonView holderPV = PhotonView.Find(holderViewId);
+
+            state = IngredientState.Held;
+
             rb.simulated = false;
             col.enabled = false;
 
-            transform.SetParent(holder);
+            transform.SetParent(holderPV.transform);
             transform.localPosition = Vector3.zero;
         }
 
-        public virtual void Drop()
+        [PunRPC]
+        public virtual void RPC_Drop(Vector2 worldPos)
         {
-            isHeld = false;
+            state = IngredientState.World;
+
             transform.SetParent(null);
+            transform.position = worldPos;
 
             transform.rotation = Quaternion.identity;
             transform.localScale = originalScale;
@@ -39,9 +91,17 @@ namespace Shurub
             col.enabled = true;
         }
 
-        public virtual void Throw(Vector2 dir, float force)
+        [PunRPC]
+        public virtual void RPC_Throw(Vector2 dir, float force)
         {
-            Drop();
+            state = IngredientState.Thrown;
+
+            transform.SetParent(null);
+
+            rb.simulated = true;
+            col.enabled = true;
+
+            rb.linearVelocity = Vector2.zero;
             rb.AddForce(dir.normalized * force, ForceMode2D.Impulse);
         }
     }

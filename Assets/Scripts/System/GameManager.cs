@@ -13,6 +13,21 @@ namespace Shurub
     {
         public static GameManager Instance;
 
+        public enum GameState
+        {
+            None = 0,
+
+            Boot,          // 게임 실행 직후
+            Lobby,         // 로비 (룸 선택 전)
+            Matching,      // 매칭 중
+            Loading,       // 씬/리소스 로딩
+            Ready,         // 카운트다운
+            Playing,       // 실제 플레이
+            Paused,        // 일시정지
+            Result,        // 결과 화면
+            GameOver       // 완전 종료
+        } 
+        public GameState gameState = GameState.None;
 
         void Start()
         {
@@ -89,8 +104,7 @@ namespace Shurub
             // MasterClient
             Photon.Realtime.Player master = PhotonNetwork.MasterClient;
             ExitGames.Client.Photon.Hashtable masterProp = new ExitGames.Client.Photon.Hashtable { { "pNum", 0 } };
-            master.SetCustomProperties(masterProp); 
-            Debug.Log("lllllll");
+            master.SetCustomProperties(masterProp);
 
             // Extra Player
             List<Photon.Realtime.Player> others = players.Where(p => p != master).ToList();

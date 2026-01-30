@@ -145,27 +145,42 @@ namespace Shurub
 
         void TryPickIngredient()
         {
+            if (!photonView.IsMine) return;
+
             Collider2D hit = Physics2D.OverlapCircle(
                 transform.position, 0.5f, LayerMask.GetMask("Ingredient"));
 
             if (hit && hit.TryGetComponent(out Ingredient ingredient))
             {
                 heldIngredient = ingredient;
-                ingredient.Pick(holdPoint);
+                ingredient.photonView.RPC(
+                    "RPC_Pick",
+                    RpcTarget.All,
+                    photonView.ViewID
+                );
                 holdState = HoldState.Holding;
             }
         }
 
         void DropIngredient()
         {
-            heldIngredient.Drop();
+            heldIngredient.photonView.RPC(
+                "RPC_Drop",
+                RpcTarget.All,
+                (Vector2)transform.position
+            );
             heldIngredient = null;
             holdState = HoldState.Empty;
         }
 
         void ThrowIngredient()
         {
-            heldIngredient.Throw(moveInput != Vector2.zero ? moveInput : moveLastInput, throwPower);
+            heldIngredient.photonView.RPC(
+                "RPC_Throw",
+                RpcTarget.All,
+                moveInput != Vector2.zero ? moveInput : moveLastInput, 
+                throwPower
+            );
             heldIngredient = null;
             holdState = HoldState.Empty;
         }
