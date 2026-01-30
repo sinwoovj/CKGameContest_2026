@@ -160,6 +160,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhotonTest.PlayerController
   playerInput: {fileID: 0}
+  holdPoint: {fileID: 6300882877206369506}
+  heldIngredient: {fileID: 0}
+  moveLastInput: {x: 0, y: 0}
+  moveInput: {x: 0, y: 0}
 --- !u!114 &499160806948557619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -335,7 +339,7 @@ MonoBehaviour:
   - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 5745876340191178797}
-        m_TargetAssemblyTypeName: PhotonTest.PlayerController, Assembly-CSharp
+        m_TargetAssemblyTypeName: Shurub.PlayerController, Assembly-CSharp
         m_MethodName: OnPickUpOrThrow
         m_Mode: 0
         m_Arguments:
