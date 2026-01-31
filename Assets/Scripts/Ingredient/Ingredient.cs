@@ -51,6 +51,15 @@ namespace Shurub
                 stopTimer = 0f;
             }
         }
+        protected virtual void OnEnable()
+        {
+            IngredientManager.Register(this);
+        }
+
+        protected virtual void OnDisable()
+        {
+            IngredientManager.Unregister(this);
+        }
 
         public virtual void OnStopped()
         {

@@ -11,9 +11,13 @@ namespace Shurub
         [SerializeField]
         public GameObject pausePanel;
         [SerializeField]
+        public GameObject resultPanel;
+        [SerializeField]
         public GameObject HPUIObj;
         [SerializeField]
         public TextMeshProUGUI playTimeText;
+        [SerializeField]
+        public TextMeshProUGUI totalTimeText;
 
         public bool isPause;
 
@@ -90,6 +94,12 @@ namespace Shurub
         {
             float time = (float)PhotonNetwork.CurrentRoom.CustomProperties[GameManager.PLAYTIME_KEY];
             playTimeText.text = $"{(int)(time / 60):00} : {(int)(time % 60):00}";
+        }
+
+        public void UpdateTotalTimeUI()
+        {
+            float time = (float)PhotonNetwork.CurrentRoom.CustomProperties[GameManager.PLAYTIME_KEY];
+            totalTimeText.text = $"[Total Time: {(int)(time / 60):00}:{(int)(time % 60):00}]";
         }
     }
 }

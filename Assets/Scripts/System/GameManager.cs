@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace Shurub
@@ -19,12 +20,12 @@ namespace Shurub
 
             Boot,          // 게임 실행 직후
             Lobby,         // 로비 (룸 선택 전)
-            Matching,      // 매칭 중
             Loading,       // 씬/리소스 로딩
             Ready,         // 카운트다운
             Playing,       // 실제 플레이
             Paused,        // 일시정지
             Result,        // 결과 화면
+            Retry,         // 재시작
             GameOver       // 완전 종료
         } 
         public GameState state = GameState.None;
@@ -41,8 +42,9 @@ namespace Shurub
 
         // Logic of Hp Decrease
         float hpTickTimer;
-        const float HP_TICK_INTERVAL = 1f; // per 1s
+        const float HP_TICK_INTERVAL = 2f; // per 2s
         const int HP_DECREASE = -1;
+        const float HP_SUBMIT_REWARD = 5f;
 
         // Monohaviour Functions
         private void Awake()
@@ -52,9 +54,9 @@ namespace Shurub
         void Start()
         {
             SetGameState(GameState.Boot);
+            SetGameState(GameState.Lobby);
+            SetGameState(GameState.Loading);
             //로비에서부터 준비 시작-> 로딩 -> 레디 -> 이후 플레잉으로 진행, 하지만 지금은 생략
-            SetHP(maxHp);
-            SetGameState(GameState.Playing);
         }
 
         private void Update()
@@ -150,9 +152,9 @@ namespace Shurub
             }
         }
 
-        // Functions
+        // Private Functions
 
-        void ReassignPlayerNumbers()
+        private void ReassignPlayerNumbers()
         {
              List<Photon.Realtime.Player> players = PhotonNetwork.PlayerList.ToList();
 
@@ -180,18 +182,57 @@ namespace Shurub
             }
         }
 
-        void OnGameStateChanged(GameState state)
+        private void OnGameStateChanged(GameState state)
         {
             switch (state)
             {
+                case GameState.Loading:
+                    PlayerSpawner.Instance.ReSpawnPlayer();
+                    SetHP(maxHp);
+                    playTime = 0f;
+                    SetPlayTime(playTime);
+                    CloseResultUI();
+                    SetPlayerInput(true);
+                    PlayerManager.LocalPlayerInstance.GetComponent<Animator>().SetTrigger("Default");
+                    IngredientManager.Instance.ClearIngredient();
+                    TestManager.Instance.InstantiateTest();
+                    SetGameState(GameState.Ready);
+                    break;
+                case GameState.Ready:
+                    //카운트 다운
+                    SetGameState(GameState.Playing);
+                    break;
+                case GameState.Playing:
+                    break;
                 case GameState.Result:
-                    //ShowResultUI();
-                    //DisablePlayerInput();
+                    OpenResultUI();
+                    SetPlayerInput(false);
+                    break;
+                case GameState.Retry:
+                    SetGameState(GameState.Loading);
                     break;
             }
         }
 
-        void SetHP(float value)
+        private void SetPlayerInput(bool val)
+        {
+            PlayerManager.LocalPlayerInstance.GetComponent<PlayerInput>().enabled = val;
+        }
+
+        private void OpenResultUI()
+        {
+            UIManager.Instance.UpdateTotalTimeUI();
+            UIManager.Instance.resultPanel.SetActive(true);
+        }
+
+        private void CloseResultUI()
+        {
+            UIManager.Instance.resultPanel.SetActive(false);
+        }
+
+        // Public Functions
+
+        public void SetHP(float value)
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
@@ -203,7 +244,7 @@ namespace Shurub
             PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
         }
 
-        void ChangeHP(float delta)
+        public void ChangeHP(float delta)
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
@@ -218,7 +259,12 @@ namespace Shurub
             PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
         }
 
-        void DecreaseHP()
+        public void SubmitFood()
+        {
+            ChangeHP(HP_SUBMIT_REWARD);
+        }
+
+        public void DecreaseHP()
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
@@ -238,7 +284,7 @@ namespace Shurub
             }
         }
 
-        void SetGameState(GameState newState)
+        public void SetGameState(GameState newState)
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
@@ -251,8 +297,8 @@ namespace Shurub
 
             PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
         }
-        
-        void SetPlayTime(float time)
+
+        public void SetPlayTime(float time)
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
@@ -263,11 +309,15 @@ namespace Shurub
             PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
         }
 
-        // Methods
+        // public Methods
         public void LeaveRoom()
         {
             PhotonNetwork.LeaveRoom();
         }
 
+        public void RetryGame()
+        {
+            SetGameState(GameState.Retry);
+        }
     }
 }

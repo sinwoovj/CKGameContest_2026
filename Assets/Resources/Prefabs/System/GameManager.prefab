@@ -45,6 +45,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   state: 0
-  maxHp: 100
-  currentHp: 100
+  maxHp: 5
+  currentHp: 5
   playTime: 0

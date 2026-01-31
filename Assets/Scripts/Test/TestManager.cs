@@ -5,6 +5,8 @@ namespace Shurub
 {   
     public class TestManager : MonoBehaviourPun
     {
+        public static TestManager Instance;
+
         [SerializeField]
         public string TestObjPath;
         [SerializeField]
@@ -14,18 +16,18 @@ namespace Shurub
 
         void Start()
         {
-            if (PhotonNetwork.IsMasterClient)
-            {
-                for (int i = 0; i < spawnCount; i++)
-                {
-                    InstantiateTest();
-                }
-            }
+            Instance = this;
         }
 
         public void InstantiateTest()
         {
-            PhotonNetwork.Instantiate("Prefabs/" + TestObjPath, TestPos, Quaternion.identity);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                for (int i = 0; i < spawnCount; i++)
+                {
+                    PhotonNetwork.Instantiate("Prefabs/" + TestObjPath, TestPos, Quaternion.identity);
+                }
+            }
         }
     }
 }
