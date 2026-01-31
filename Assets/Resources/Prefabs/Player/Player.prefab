@@ -118,9 +118,6 @@ MonoBehaviour:
   isSpawned: 0
   influenceSpeed: 1
   isGrounded: 0
-  maxHp: 0
-  currentHp: 0
-  regenHp: 0
   isInvincible: 0
   maxStamina: 0
   currentStamina: 0

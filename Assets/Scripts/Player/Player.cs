@@ -21,9 +21,6 @@ namespace Shurub
         public bool isGrounded;
         
     // Vitals
-        public float maxHp;
-        public float currentHp;
-        public float regenHp;
         public bool isInvincible;
         public float maxStamina;
         public float currentStamina;

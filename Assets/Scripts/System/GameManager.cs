@@ -27,16 +27,54 @@ namespace Shurub
             Result,        // 결과 화면
             GameOver       // 완전 종료
         } 
-        public GameState gameState = GameState.None;
+        public GameState state = GameState.None;
 
-        void Start()
+        // Room Property Key
+        public const string HP_KEY = "GlobalHP";
+        public const string STATE_KEY = "GameState";
+        public const string PLAYTIME_KEY = "PlayTime";
+
+        // Room Properties
+        public float maxHp = 100f;
+        public float currentHp = 0f;
+        public float playTime = 0f;
+
+        // Logic of Hp Decrease
+        float hpTickTimer;
+        const float HP_TICK_INTERVAL = 1f; // per 1s
+        const int HP_DECREASE = -1;
+
+        // Monohaviour Functions
+        private void Awake()
         {
             Instance = this;
+        }
+        void Start()
+        {
+            SetGameState(GameState.Boot);
+            //로비에서부터 준비 시작-> 로딩 -> 레디 -> 이후 플레잉으로 진행, 하지만 지금은 생략
+            SetHP(maxHp);
+            SetGameState(GameState.Playing);
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape)) UIManager.Instance.SetPausePanel();
+            if (!PhotonNetwork.IsMasterClient) return;
+
+            if(state == GameState.Playing)
+            {
+                hpTickTimer += Time.deltaTime;
+                if (hpTickTimer >= HP_TICK_INTERVAL)
+                {
+                    hpTickTimer = 0f;
+                    DecreaseHP();
+                }
+                playTime += Time.deltaTime;
+                if (Time.frameCount % 30 == 0) // Do not send it too often
+                {
+                    SetPlayTime(playTime);
+                }
+            }
         }
 
         // Called when the local player left the room.
@@ -47,11 +85,7 @@ namespace Shurub
             PhotonNetwork.LocalPlayer.TagObject = null;
         }
 
-        public void LeaveRoom()
-        {
-            PhotonNetwork.LeaveRoom();
-        }
-
+        // Photon Callback Functions
         public override void OnMasterClientSwitched(Photon.Realtime.Player newMasterClient)
         {
             ReassignPlayerNumbers();
@@ -80,6 +114,25 @@ namespace Shurub
                 ReassignPlayerNumbers();
             }
         }
+        public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable properties)
+        {
+            if (properties.TryGetValue(HP_KEY, out object hp))
+            {
+                currentHp = (float)hp;
+                UIManager.Instance.UpdateHPUI();
+            }
+
+            if (properties.TryGetValue(PLAYTIME_KEY, out object time))
+            {
+                UIManager.Instance.UpdateTimeUI();
+            }
+
+            if (properties.TryGetValue(STATE_KEY, out object _state))
+            {
+                state = (GameState)(int)_state;
+                OnGameStateChanged(state);
+            }
+        }
 
         public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
         {
@@ -96,6 +149,8 @@ namespace Shurub
                 }
             }
         }
+
+        // Functions
 
         void ReassignPlayerNumbers()
         {
@@ -124,5 +179,95 @@ namespace Shurub
                 player.SetCustomProperties(prop);
             }
         }
+
+        void OnGameStateChanged(GameState state)
+        {
+            switch (state)
+            {
+                case GameState.Result:
+                    //ShowResultUI();
+                    //DisablePlayerInput();
+                    break;
+            }
+        }
+
+        void SetHP(float value)
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+
+            ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable
+            {
+                { HP_KEY, value }
+            };
+
+            PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
+        }
+
+        void ChangeHP(float delta)
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+
+            float currentHP = (float)PhotonNetwork.CurrentRoom.CustomProperties[HP_KEY];
+            currentHP += delta;
+
+            ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable
+            {
+                { HP_KEY, currentHP }
+            };
+
+            PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
+        }
+
+        void DecreaseHP()
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+
+            float hp = (float)PhotonNetwork.CurrentRoom.CustomProperties[HP_KEY];
+            hp += HP_DECREASE;
+
+            ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable
+            {
+                { HP_KEY, hp }
+            };
+
+            PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
+
+            if (hp <= 0)
+            {
+                SetGameState(GameState.Result);
+            }
+        }
+
+        void SetGameState(GameState newState)
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+
+            state = newState;
+
+            ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable
+            {
+                { STATE_KEY, (int)newState }
+            };
+
+            PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
+        }
+        
+        void SetPlayTime(float time)
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+
+            ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable
+            {
+                { PLAYTIME_KEY, playTime }
+            };
+            PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
+        }
+
+        // Methods
+        public void LeaveRoom()
+        {
+            PhotonNetwork.LeaveRoom();
+        }
+
     }
 }

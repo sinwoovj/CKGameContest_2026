@@ -1687,14 +1687,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2412970805842713816, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 80
-      objectReference: {fileID: 0}
-    - target: {fileID: 2412970805842713816, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 360
-      objectReference: {fileID: 0}
     - target: {fileID: 2835483205733960078, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -1771,14 +1763,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 927819053}
-    - target: {fileID: 5434380821810256490, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 80
-      objectReference: {fileID: 0}
-    - target: {fileID: 5434380821810256490, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 310
-      objectReference: {fileID: 0}
     - target: {fileID: 5936099000927185419, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -1904,6 +1888,22 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+--- !u!1 &7067529828285447786 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 837793209324075659, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+  m_PrefabInstance: {fileID: 7067529828285447785}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7067529828285447787 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4213732152234312574, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+  m_PrefabInstance: {fileID: 7067529828285447785}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1001 &7543505716196113343
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1913,9 +1913,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1618324868779616650, guid: 58530b6b92c9f4341b4838449c0794e7, type: 3}
+      propertyPath: HPUIObj
+      value: 
+      objectReference: {fileID: 7067529828285447786}
+    - target: {fileID: 1618324868779616650, guid: 58530b6b92c9f4341b4838449c0794e7, type: 3}
       propertyPath: pausePanel
       value: 
       objectReference: {fileID: 3553381510967298318}
+    - target: {fileID: 1618324868779616650, guid: 58530b6b92c9f4341b4838449c0794e7, type: 3}
+      propertyPath: playTimeText
+      value: 
+      objectReference: {fileID: 7067529828285447787}
     - target: {fileID: 5491040630565178757, guid: 58530b6b92c9f4341b4838449c0794e7, type: 3}
       propertyPath: m_Name
       value: UIManager

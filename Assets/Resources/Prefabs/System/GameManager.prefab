@@ -44,4 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3d5a2994f50bd44e958a194fd1ca149, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  playerPrefab: {fileID: 1644164552098462632, guid: 7fffc4bd0d4c4c841b4854514fffd63f, type: 3}
+  state: 0
+  maxHp: 100
+  currentHp: 100
+  playTime: 0
