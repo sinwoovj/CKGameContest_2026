@@ -32,7 +32,14 @@ public class TutorialUI : UIBase
     {
         if (PhotonNetwork.InRoom)
         {
-            NetworkManager.Instance().SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.NotReady);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                NetworkManager.Instance().SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.Ready);
+            }
+            else
+            {
+                NetworkManager.Instance().SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.NotReady);
+            }
         }
 
         base.Hide(onConfirmed, force);
