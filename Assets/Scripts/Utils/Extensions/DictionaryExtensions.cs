@@ -66,4 +66,23 @@ public static class DictionaryExtensions
 
         return source.Values.ToArray()[(random != null) ? random.Next(0, source.Count) : UnityEngine.Random.Range(0, source.Count)];
     }
+
+
+    /// <summary>
+    /// Dictionary를 깊은 복사합니다.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public static Dictionary<TKey, TValue> Clone<TKey, TValue>(this Dictionary<TKey, TValue> source)
+    {
+        Dictionary<TKey, TValue> clone = new Dictionary<TKey, TValue>();
+        foreach (KeyValuePair<TKey, TValue> item in source)
+        {
+            clone[item.Key] = item.Value;
+        }
+
+        return clone;
+    }
 }

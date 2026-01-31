@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Photon.Realtime;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class ListExtensions
@@ -59,5 +61,22 @@ public static class ListExtensions
     public static T Last<T>(this IList<T> source)
     {
         return source[source.Count - 1];
+    }
+
+    /// <summary>
+    /// List를 깊은 복사합니다.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <returns></returns>
+    public static List<T> Clone<T>(this List<T> source)
+    {
+        List<T> clone = new List<T>();
+        foreach (T item in source)
+        {
+            clone.Add(item);
+        }
+
+        return clone;
     }
 }
