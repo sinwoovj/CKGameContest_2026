@@ -16,7 +16,6 @@ public class JoinRoomUI : UIBase
     [SerializeField] private ToggleGroup roomListToggleGroup;
     [SerializeField] private RoomInfoObj roomInfoPrefab;
 
-    private bool isJoining = false;
     private string curSearchRoomStr = "";
 
     private List<RoomInfo> cachedAvailableRooms;
