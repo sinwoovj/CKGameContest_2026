@@ -145,7 +145,6 @@ namespace Shurub
 
         void TryPickIngredient()
         {
-            if (!photonView.IsMine) return;
 
             Collider2D hit = Physics2D.OverlapCircle(
                 transform.position, 0.5f, LayerMask.GetMask("Ingredient"));
@@ -153,6 +152,10 @@ namespace Shurub
             if (hit && hit.TryGetComponent(out Ingredient ingredient))
             {
                 heldIngredient = ingredient;
+
+                if (!heldIngredient.photonView.IsMine)
+                    heldIngredient.photonView.RequestOwnership();
+
                 ingredient.photonView.RPC(
                     "RPC_Pick",
                     RpcTarget.All,
@@ -164,6 +167,9 @@ namespace Shurub
 
         void DropIngredient()
         {
+            if (!heldIngredient.photonView.IsMine)
+                heldIngredient.photonView.RequestOwnership();
+
             heldIngredient.photonView.RPC(
                 "RPC_Drop",
                 RpcTarget.All,
@@ -175,6 +181,9 @@ namespace Shurub
 
         void ThrowIngredient()
         {
+            if (!heldIngredient.photonView.IsMine)
+                heldIngredient.photonView.RequestOwnership();
+
             heldIngredient.photonView.RPC(
                 "RPC_Throw",
                 RpcTarget.All,

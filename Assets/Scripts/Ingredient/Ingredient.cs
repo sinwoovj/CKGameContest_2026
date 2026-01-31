@@ -102,7 +102,8 @@ namespace Shurub
             col.enabled = true;
 
             rb.linearVelocity = Vector2.zero;
-            rb.AddForce(dir.normalized * force, ForceMode2D.Impulse);
+            if (photonView.IsMine) 
+                rb.AddForce(dir.normalized * force, ForceMode2D.Impulse);
         }
     }
 }
