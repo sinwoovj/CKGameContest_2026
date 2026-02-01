@@ -22,15 +22,18 @@ namespace JJM
         [SerializeField] private TMP_Text nameText;
         [SerializeField] private Image masterImage;
 
+        public Player Info { get; private set; }
         public Toggle InfoToggle => infoToggle;
 
         public void Init(Player player)
         {
+            Info = player;
+
             infoToggle.onValueChanged.RemoveAllListeners();
             infoToggle.onValueChanged.AddListener(OnValueChangedInfoToggle);
 
             nameText.text = player.NickName + (player == PhotonNetwork.LocalPlayer ? " (Me)" : "");
-            masterImage.gameObject.SetActive(PhotonNetwork.IsMasterClient);
+            masterImage.gameObject.SetActive(player.IsMasterClient);
 
             if (!PhotonNetwork.IsMasterClient || player == PhotonNetwork.LocalPlayer)
             {

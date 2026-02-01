@@ -50,12 +50,13 @@ public class RoomLobbyUI : UIBase
         readyToggle.onValueChanged.RemoveAllListeners();
     }
 
-    public override void Show()
+    public override async void Show()
     {
-        ProcessShow().Forget();
+        await Setup();
+        base.Show();
     }
 
-    private async UniTask ProcessShow()
+    private async UniTask Setup()
     {
         foreach (PlayerInfoObj player in playerInfoObjects)
         {
@@ -104,8 +105,6 @@ public class RoomLobbyUI : UIBase
         int min = totalTimeLimitSeconds / 60;
         int sec = totalTimeLimitSeconds % 60;
         timeLimitInput.text = $"{min:00} : {sec:00}";
-
-        base.Show();
     }
 
     public override void Hide(Action onConfirmed, bool force)
@@ -319,6 +318,11 @@ public class RoomLobbyUI : UIBase
 
     public void OnUpdatedCustomProperties(Hashtable propertiesThatChanged)
     {
+        if (!IsOpenned())
+        {
+            return;
+        }
+
         if (propertiesThatChanged.TryGetValue(GameConstants.Network.ROOM_TIME_LIMIT_HASH_PROP, out object value))
         {
             totalTimeLimitSeconds = (int)value;
@@ -331,6 +335,11 @@ public class RoomLobbyUI : UIBase
 
     public void OnUpdatedPlayerList()
     {
+        if (!IsOpenned())
+        {
+            return;
+        }
+
         playerStatusDict.Clear();
         Player[] players = PhotonNetwork.PlayerList;
 
@@ -358,6 +367,21 @@ public class RoomLobbyUI : UIBase
             {
                 playerStatusDict[player.UserId] = (PlayerInfoObj.Status)(int)player.CustomProperties[GameConstants.Network.PLAYER_STATUS_HASH_PROP];
             }
+        }
+    }
+
+    public void OnChangedMaster(Player newMaster)
+    {
+        if (!IsOpenned())
+        {
+            return;
+        }
+
+        if (PhotonNetwork.LocalPlayer == newMaster)
+        {
+            NetworkManager.Instance().SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.Ready);
+            //playerInfoObjects.Find(p => p.Info == PhotonNetwork.LocalPlayer).Init(PhotonNetwork.LocalPlayer);
+            Setup().Forget();
         }
     }
 

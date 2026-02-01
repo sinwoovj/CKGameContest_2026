@@ -137,7 +137,7 @@ public class NetworkManager : Singleton<NetworkManager>
         });
 
         UIManager.Instance().ShowUI<RoomLobbyUI>();
-        Debug.LogFormat("방 입장 완료. PlayerId: {0}", PhotonNetwork.LocalPlayer.UserId);
+        Debug.Log("방 입장 완료.");
     }
 
     public override void OnLeftRoom()
@@ -174,6 +174,12 @@ public class NetworkManager : Singleton<NetworkManager>
 
         UIManager.Instance().GetUI<RoomLobbyUI>().OnUpdatedPlayerList();
         Debug.LogFormat("플레이어가 퇴장함. Id: {0}, 플레이어 수: {1}", otherPlayer.UserId, PhotonNetwork.PlayerList.Length);
+    }
+
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        UIManager.Instance().GetUI<RoomLobbyUI>().OnChangedMaster(newMasterClient);
+        Debug.LogFormat("마스터 클라이언트가 변경됨. Id: {0}", newMasterClient.UserId);
     }
 
     public void KickPlayer(Player target)
