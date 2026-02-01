@@ -20,6 +20,7 @@ namespace JJM
         [SerializeField] private Button kickButton;
         [SerializeField] private Image statusImage;
         [SerializeField] private TMP_Text nameText;
+        [SerializeField] private Image masterImage;
 
         public Toggle InfoToggle => infoToggle;
 
@@ -29,6 +30,8 @@ namespace JJM
             infoToggle.onValueChanged.AddListener(OnValueChangedInfoToggle);
 
             nameText.text = player.NickName + (player == PhotonNetwork.LocalPlayer ? " (Me)" : "");
+            masterImage.gameObject.SetActive(PhotonNetwork.IsMasterClient);
+
             if (!PhotonNetwork.IsMasterClient || player == PhotonNetwork.LocalPlayer)
             {
                 kickButton.gameObject.SetActive(false);
