@@ -3,7 +3,7 @@ using DG.Tweening;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-namespace JJM
+namespace Shurub
 {
     public class CustomSelectableUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {

@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace JJM
+namespace Shurub
 {
     public class RoomInfoObj : MonoBehaviour
     {

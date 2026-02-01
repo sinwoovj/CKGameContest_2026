@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace JJM
+namespace Shurub
 {
     public class PlayerInfoObj : MonoBehaviour
     {
@@ -22,10 +22,10 @@ namespace JJM
         [SerializeField] private TMP_Text nameText;
         [SerializeField] private Image masterImage;
 
-        public Player Info { get; private set; }
+        public Photon.Realtime.Player Info { get; private set; }
         public Toggle InfoToggle => infoToggle;
 
-        public void Init(Player player)
+        public void Init(Photon.Realtime.Player player)
         {
             Info = player;
 

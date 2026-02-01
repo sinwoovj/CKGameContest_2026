@@ -87,102 +87,27 @@ namespace Shurub
             PhotonNetwork.LocalPlayer.TagObject = null;
         }
 
-        // Photon Callback Functions
-        public override void OnMasterClientSwitched(Photon.Realtime.Player newMasterClient)
-        {
-            ReassignPlayerNumbers();
-        }
-
-        public override void OnPlayerEnteredRoom(Photon.Realtime.Player other)
-        {
-            Debug.LogFormat("OnPlayerEnteredRoom() {0}", other.NickName); // not seen if you're the player connecting
-
-            if (PhotonNetwork.IsMasterClient)
-            {
-                Debug.LogFormat("OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
-
-                ReassignPlayerNumbers();
-            }
-        }
-
-        public override void OnPlayerLeftRoom(Photon.Realtime.Player other)
-        {
-            Debug.LogFormat("OnPlayerLeftRoom() {0}", other.NickName); // seen when other disconnects
-
-            if (PhotonNetwork.IsMasterClient)
-            {
-                Debug.LogFormat("OnPlayerLeftRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient); // called before OnPlayerLeftRoom
-
-                ReassignPlayerNumbers();
-            }
-        }
-        public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable properties)
-        {
-            if (properties.TryGetValue(HP_KEY, out object hp))
-            {
-                currentHp = (float)hp;
-                UIManager.Instance.UpdateHPUI();
-            }
-
-            if (properties.TryGetValue(PLAYTIME_KEY, out object time))
-            {
-                UIManager.Instance.UpdateTimeUI();
-            }
-
-            if (properties.TryGetValue(STATE_KEY, out object _state))
-            {
-                state = (GameState)(int)_state;
-                OnGameStateChanged(state);
-            }
-        }
-
-        public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
-        {
-            int myPNum;
-            if (targetPlayer == PhotonNetwork.LocalPlayer &&
-                changedProps.TryGetValue("pNum", out object value))
-            {
-                myPNum = (int)value;
-                Debug.Log("MyPNum updated: " + myPNum);
-                if (!PlayerManager.LocalPlayerInstance.GetComponent<Player>().isSpawned)
-                {
-                    PlayerSpawner.Instance.ReSpawnPlayer();
-                    PlayerManager.LocalPlayerInstance.GetComponent<Player>().isSpawned = true;
-                }
-            }
-        }
-
         // Private Functions
 
-        private void ReassignPlayerNumbers()
+        private void SetPlayerInput(bool val)
         {
-             List<Photon.Realtime.Player> players = PhotonNetwork.PlayerList.ToList();
-
-            // MasterClient
-            Photon.Realtime.Player master = PhotonNetwork.MasterClient;
-            ExitGames.Client.Photon.Hashtable masterProp = new ExitGames.Client.Photon.Hashtable { { "pNum", 0 } };
-            master.SetCustomProperties(masterProp);
-
-            // Extra Player
-            List<Photon.Realtime.Player> others = players.Where(p => p != master).ToList();
-
-            // Mix Random
-            for (int i = 0; i < others.Count; i++)
-            {
-                int rand = UnityEngine.Random.Range(i, others.Count);
-                (others[i], others[rand]) = (others[rand], others[i]);
-            }
-
-            // if pNum 1~
-            int pNum = 1;
-            foreach (var player in others)
-            {
-                ExitGames.Client.Photon.Hashtable prop = new ExitGames.Client.Photon.Hashtable { { "pNum", pNum++ } };
-                player.SetCustomProperties(prop);
-            }
+            PlayerManager.LocalPlayerInstance.GetComponent<PlayerInput>().enabled = val;
         }
 
-        private void OnGameStateChanged(GameState state)
+        private void OpenResultUI()
+        {
+            GUIManager.Instance.UpdateTotalTimeUI();
+            GUIManager.Instance.resultPanel.SetActive(true);
+        }
+
+        private void CloseResultUI()
+        {
+            GUIManager.Instance.resultPanel.SetActive(false);
+        }
+
+        // Public Functions
+
+        public void OnGameStateChanged(GameState state)
         {
             switch (state)
             {
@@ -214,23 +139,33 @@ namespace Shurub
             }
         }
 
-        private void SetPlayerInput(bool val)
+        public void ReassignPlayerNumbers()
         {
-            PlayerManager.LocalPlayerInstance.GetComponent<PlayerInput>().enabled = val;
-        }
+            List<Photon.Realtime.Player> players = PhotonNetwork.PlayerList.ToList();
 
-        private void OpenResultUI()
-        {
-            UIManager.Instance.UpdateTotalTimeUI();
-            UIManager.Instance.resultPanel.SetActive(true);
-        }
+            // MasterClient
+            Photon.Realtime.Player master = PhotonNetwork.MasterClient;
+            ExitGames.Client.Photon.Hashtable masterProp = new ExitGames.Client.Photon.Hashtable { { "pNum", 0 } };
+            master.SetCustomProperties(masterProp);
 
-        private void CloseResultUI()
-        {
-            UIManager.Instance.resultPanel.SetActive(false);
-        }
+            // Extra Player
+            List<Photon.Realtime.Player> others = players.Where(p => p != master).ToList();
 
-        // Public Functions
+            // Mix Random
+            for (int i = 0; i < others.Count; i++)
+            {
+                int rand = UnityEngine.Random.Range(i, others.Count);
+                (others[i], others[rand]) = (others[rand], others[i]);
+            }
+
+            // if pNum 1~
+            int pNum = 1;
+            foreach (var player in others)
+            {
+                ExitGames.Client.Photon.Hashtable prop = new ExitGames.Client.Photon.Hashtable { { "pNum", pNum++ } };
+                player.SetCustomProperties(prop);
+            }
+        }
 
         public void SetHP(float value)
         {

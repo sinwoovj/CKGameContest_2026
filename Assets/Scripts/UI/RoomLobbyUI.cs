@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using ExitGames.Client.Photon;
-using JJM;
+using Shurub;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
@@ -159,6 +159,11 @@ public class RoomLobbyUI : UIBase
     {
         // Todo: 게임 시작
         Debug.Log("게임 시작!");
+
+        // #Critical
+        // Load the Room Level.
+        PhotonNetwork.MasterClient.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { "pNum", 0 } });
+        PhotonNetwork.LoadLevel("InGame");
     }
 
     private bool CheckGameStartable()
@@ -341,7 +346,7 @@ public class RoomLobbyUI : UIBase
         }
 
         playerStatusDict.Clear();
-        Player[] players = PhotonNetwork.PlayerList;
+        Photon.Realtime.Player[] players = PhotonNetwork.PlayerList;
 
         for (int i = 0; i < playerInfoObjects.Count; i++)
         {
@@ -358,7 +363,7 @@ public class RoomLobbyUI : UIBase
 
         for (int i = 0; i < players.Length; i++)
         {
-            Player player = players[i];
+            Photon.Realtime.Player player = players[i];
             PlayerInfoObj playerObj = playerInfoObjects[i];
             playerObj.gameObject.SetActive(true);
             playerObj.Init(player);
@@ -370,7 +375,7 @@ public class RoomLobbyUI : UIBase
         }
     }
 
-    public void OnChangedMaster(Player newMaster)
+    public void OnChangedMaster(Photon.Realtime.Player newMaster)
     {
         if (!IsOpenned())
         {

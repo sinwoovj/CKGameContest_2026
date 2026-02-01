@@ -1,12 +1,11 @@
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Shurub
 {
-    public class UIManager : MonoBehaviourPun
+    public class GUIManager : MonoBehaviour
     {
         [SerializeField]
         public GameObject pausePanel;
@@ -21,7 +20,7 @@ namespace Shurub
 
         public bool isPause;
 
-        static public UIManager Instance;
+        static public GUIManager Instance;
 
         void Start()
         {
@@ -32,7 +31,7 @@ namespace Shurub
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape)) UIManager.Instance.SetPausePanel();
+            if (Input.GetKeyDown(KeyCode.Escape)) GUIManager.Instance.SetPausePanel();
         }
 
         // Button Fucntions...

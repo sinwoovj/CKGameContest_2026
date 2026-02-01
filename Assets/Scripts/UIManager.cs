@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using Photon.Pun.Demo.PunBasics;
 using Cysharp.Threading.Tasks;
 
-namespace JJM
+namespace Shurub
 {
     public class UIManager : Singleton<UIManager>
     {
