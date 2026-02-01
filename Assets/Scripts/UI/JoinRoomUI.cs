@@ -52,7 +52,7 @@ public class JoinRoomUI : UIBase
 
     public void OnUpdatedRoomList(List<RoomInfo> roomList)
     {
-        cachedAvailableRooms = roomList.Clone();
+        cachedAvailableRooms = roomList;
 
         for (int i = 0; i < roomInfoObjects.Count; i++)
         {
