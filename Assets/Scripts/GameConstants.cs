@@ -15,6 +15,7 @@ public static class GameConstants
         public const string ROOM_TIME_LIMIT_HASH_PROP = "tl";
         public const string PLAYER_KICK_HASH_PROP = "kick";
         public const string PLAYER_STATUS_HASH_PROP = "status";
+        public const string PLAYER_NUMBER_HASH_PROP = "pNum";
     }
 
     public static class UI

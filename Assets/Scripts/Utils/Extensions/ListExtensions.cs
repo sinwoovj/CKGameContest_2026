@@ -69,14 +69,8 @@ public static class ListExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static List<T> Clone<T>(this List<T> source)
+    public static List<T> Clone<T>(this IList<T> source) where T : ICloneable
     {
-        List<T> clone = new List<T>();
-        foreach (T item in source)
-        {
-            clone.Add(item);
-        }
-
-        return clone;
+        return source.Select(x => (T)x.Clone()).ToList();
     }
 }

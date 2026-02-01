@@ -1,14 +1,21 @@
-﻿using Shurub;
+﻿using Photon.Pun;
+using Shurub;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public abstract class UIBase : MonoBehaviour
 {
     protected CanvasGroup canvasGroup;
     private bool isShowing = false;
+
+    public virtual bool NeedConfirmWhenHide => false;
+    protected virtual string ConfirmTitle => "확인";
+    protected virtual string ConfirmMessage => "";
+    protected virtual UnityAction OnConfirmed => null;
 
     private void Reset()
     {
@@ -32,12 +39,18 @@ public abstract class UIBase : MonoBehaviour
         }
 
         isShowing = false;
+        Prepare();
+    }
+
+    protected abstract void Init();
+
+    public void Prepare()
+    {
+        gameObject.SetActive(true);
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
     }
-
-    protected abstract void Init();
 
     public virtual void Show()
     {
@@ -47,14 +60,30 @@ public abstract class UIBase : MonoBehaviour
         isShowing = true;
     }
 
-    public virtual void Hide(Action onConfirmed, bool force)
+    public virtual void Hide()
     {
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
         isShowing = false;
+    }
 
-        onConfirmed?.Invoke();
+    public virtual void ConfirmHide(UnityAction onCompleted, bool force)
+    {
+        if (force)
+        {
+            OnConfirmed?.Invoke();
+            onCompleted?.Invoke();
+            Hide();
+            return;
+        }
+
+        ModalManager.Instance().OpenNewModal(ConfirmTitle, ConfirmMessage, yesAction: () =>
+        {
+            OnConfirmed?.Invoke();
+            onCompleted?.Invoke();
+            Hide();
+        });
     }
 
     public bool IsOpenned() => isShowing;

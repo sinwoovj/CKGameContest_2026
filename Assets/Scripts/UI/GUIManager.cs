@@ -1,4 +1,4 @@
-using Photon.Pun;
+﻿using Photon.Pun;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -75,6 +75,7 @@ namespace Shurub
 
         public void InitHPUI()
         {
+            HPUIObj.GetComponent<Slider>().interactable = false;
             HPUIObj.GetComponent<Slider>().maxValue = GameManager.Instance.maxHp;
             HPUIObj.GetComponent<Slider>().value = GameManager.Instance.maxHp;
         }

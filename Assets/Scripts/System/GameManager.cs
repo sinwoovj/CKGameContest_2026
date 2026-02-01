@@ -1,4 +1,4 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using Photon.Realtime;
 using System;
 using System.Collections;
@@ -18,15 +18,15 @@ namespace Shurub
         {
             None = 0,
 
-            Boot,          // °ÔÀÓ ½ÇÇà Á÷ÈÄ
-            Lobby,         // ·Îºñ (·ë ¼±ÅÃ Àü)
-            Loading,       // ¾À/¸®¼Ò½º ·Îµù
-            Ready,         // Ä«¿îÆ®´Ù¿î
-            Playing,       // ½ÇÁ¦ ÇÃ·¹ÀÌ
-            Paused,        // ÀÏ½ÃÁ¤Áö
-            Result,        // °á°ú È­¸é
-            Retry,         // Àç½ÃÀÛ
-            GameOver       // ¿ÏÀü Á¾·á
+            Boot,          // ê²Œìž„ ì‹¤í–‰ ì§í›„
+            Lobby,         // ë¡œë¹„ (ë£¸ ì„ íƒ ì „)
+            Loading,       // ì”¬/ë¦¬ì†ŒìŠ¤ ë¡œë”©
+            Ready,         // ì¹´ìš´íŠ¸ë‹¤ìš´
+            Playing,       // ì‹¤ì œ í”Œë ˆì´
+            Paused,        // ì¼ì‹œì •ì§€
+            Result,        // ê²°ê³¼ í™”ë©´
+            Retry,         // ìž¬ì‹œìž‘
+            GameOver       // ì™„ì „ ì¢…ë£Œ
         } 
         public GameState state = GameState.None;
 
@@ -56,14 +56,14 @@ namespace Shurub
             SetGameState(GameState.Boot);
             SetGameState(GameState.Lobby);
             SetGameState(GameState.Loading);
-            //·Îºñ¿¡¼­ºÎÅÍ ÁØºñ ½ÃÀÛ-> ·Îµù -> ·¹µð -> ÀÌÈÄ ÇÃ·¹À×À¸·Î ÁøÇà, ÇÏÁö¸¸ Áö±ÝÀº »ý·«
+            //ë¡œë¹„ì—ì„œë¶€í„° ì¤€ë¹„ ì‹œìž‘-> ë¡œë”© -> ë ˆë”” -> ì´í›„ í”Œë ˆìž‰ìœ¼ë¡œ ì§„í–‰, í•˜ì§€ë§Œ ì§€ê¸ˆì€ ìƒëžµ
         }
 
         private void Update()
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
-            if(state == GameState.Playing)
+            if (state == GameState.Playing)
             {
                 hpTickTimer += Time.deltaTime;
                 if (hpTickTimer >= HP_TICK_INTERVAL)
@@ -77,14 +77,6 @@ namespace Shurub
                     SetPlayTime(playTime);
                 }
             }
-        }
-
-        // Called when the local player left the room.
-        // We need to load the launcher scene.
-        public override void OnLeftRoom()
-        {
-            SceneManager.LoadScene(0); // Main Scene
-            PhotonNetwork.LocalPlayer.TagObject = null;
         }
 
         // Private Functions
@@ -124,7 +116,7 @@ namespace Shurub
                     SetGameState(GameState.Ready);
                     break;
                 case GameState.Ready:
-                    //Ä«¿îÆ® ´Ù¿î
+                    //ì¹´ìš´íŠ¸ ë‹¤ìš´
                     SetGameState(GameState.Playing);
                     break;
                 case GameState.Playing:
@@ -139,34 +131,6 @@ namespace Shurub
             }
         }
 
-        public void ReassignPlayerNumbers()
-        {
-            List<Photon.Realtime.Player> players = PhotonNetwork.PlayerList.ToList();
-
-            // MasterClient
-            Photon.Realtime.Player master = PhotonNetwork.MasterClient;
-            ExitGames.Client.Photon.Hashtable masterProp = new ExitGames.Client.Photon.Hashtable { { "pNum", 0 } };
-            master.SetCustomProperties(masterProp);
-
-            // Extra Player
-            List<Photon.Realtime.Player> others = players.Where(p => p != master).ToList();
-
-            // Mix Random
-            for (int i = 0; i < others.Count; i++)
-            {
-                int rand = UnityEngine.Random.Range(i, others.Count);
-                (others[i], others[rand]) = (others[rand], others[i]);
-            }
-
-            // if pNum 1~
-            int pNum = 1;
-            foreach (var player in others)
-            {
-                ExitGames.Client.Photon.Hashtable prop = new ExitGames.Client.Photon.Hashtable { { "pNum", pNum++ } };
-                player.SetCustomProperties(prop);
-            }
-        }
-
         public void SetHP(float value)
         {
             if (!PhotonNetwork.IsMasterClient) return;
@@ -176,6 +140,9 @@ namespace Shurub
                 { HP_KEY, value }
             };
 
+            //ExitGames.Client.Photon.Hashtable ht = (ExitGames.Client.Photon.Hashtable)PhotonNetwork.CurrentRoom.CustomProperties.Clone();
+            //ht[HP_KEY] = value;
+
             PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
         }
 
@@ -183,13 +150,16 @@ namespace Shurub
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
-            float currentHP = (float)PhotonNetwork.CurrentRoom.CustomProperties[HP_KEY];
-            currentHP += delta;
+            float curHp = (float)PhotonNetwork.CurrentRoom.CustomProperties.Get(HP_KEY);
+            curHp += delta;
 
             ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable
             {
-                { HP_KEY, currentHP }
+                { HP_KEY, curHp }
             };
+
+            //ExitGames.Client.Photon.Hashtable ht = (ExitGames.Client.Photon.Hashtable)PhotonNetwork.CurrentRoom.CustomProperties.Clone();
+            //ht[HP_KEY] = curHp;
 
             PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
         }
@@ -203,13 +173,16 @@ namespace Shurub
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
-            float hp = (float)PhotonNetwork.CurrentRoom.CustomProperties[HP_KEY];
+            float hp = (float)PhotonNetwork.CurrentRoom.CustomProperties.Get(HP_KEY);
             hp += HP_DECREASE;
 
             ExitGames.Client.Photon.Hashtable ht = new ExitGames.Client.Photon.Hashtable
             {
                 { HP_KEY, hp }
             };
+
+            //ExitGames.Client.Photon.Hashtable ht = (ExitGames.Client.Photon.Hashtable)PhotonNetwork.CurrentRoom.CustomProperties.Clone();
+            //ht[HP_KEY] = HP_DECREASE;
 
             PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
 
@@ -230,6 +203,9 @@ namespace Shurub
                 { STATE_KEY, (int)newState }
             };
 
+            //ExitGames.Client.Photon.Hashtable ht = (ExitGames.Client.Photon.Hashtable)PhotonNetwork.CurrentRoom.CustomProperties.Clone();
+            //ht[STATE_KEY] = (int)newState;
+
             PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
         }
 
@@ -241,6 +217,10 @@ namespace Shurub
             {
                 { PLAYTIME_KEY, playTime }
             };
+
+            //ExitGames.Client.Photon.Hashtable ht = (ExitGames.Client.Photon.Hashtable)PhotonNetwork.CurrentRoom.CustomProperties.Clone();
+            //ht[PLAYTIME_KEY] = playTime;
+
             PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
         }
 

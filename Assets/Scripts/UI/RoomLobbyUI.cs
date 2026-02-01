@@ -9,6 +9,7 @@ using Photon.Realtime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class RoomLobbyUI : UIBase
 {
@@ -40,6 +41,18 @@ public class RoomLobbyUI : UIBase
 
     private Dictionary<string, PlayerInfoObj.Status> playerStatusDict = new Dictionary<string, PlayerInfoObj.Status>();
 
+    public override bool NeedConfirmWhenHide => true;
+    protected override string ConfirmTitle => "경고";
+    protected override string ConfirmMessage => "방을 나가시겠습니까?";
+    protected override UnityAction OnConfirmed => () =>
+    {
+        PhotonNetwork.AutomaticallySyncScene = false;
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+        }
+    };
+
     protected override void Init()
     {
         UIManager.Instance().RegisterUI(this);
@@ -52,8 +65,38 @@ public class RoomLobbyUI : UIBase
 
     public override async void Show()
     {
+        PhotonNetwork.AutomaticallySyncScene = true;
+
         await Setup();
         base.Show();
+    }
+
+    private void Update()
+    {
+        if (!PhotonNetwork.InRoom)
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.F5) && !UIManager.Instance().GetUI<TutorialUI>().IsOpenned())
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                if (CheckGameStartable())
+                {
+                    OnClickGameStartButton();
+                }
+            }
+            else if (readyToggle.interactable)
+            {
+                readyToggle.isOn = !readyToggle.isOn;
+            }
+        }
+
+        UpdateReadyToggle();
+        UpdateTutorialButton();
+        UpdateGameStartButton();
+        UpdateMaxPlayers();
     }
 
     private async UniTask Setup()
@@ -107,58 +150,9 @@ public class RoomLobbyUI : UIBase
         timeLimitInput.text = $"{min:00} : {sec:00}";
     }
 
-    public override void Hide(Action onConfirmed, bool force)
-    {
-        if (force)
-        {
-            base.Hide(onConfirmed, force);
-        }
-        else if (PhotonNetwork.InRoom)
-        {
-            ModalManager.Instance().OpenNewModal("경고", "방을 나가시겠습니까?", yesAction: () =>
-            {
-                PhotonNetwork.LeaveRoom();
-                base.Hide(onConfirmed, force);
-            });
-        }
-        else
-        {
-            base.Hide(onConfirmed, force);
-        }
-    }
-
-    private void Update()
-    {
-        if (!PhotonNetwork.InRoom)
-        {
-            return;
-        }
-
-        if (Input.GetKeyDown(KeyCode.F5) && !UIManager.Instance().GetUI<TutorialUI>().IsOpenned())
-        {
-            if (PhotonNetwork.IsMasterClient)
-            {
-                if (CheckGameStartable())
-                {
-                    OnClickGameStartButton();
-                }
-            }
-            else if (readyToggle.interactable)
-            {
-                readyToggle.isOn = !readyToggle.isOn;
-            }
-        }
-
-        UpdateReadyToggle();
-        UpdateTutorialButton();
-        UpdateGameStartButton();
-        UpdateMaxPlayers();
-    }
-
     private void OnClickGameStartButton()
     {
-        // Todo: 게임 시작
-        Debug.Log("게임 시작!");
+        Hide();
 
         // #Critical
         // Load the Room Level.

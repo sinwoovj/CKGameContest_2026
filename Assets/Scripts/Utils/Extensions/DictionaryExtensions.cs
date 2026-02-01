@@ -75,14 +75,11 @@ public static class DictionaryExtensions
     /// <typeparam name="TValue"></typeparam>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static Dictionary<TKey, TValue> Clone<TKey, TValue>(this Dictionary<TKey, TValue> source)
+    public static Dictionary<TKey, TValue> Clone<TKey, TValue>(this IDictionary<TKey, TValue> source) where TValue : ICloneable
     {
-        Dictionary<TKey, TValue> clone = new Dictionary<TKey, TValue>();
-        foreach (KeyValuePair<TKey, TValue> item in source)
-        {
-            clone[item.Key] = item.Value;
-        }
-
-        return clone;
+        return source.ToDictionary(
+            pair => pair.Key,
+            pair => (TValue)pair.Value.Clone()
+        );
     }
 }

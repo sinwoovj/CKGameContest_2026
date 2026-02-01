@@ -31,12 +31,11 @@ public class JoinRoomUI : UIBase
 
     public override void Show()
     {
+        base.Show();
         foreach (RoomInfoObj room in roomInfoObjects)
         {
             room.InfoToggle.isOn = false;
         }
-
-        base.Show();
     }
 
     private void OnClickSearchRoomButton()

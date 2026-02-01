@@ -53,6 +53,8 @@ public class HostRoomUI : UIBase
 
     private async UniTaskVoid ProcessShow()
     {
+        base.Show();
+
         isHosting = false;
         curMaxPlayers = GameConstants.Network.MIN_PLAYERS_PER_ROOM;
         totalTimeLimitSeconds = 0;
@@ -66,8 +68,6 @@ public class HostRoomUI : UIBase
         await UniTask.WaitUntil(() => PhotonNetwork.InLobby, cancellationToken: this.GetCancellationTokenOnDestroy());
 
         hostRoomButton.interactable = true;
-
-        base.Show();
     }
 
     private void OnClickHostRoomButton()

@@ -28,7 +28,7 @@ public class TutorialUI : UIBase
         base.Show();
     }
 
-    public override void Hide(Action onConfirmed, bool force)
+    public override void Hide()
     {
         if (PhotonNetwork.InRoom)
         {
@@ -42,7 +42,7 @@ public class TutorialUI : UIBase
             }
         }
 
-        base.Hide(onConfirmed, force);
+        base.Hide();
     }
 
     private void OnClickGameRuleOpenButton()

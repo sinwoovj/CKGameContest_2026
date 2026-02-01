@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static Shurub.GameManager;
 
 
@@ -19,9 +20,11 @@ namespace Shurub
 
         protected override void OnAwake()
         {
-            PhotonNetwork.AutomaticallySyncScene = true;
+            PhotonNetwork.AutomaticallySyncScene = false;
             PhotonNetwork.IsMessageQueueRunning = true;
             PhotonNetwork.GameVersion = Application.version;
+            PhotonNetwork.SendRate = 60;
+            PhotonNetwork.SerializationRate = 60;
             PhotonNetwork.NickName = Guid.NewGuid().ToString()[..4];
 
             Connect();
@@ -145,7 +148,9 @@ namespace Shurub
 
         public override void OnLeftRoom()
         {
+            PhotonNetwork.LocalPlayer.TagObject = null;
             PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable());
+            //SceneManager.LoadScene(0); // Main Scene
 
             Debug.Log("방 퇴장 완료.");
         }
@@ -176,7 +181,7 @@ namespace Shurub
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                GameManager.Instance.ReassignPlayerNumbers();
+                ReassignPlayerNumbers();
                 if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
                 {
                     PhotonNetwork.CurrentRoom.IsOpen = false;
@@ -202,8 +207,8 @@ namespace Shurub
 
         public override void OnMasterClientSwitched(Photon.Realtime.Player newMasterClient)
         {
+            ReassignPlayerNumbers();
             UIManager.Instance().GetUI<RoomLobbyUI>().OnChangedMaster(newMasterClient);
-            GameManager.Instance.ReassignPlayerNumbers();
             Debug.LogFormat("마스터 클라이언트가 변경됨. Id: {0}", newMasterClient.UserId);
         }
 
@@ -214,12 +219,10 @@ namespace Shurub
                 return;
             }
 
-            Hashtable props = new Hashtable
-        {
-            { GameConstants.Network.PLAYER_KICK_HASH_PROP, true }
-        };
-
-            target.SetCustomProperties(props);
+            target.SetCustomProperties(new Hashtable
+            {
+                { GameConstants.Network.PLAYER_KICK_HASH_PROP, true }
+            });
         }
 
         public void SetLobbyPlayerStatus(Photon.Realtime.Player target, PlayerInfoObj.Status status)
@@ -237,8 +240,6 @@ namespace Shurub
 
         public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
         {
-
-            
             if (PhotonNetwork.InRoom)
             {
                 //if (changedProps.ContainsKey(GameConstants.Network.PLAYER_STATUS_HASH_PROP))
@@ -248,17 +249,21 @@ namespace Shurub
 
                 if (targetPlayer == PhotonNetwork.LocalPlayer)
                 {
-                    int myPNum;
-                    if (changedProps.TryGetValue("pNum", out object value))
+                    if (PlayerManager.LocalPlayerInstance != null && PlayerSpawner.Instance != null)
                     {
-                        myPNum = (int)value;
-                        Debug.Log("MyPNum updated: " + myPNum);
-                        if (!PlayerManager.LocalPlayerInstance.GetComponent<Player>().isSpawned)
+                        int myPNum;
+                        if (changedProps.TryGetValue(GameConstants.Network.PLAYER_NUMBER_HASH_PROP, out object value))
                         {
-                            PlayerSpawner.Instance.ReSpawnPlayer();
-                            PlayerManager.LocalPlayerInstance.GetComponent<Player>().isSpawned = true;
+                            myPNum = (int)value;
+                            Debug.Log("MyPNum updated: " + myPNum);
+                            if (!PlayerManager.LocalPlayerInstance.GetComponent<Player>().isSpawned)
+                            {
+                                PlayerSpawner.Instance.ReSpawnPlayer();
+                                PlayerManager.LocalPlayerInstance.GetComponent<Player>().isSpawned = true;
+                            }
                         }
                     }
+
                     if (changedProps.ContainsKey(GameConstants.Network.PLAYER_KICK_HASH_PROP))
                     {
                         PhotonNetwork.LeaveRoom();
@@ -273,6 +278,40 @@ namespace Shurub
                 }
 
                 UIManager.Instance().GetUI<RoomLobbyUI>().OnUpdatedPlayerList();
+            }
+        }
+
+        public void ReassignPlayerNumbers()
+        {
+            List<Photon.Realtime.Player> players = PhotonNetwork.PlayerList.ToList();
+
+            // MasterClient
+            Photon.Realtime.Player master = PhotonNetwork.MasterClient;
+
+            ExitGames.Client.Photon.Hashtable masterProp = new ExitGames.Client.Photon.Hashtable { { "pNum", 0 } };
+
+            //ExitGames.Client.Photon.Hashtable masterProp = (ExitGames.Client.Photon.Hashtable)master.CustomProperties.Clone();
+            //masterProp[GameConstants.Network.PLAYER_NUMBER_HASH_PROP] = 0;
+            master.SetCustomProperties(masterProp);
+
+            // Extra Player
+            List<Photon.Realtime.Player> others = players.Where(p => p != master).ToList();
+
+            // Mix Random
+            for (int i = 0; i < others.Count; i++)
+            {
+                int rand = UnityEngine.Random.Range(i, others.Count);
+                (others[i], others[rand]) = (others[rand], others[i]);
+            }
+
+            // if pNum 1~
+            int pNum = 1;
+            foreach (var player in others)
+            {
+                ExitGames.Client.Photon.Hashtable prop = new ExitGames.Client.Photon.Hashtable { { "pNum", pNum++ } };
+                //ExitGames.Client.Photon.Hashtable prop = (ExitGames.Client.Photon.Hashtable)player.CustomProperties.Clone();
+                //prop[GameConstants.Network.PLAYER_NUMBER_HASH_PROP] = pNum++;
+                player.SetCustomProperties(prop);
             }
         }
     }

@@ -22,11 +22,11 @@ public class TitleUI : UIBase
 
     private async UniTaskVoid ProcessShow()
     {
+        base.Show();
+
         playButton.interactable = false;
         await UniTask.WaitUntil(() => PhotonNetwork.IsConnectedAndReady, cancellationToken: this.GetCancellationTokenOnDestroy());
         playButton.interactable = true;
-
-        base.Show();
     }
 
     private void OnClickPlayButton()

@@ -62,22 +62,46 @@ namespace Shurub
 
                 if (removePrev && uiStack.Count > 0)
                 {
-                    uiStack.Pop().Hide(() =>
+                    UIBase curUI = uiStack.Pop();
+                    if (curUI.NeedConfirmWhenHide)
                     {
+                        curUI.ConfirmHide(() =>
+                        {
+                            nextUI.Prepare();
+                            uiStack.Push(nextUI);
+                            nextUI.Show();
+                        }, force);
+                    }
+                    else
+                    {
+                        curUI.Hide();
+                        nextUI.Prepare();
                         uiStack.Push(nextUI);
                         nextUI.Show();
-                    }, force);
+                    }
 
                     return;
                 }
 
                 if (hidePrev && uiStack.Count > 0)
                 {
-                    uiStack.Peek().Hide(() =>
+                    UIBase curUI = uiStack.Peek();
+                    if (curUI.NeedConfirmWhenHide)
                     {
+                        curUI.ConfirmHide(() =>
+                        {
+                            nextUI.Prepare();
+                            uiStack.Push(nextUI);
+                            nextUI.Show();
+                        }, force);
+                    }
+                    else
+                    {
+                        curUI.Hide();
+                        nextUI.Prepare();
                         uiStack.Push(nextUI);
                         nextUI.Show();
-                    }, force);
+                    }
                 }
                 else
                 {
@@ -106,7 +130,15 @@ namespace Shurub
                     return;
                 }
 
-                uiStack.Pop().Hide(null, force);
+                UIBase curUI = uiStack.Pop();
+                if (curUI.NeedConfirmWhenHide)
+                {
+                    curUI.ConfirmHide(null, force);
+                }
+                else
+                {
+                    curUI.Hide();
+                }
             }
         }
 
@@ -127,11 +159,28 @@ namespace Shurub
                 return;
             }
 
-            uiStack.Peek().Hide(() =>
+            UIBase curUI = uiStack.Peek();
+
+            if (curUI.NeedConfirmWhenHide)
             {
-                uiStack.Pop();
-                uiStack.Peek().Show();
-            }, force);
+                curUI.ConfirmHide(() =>
+                {
+                    UIBase removed = uiStack.Pop();
+                    UIBase prevUI = uiStack.Peek();
+
+                    prevUI.Prepare();
+                    prevUI.Show();
+                }, force);
+            }
+            else
+            {
+                UIBase removed = uiStack.Pop();
+                UIBase prevUI = uiStack.Peek();
+
+                prevUI.Prepare();
+                removed.Hide();
+                prevUI.Show();
+            }
         }
 
         private async UniTaskVoid CalcControlCool()

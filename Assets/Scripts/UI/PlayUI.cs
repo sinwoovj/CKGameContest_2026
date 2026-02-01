@@ -23,6 +23,8 @@ public class PlayUI : UIBase
 
     private async UniTaskVoid ProcessShow()
     {
+        base.Show();
+
         hostButton.interactable = false;
         joinButton.interactable = false;
 
@@ -30,8 +32,6 @@ public class PlayUI : UIBase
 
         hostButton.interactable = true;
         joinButton.interactable = true;
-
-        base.Show();
     }
 
     private void OnClickSingleButton()

@@ -485,6 +485,9 @@ MonoBehaviour:
   - Type: 4
     SynchronizeType: 1
     Name: IsWalking
+  - Type: 9
+    SynchronizeType: 0
+    Name: Default
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0
