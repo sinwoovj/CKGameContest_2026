@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Shurub.GameManager;
 
 namespace Shurub
 {
@@ -31,7 +32,7 @@ namespace Shurub
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape)) GUIManager.Instance.SetPausePanel();
+            if (Input.GetKeyDown(KeyCode.Escape) && GameManager.Instance.state == GameManager.GameState.Playing) GUIManager.Instance.SetPausePanel();
         }
 
         // Button Fucntions...
@@ -63,6 +64,11 @@ namespace Shurub
             }
         }
 
+        public void RetryGame()
+        {
+            GameManager.Instance.SetGameState(GameManager.GameState.Retry);
+        }
+
         public void GoToPlayerManagement()
         {
 
@@ -71,6 +77,11 @@ namespace Shurub
         public void GoToSettings()
         {
 
+        }
+
+        public void GoToMain()
+        {
+            PhotonNetwork.LeaveRoom();
         }
 
         public void InitHPUI()

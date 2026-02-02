@@ -19,14 +19,14 @@ namespace Shurub
             None = 0,
 
             Boot,          // 게임 실행 직후
-            Lobby,         // 로비 (룸 선택 전)
             Loading,       // 씬/리소스 로딩
             Ready,         // 카운트다운
             Playing,       // 실제 플레이
             Paused,        // 일시정지
             Result,        // 결과 화면
             Retry,         // 재시작
-            GameOver       // 완전 종료
+            GameOver,      // 완전 종료
+            Lobby          // 로비
         } 
         public GameState state = GameState.None;
 
@@ -54,7 +54,7 @@ namespace Shurub
         void Start()
         {
             SetGameState(GameState.Boot);
-            SetGameState(GameState.Lobby);
+            UIManager.Instance().isInGame = true;
             SetGameState(GameState.Loading);
             //로비에서부터 준비 시작-> 로딩 -> 레디 -> 이후 플레잉으로 진행, 하지만 지금은 생략
         }
@@ -222,17 +222,6 @@ namespace Shurub
             //ht[PLAYTIME_KEY] = playTime;
 
             PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
-        }
-
-        // public Methods
-        public void LeaveRoom()
-        {
-            PhotonNetwork.LeaveRoom();
-        }
-
-        public void RetryGame()
-        {
-            SetGameState(GameState.Retry);
         }
     }
 }

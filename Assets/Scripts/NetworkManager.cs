@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static Shurub.GameManager;
 
 
 namespace Shurub
@@ -150,7 +149,13 @@ namespace Shurub
         {
             PhotonNetwork.LocalPlayer.TagObject = null;
             PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable());
-            //SceneManager.LoadScene(0); // Main Scene
+
+            if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("InGame"))
+            {
+                UIManager.Instance().isInGame = false;
+
+                SceneManager.LoadScene("Main");
+            }
 
             Debug.Log("방 퇴장 완료.");
         }
@@ -159,20 +164,20 @@ namespace Shurub
         {
             UIManager.Instance().GetUI<RoomLobbyUI>().OnUpdatedCustomProperties(properties);
 
-            if (properties.TryGetValue(HP_KEY, out object hp))
+            if (properties.TryGetValue(GameManager.HP_KEY, out object hp))
             {
                 GameManager.Instance.currentHp = (float)hp;
                 GUIManager.Instance.UpdateHPUI();
             }
 
-            if (properties.TryGetValue(PLAYTIME_KEY, out object time))
+            if (properties.TryGetValue(GameManager.PLAYTIME_KEY, out object time))
             {
                 GUIManager.Instance.UpdateTimeUI();
             }
 
-            if (properties.TryGetValue(STATE_KEY, out object _state))
+            if (properties.TryGetValue(GameManager.STATE_KEY, out object _state))
             {
-                GameManager.Instance.state = (GameState)(int)_state;
+                GameManager.Instance.state = (GameManager.GameState)(int)_state;
                 GameManager.Instance.OnGameStateChanged(GameManager.Instance.state);
             }
         }

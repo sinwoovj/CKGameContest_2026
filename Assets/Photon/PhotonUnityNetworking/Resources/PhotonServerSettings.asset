@@ -43,6 +43,10 @@ MonoBehaviour:
   - RPC_Pick
   - RPC_Throw
   - RPC_SyncPlayTime
+  - RPC_Hide
+  - RPC_Show
+  - RPC_StartGame
+  - RPC_HideRoomLobbyUI
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

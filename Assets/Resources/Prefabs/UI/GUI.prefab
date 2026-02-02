@@ -308,7 +308,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Shurub.GameManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: Shurub.GUIManager, Assembly-CSharp
         m_MethodName: RetryGame
         m_Mode: 1
         m_Arguments:
@@ -2340,6 +2340,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 634953523445327003}
     m_Modifications:
+    - target: {fileID: 2617044806607020597, guid: 37dc7b659aafa8c4f99d555895cf6533, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: GoToMain
+      objectReference: {fileID: 0}
+    - target: {fileID: 2617044806607020597, guid: 37dc7b659aafa8c4f99d555895cf6533, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: Shurub.GUIManager, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 2974422288765905846, guid: 37dc7b659aafa8c4f99d555895cf6533, type: 3}
       propertyPath: m_Name
       value: Pause Panel

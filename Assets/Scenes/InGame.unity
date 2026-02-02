@@ -495,7 +495,7 @@ GameObject:
   - component: {fileID: 2834772654266784690}
   - component: {fileID: 9140789503457579573}
   m_Layer: 0
-  m_Name: UIManager
+  m_Name: GUIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -931,7 +931,7 @@ PrefabInstance:
     - target: {fileID: 4268432938698135171, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1795651139}
+      objectReference: {fileID: 9140789503457579573}
     - target: {fileID: 4334849049624825300, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -963,7 +963,7 @@ PrefabInstance:
     - target: {fileID: 5936099000927185419, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1795651139}
+      objectReference: {fileID: 9140789503457579573}
     - target: {fileID: 6463218355750127671, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

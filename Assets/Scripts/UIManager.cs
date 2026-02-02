@@ -6,14 +6,18 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using Photon.Pun.Demo.PunBasics;
 using Cysharp.Threading.Tasks;
+using Photon.Pun;
 
 namespace Shurub
 {
     public class UIManager : Singleton<UIManager>
     {
         public bool IsInterrupted { get; private set; }
+        
+        public bool isInGame = false;
 
         private bool isControlCool = false;
+
 
         private Dictionary<Type, UIBase> uis = new Dictionary<Type, UIBase>();
         Stack<UIBase> uiStack = new Stack<UIBase>();
@@ -25,7 +29,7 @@ namespace Shurub
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape) && !isInGame)
             {
                 ReturnPrevUI();
             }
@@ -140,6 +144,19 @@ namespace Shurub
                     curUI.Hide();
                 }
             }
+        }
+        public void HideRoomLobbyUI()
+        {
+            photonView.RPC(
+                "RPC_HideRoomLobbyUI",
+                RpcTarget.All
+            );
+        }
+
+        [PunRPC]
+        public void RPC_HideRoomLobbyUI()
+        {
+            this.gameObject.GetComponentInChildren<RoomLobbyUI>().Hide();
         }
 
         public void ReturnPrevUI(bool force = false)
