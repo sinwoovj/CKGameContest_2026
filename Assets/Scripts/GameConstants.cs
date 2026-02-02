@@ -12,10 +12,21 @@ public static class GameConstants
 
         public const int ROOM_LOBBY_UPDATE_DELAY = 500; // milliseconds
 
-        public const string ROOM_TIME_LIMIT_HASH_PROP = "tl";
-        public const string PLAYER_KICK_HASH_PROP = "kick";
-        public const string PLAYER_STATUS_HASH_PROP = "status";
-        public const string PLAYER_NUMBER_HASH_PROP = "pNum";
+        // Room Property Keys
+        public const string ROOM_TIME_LIMIT_KEY = "tl";
+        public const string GAME_STATE_KEY = "state";
+        public const string GAME_HP_KEY = "gHp";
+        public const string GAME_PLAYTIME_KEY = "pT";
+
+        // Player Property Keys
+        public const string PLAYER_KICK_KEY = "kick";
+        public const string PLAYER_STATUS_KEY = "status";
+        public const string PLAYER_NUMBER_KEY = "pNum";
+    }
+
+    public static class Scene
+    {
+        public const string MAIN_SCENE_NAME = "Main";
     }
 
     public static class UI

@@ -14,7 +14,7 @@ public class TutorialUI : UIBase
 
     protected override void Init()
     {
-        UIManager.Instance().RegisterUI(this);
+        UIManager.Instance.RegisterUI(this);
     }
 
     public override void Show()
@@ -34,11 +34,11 @@ public class TutorialUI : UIBase
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                NetworkManager.Instance().SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.Ready);
+                NetworkManager.Instance.SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.Ready);
             }
             else
             {
-                NetworkManager.Instance().SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.NotReady);
+                NetworkManager.Instance.SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.NotReady);
             }
         }
 

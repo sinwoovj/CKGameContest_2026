@@ -8,6 +8,21 @@ public abstract class SingletonPun<T> : MonoBehaviourPunCallbacks where T : Mono
 
     protected bool IsUsed = false;
 
+    public static T Instance
+    {
+        get
+        {
+            if (!_hasInstance)
+            {
+                FindOrCreateInstance();
+            }
+
+            return _instance;
+        }
+    }
+
+    public static bool HasInstance => _hasInstance;
+
     void Awake()
     {
         CheckDuplication();
@@ -142,20 +157,5 @@ public abstract class SingletonPun<T> : MonoBehaviourPunCallbacks where T : Mono
         SetInstance(t);
 
         return t;
-    }
-
-    public static T Instance()
-    {
-        if (!_hasInstance)
-        {
-            FindOrCreateInstance();
-        }
-
-        return _instance;
-    }
-
-    public static bool HasInstance()
-    {
-        return _hasInstance;
     }
 }

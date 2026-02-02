@@ -7,6 +7,21 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     protected bool IsUsed = false;
 
+    public static T Instance
+    {
+        get
+        {
+            if (!_hasInstance)
+            {
+                FindOrCreateInstance();
+            }
+
+            return _instance;
+        }
+    }
+
+    public static bool HasInstance => _hasInstance;
+
     void Awake()
     {
         CheckDuplication();
@@ -39,6 +54,10 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 이 Singleton 객체를 DontDestroyOnLoad 할 것인지 여부 체크
+    /// </summary>
+    /// <returns></returns>
     protected virtual bool CheckDontDestroyOnLoad()
     {
         return true;
@@ -141,20 +160,5 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
         SetInstance(t);
 
         return t;
-    }
-
-    public static T Instance()
-    {
-        if (!_hasInstance)
-        {
-            FindOrCreateInstance();
-        }
-
-        return _instance;
-    }
-
-    public static bool HasInstance()
-    {
-        return _hasInstance;
     }
 }

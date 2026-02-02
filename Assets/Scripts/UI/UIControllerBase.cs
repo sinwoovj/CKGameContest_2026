@@ -5,7 +5,7 @@
 //{
 //    private void Awake()
 //    {
-//        UIManager.Instance().RegisterController(this);
+//        UIManager.Instance.RegisterController(this);
 //    }
 
 //    public virtual void Show()

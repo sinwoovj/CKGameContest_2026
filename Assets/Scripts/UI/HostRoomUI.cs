@@ -34,7 +34,7 @@ public class HostRoomUI : UIBase
 
     protected override void Init()
     {
-        UIManager.Instance().RegisterUI(this);
+        UIManager.Instance.RegisterUI(this);
 
         maxPlayerInput.onEndEdit.RemoveAllListeners();
         maxPlayerInput.onEndEdit.AddListener(OnEndEditMaxPlayerInput);
@@ -95,9 +95,10 @@ public class HostRoomUI : UIBase
             MaxPlayers = curMaxPlayers,
             CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
             {
-                { GameConstants.Network.ROOM_TIME_LIMIT_HASH_PROP, totalTimeLimitSeconds }
+                { GameConstants.Network.GAME_STATE_KEY, (int)NetworkManager.Instance.CurrentRoomState },
+                { GameConstants.Network.ROOM_TIME_LIMIT_KEY, totalTimeLimitSeconds }
             },
-            CustomRoomPropertiesForLobby = new string[] { GameConstants.Network.ROOM_TIME_LIMIT_HASH_PROP }
+            CustomRoomPropertiesForLobby = new string[] { GameConstants.Network.ROOM_TIME_LIMIT_KEY }
         };
         PhotonNetwork.CreateRoom(name, options);
     }

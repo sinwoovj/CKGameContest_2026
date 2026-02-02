@@ -45,11 +45,11 @@ namespace Shurub
                 kickButton.onClick.RemoveAllListeners();
                 kickButton.onClick.AddListener(() =>
                 {
-                    NetworkManager.Instance().KickPlayer(player);
+                    NetworkManager.Instance.KickPlayer(player);
                 });
             }
 
-            statusImage.color = (Status)(int)player.CustomProperties.Get(GameConstants.Network.PLAYER_STATUS_HASH_PROP, Status.Invalid) switch
+            statusImage.color = (Status)(int)player.CustomProperties.Get(GameConstants.Network.PLAYER_STATUS_KEY, Status.Invalid) switch
             {
                 Status.NotReady => (Color)new Color32(117, 117, 117, 255),
                 Status.Ready => (Color)new Color32(126, 217, 87, 255),
