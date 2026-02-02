@@ -150,7 +150,7 @@ namespace Shurub
             PhotonNetwork.LocalPlayer.TagObject = null;
             PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable());
 
-            if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("InGame"))
+            if (UIManager.Instance().isInGame)
             {
                 UIManager.Instance().isInGame = false;
 
@@ -177,8 +177,12 @@ namespace Shurub
 
             if (properties.TryGetValue(GameManager.STATE_KEY, out object _state))
             {
-                GameManager.Instance.state = (GameManager.GameState)(int)_state;
-                GameManager.Instance.OnGameStateChanged(GameManager.Instance.state);
+                GameManager.GameState newState = (GameManager.GameState)(int)_state;
+                if (GameManager.Instance.state != newState)
+                {
+                    GameManager.Instance.state = newState;
+                    GameManager.Instance.OnGameStateChanged(GameManager.Instance.state);
+                }
             }
         }
 

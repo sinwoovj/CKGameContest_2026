@@ -91,6 +91,16 @@ namespace Shurub
             anim.SetFloat("InputY", moveInput.y);
         }
 
+        public void InitAnim()
+        {
+            anim.SetFloat("InputX", 0);
+            anim.SetFloat("InputY", 0);
+            anim.SetFloat("LastInputX", 0);
+            anim.SetFloat("LastInputY", 0);
+            anim.SetBool("IsWalking", false);
+            anim.SetTrigger("Default");
+        }
+
         public void OnInteract(InputAction.CallbackContext context) // J
         {
             PlayerManager.Instance.isIntreact = context.canceled ? false : true;
