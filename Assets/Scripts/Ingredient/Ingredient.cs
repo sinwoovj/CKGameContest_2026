@@ -10,9 +10,9 @@ namespace Shurub
 
         public enum IngredientState
         {
-            World,     // �ٴڿ� ����
-            Held,      // ������ ��� ����
-            Thrown     // �������� ���ư��� ��
+            World, 
+            Held,  
+            Thrown 
         }
         public IngredientState state;
 

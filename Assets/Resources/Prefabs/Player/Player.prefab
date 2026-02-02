@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 7996533809710324138}
   - component: {fileID: 2062758290593414256}
   - component: {fileID: 1671824807042570286}
+  - component: {fileID: 7227814115237919756}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -186,8 +187,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_LinearDamping: 5
+  m_AngularDamping: 0
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -431,11 +432,12 @@ MonoBehaviour:
   prefixField: -1
   Synchronization: 3
   OwnershipTransfer: 0
-  observableSearch: 0
+  observableSearch: 2
   ObservedComponents:
   - {fileID: 698375528675793719}
   - {fileID: 7996533809710324138}
   - {fileID: 2062758290593414256}
+  - {fileID: 7227814115237919756}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -505,3 +507,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Shurub.CameraWork
   offset: {x: 0, y: 0, z: -10}
   smoothSpeed: 5
+--- !u!114 &7227814115237919756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1644164552098462632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e7cb724808c322458aa4d15f5035fa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: PhotonUnityNetworking::Photon.Pun.PhotonRigidbody2DView
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 0
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3

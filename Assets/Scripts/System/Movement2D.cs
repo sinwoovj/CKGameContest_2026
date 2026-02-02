@@ -4,7 +4,6 @@ namespace Shurub
 {
     public class Movement2D : MonoBehaviour
     {
-
         private Rigidbody2D rb;
 
         public Vector2 MoveDirection { get; set; } = Vector3.zero;

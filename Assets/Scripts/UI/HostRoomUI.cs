@@ -99,7 +99,6 @@ public class HostRoomUI : UIBase
             },
             CustomRoomPropertiesForLobby = new string[] { GameConstants.Network.ROOM_TIME_LIMIT_HASH_PROP }
         };
-
         PhotonNetwork.CreateRoom(name, options);
     }
 

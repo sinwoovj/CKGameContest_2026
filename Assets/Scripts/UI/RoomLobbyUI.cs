@@ -152,7 +152,7 @@ public class RoomLobbyUI : UIBase
 
     private void OnClickGameStartButton()
     {
-        Hide();
+        UIManager.Instance().HideRoomLobbyUI();
 
         // #Critical
         // Load the Room Level.

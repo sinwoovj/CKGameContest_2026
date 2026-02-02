@@ -149,7 +149,13 @@ namespace Shurub
         {
             PhotonNetwork.LocalPlayer.TagObject = null;
             PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable());
-            //SceneManager.LoadScene(0); // Main Scene
+
+            if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("InGame"))
+            {
+                UIManager.Instance().isInGame = false;
+
+                SceneManager.LoadScene("Main");
+            }
 
             Debug.Log("방 퇴장 완료.");
         }
