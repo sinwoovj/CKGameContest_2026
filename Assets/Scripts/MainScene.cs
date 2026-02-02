@@ -11,6 +11,7 @@ public class MainScene : MonoBehaviour
 {
     private void Start()
     {
+
         UIManager.Instance().ShowUI<TitleUI>();
     }
 }

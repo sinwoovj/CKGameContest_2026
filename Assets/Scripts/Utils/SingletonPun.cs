@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 
-public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
+public abstract class SingletonPun<T> : MonoBehaviourPunCallbacks where T : MonoBehaviourPunCallbacks
 {
     private static T _instance;
     private static bool _hasInstance;
@@ -46,13 +47,13 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     private void CheckDuplication()
     {
-        Singleton<T> singleton = this;
+        SingletonPun<T> singleton = this;
         T[] array = FindObjectsByType<T>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         if (array.Length >= 2)
         {
             for (int i = 0; i < array.Length; i++)
             {
-                Singleton<T> singleton2 = array[i] as Singleton<T>;
+                SingletonPun<T> singleton2 = array[i] as SingletonPun<T>;
                 if (singleton2.IsUsed)
                 {
                     singleton = singleton2;
@@ -96,7 +97,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         _instance = instance;
         _hasInstance = _instance != null;
-        Singleton<T> singleton = _instance as Singleton<T>;
+        SingletonPun<T> singleton = _instance as SingletonPun<T>;
         singleton.IsUsed = true;
     }
 

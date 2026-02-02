@@ -7,12 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static Shurub.GameManager;
 
 
 namespace Shurub
 {
-    public class NetworkManager : Singleton<NetworkManager>
+    public class NetworkManager : SingletonPun<NetworkManager>
     {
         public bool IsConnecting { get; private set; }
 
@@ -159,20 +158,20 @@ namespace Shurub
         {
             UIManager.Instance().GetUI<RoomLobbyUI>().OnUpdatedCustomProperties(properties);
 
-            if (properties.TryGetValue(HP_KEY, out object hp))
+            if (properties.TryGetValue(GameManager.HP_KEY, out object hp))
             {
                 GameManager.Instance.currentHp = (float)hp;
                 GUIManager.Instance.UpdateHPUI();
             }
 
-            if (properties.TryGetValue(PLAYTIME_KEY, out object time))
+            if (properties.TryGetValue(GameManager.PLAYTIME_KEY, out object time))
             {
                 GUIManager.Instance.UpdateTimeUI();
             }
 
-            if (properties.TryGetValue(STATE_KEY, out object _state))
+            if (properties.TryGetValue(GameManager.STATE_KEY, out object _state))
             {
-                GameManager.Instance.state = (GameState)(int)_state;
+                GameManager.Instance.state = (GameManager.GameState)(int)_state;
                 GameManager.Instance.OnGameStateChanged(GameManager.Instance.state);
             }
         }

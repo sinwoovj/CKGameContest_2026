@@ -16,7 +16,12 @@ namespace Shurub
         private bool isControlCool = false;
 
         private Dictionary<Type, UIBase> uis = new Dictionary<Type, UIBase>();
-        Stack<UIBase> uiStack = new Stack<UIBase>();
+        private Stack<UIBase> uiStack = new Stack<UIBase>();
+
+        public void Clear()
+        {
+            uiStack.Clear();
+        }
 
         private void Update()
         {
