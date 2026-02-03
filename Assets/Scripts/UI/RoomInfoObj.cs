@@ -23,7 +23,7 @@ namespace Shurub
             infoToggle.onValueChanged.RemoveAllListeners();
             infoToggle.onValueChanged.AddListener(OnValueChangedInfoToggle);
 
-            int total = (int)info.CustomProperties.Get(GameConstants.Network.ROOM_TIME_LIMIT_HASH_PROP, 0);
+            int total = (int)info.CustomProperties.Get(GameConstants.Network.ROOM_TIME_LIMIT_KEY, 0);
             int min = total / 60;
             int sec = total % 60;
             string time = $"{min:00} : {sec:00}";

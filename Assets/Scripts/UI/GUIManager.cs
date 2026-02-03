@@ -2,71 +2,72 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static Shurub.GameManager;
 
 namespace Shurub
 {
-    public class GUIManager : MonoBehaviour
+    public class GUIManager : Singleton<GUIManager>
     {
-        [SerializeField]
-        public GameObject pausePanel;
-        [SerializeField]
-        public GameObject resultPanel;
-        [SerializeField]
-        public GameObject HPUIObj;
-        [SerializeField]
-        public TextMeshProUGUI playTimeText;
-        [SerializeField]
-        public TextMeshProUGUI totalTimeText;
+        protected override bool CheckDontDestroyOnLoad()
+        {
+            return false;
+        }
 
-        public bool isPause;
+        [SerializeField] private GameObject pausePanel;
+        [SerializeField] private GameObject resultPanel;
+        [SerializeField] private GameObject HPUIObj;
+        [SerializeField] private TextMeshProUGUI playTimeText;
+        [SerializeField] private TextMeshProUGUI totalTimeText;
 
-        static public GUIManager Instance;
+        public GameObject ResultPanel => resultPanel;
+
+        public bool IsPaused { get; private set; }
 
         void Start()
         {
-            Instance = this;
             InitHPUI();
             InitTimeUI();
         }
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape) && GameManager.Instance.state == GameManager.GameState.Playing) GUIManager.Instance.SetPausePanel();
+            if (Input.GetKeyDown(KeyCode.Escape) && NetworkManager.Instance.CurrentRoomState == GameState.Playing)
+            {
+                SetPausePanel();
+            }
         }
 
         // Button Fucntions...
 
         public void SetPausePanel()
         {
-            isPause = !isPause;
-            pausePanel.SetActive(isPause);
-            PlayerController.Instance.playerInput.enabled = !isPause;
+            IsPaused = !IsPaused;
+            pausePanel.SetActive(IsPaused);
+            PlayerController.Instance.playerInput.enabled = !IsPaused;
         }
 
         public void OpenPausePanel()
         {
-            if (!isPause)
+            if (!IsPaused)
             {
-                isPause = true;
-                pausePanel.SetActive(isPause);
-                PlayerController.Instance.playerInput.enabled = !isPause;
+                IsPaused = true;
+                pausePanel.SetActive(IsPaused);
+                PlayerController.Instance.playerInput.enabled = !IsPaused;
             }
         }
 
         public void ClosePausePanel()
         {
-            if (isPause)
+            if (IsPaused)
             {
-                isPause = false;
-                pausePanel.SetActive(isPause);
-                PlayerController.Instance.playerInput.enabled = !isPause;
+                IsPaused = false;
+                pausePanel.SetActive(IsPaused);
+                PlayerController.Instance.playerInput.enabled = !IsPaused;
             }
         }
 
         public void RetryGame()
         {
-            GameManager.Instance.SetGameState(GameManager.GameState.Retry);
+            NetworkManager.Instance.SetGameState(GameState.Retry);
         }
 
         public void GoToPlayerManagement()
@@ -81,7 +82,7 @@ namespace Shurub
 
         public void GoToMain()
         {
-            PhotonNetwork.LeaveRoom();
+            GameManager.Instance.GoToMain();
         }
 
         public void InitHPUI()
@@ -93,7 +94,7 @@ namespace Shurub
 
         public void UpdateHPUI()
         {
-            HPUIObj.GetComponent<Slider>().value = (float)PhotonNetwork.CurrentRoom.CustomProperties[GameManager.HP_KEY];
+            HPUIObj.GetComponent<Slider>().value = GameManager.Instance.GetHP();
         }
 
         public void InitTimeUI()
@@ -103,13 +104,13 @@ namespace Shurub
 
         public void UpdateTimeUI()
         {
-            float time = (float)PhotonNetwork.CurrentRoom.CustomProperties[GameManager.PLAYTIME_KEY];
+            float time = GameManager.Instance.GetPlayTime();
             playTimeText.text = $"{(int)(time / 60):00} : {(int)(time % 60):00}";
         }
 
         public void UpdateTotalTimeUI()
         {
-            float time = (float)PhotonNetwork.CurrentRoom.CustomProperties[GameManager.PLAYTIME_KEY];
+            float time = GameManager.Instance.GetPlayTime();
             totalTimeText.text = $"[Total Time: {(int)(time / 60):00}:{(int)(time % 60):00}]";
         }
     }

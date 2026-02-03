@@ -13,7 +13,7 @@ public class PlayUI : UIBase
 
     protected override void Init()
     {
-        UIManager.Instance().RegisterUI(this);
+        UIManager.Instance.RegisterUI(this);
     }
 
     public override void Show()
@@ -41,16 +41,16 @@ public class PlayUI : UIBase
 
     private void OnClickHostButton()
     {
-        UIManager.Instance().ShowUI<HostRoomUI>();
+        UIManager.Instance.ShowUI<HostRoomUI>();
     }
 
     private void OnClickJoinButton()
     {
-        UIManager.Instance().ShowUI<JoinRoomUI>();
+        UIManager.Instance.ShowUI<JoinRoomUI>();
     }
 
     private void OnClickTutorialButton()
     {
-        UIManager.Instance().ShowUI<TutorialUI>();
+        UIManager.Instance.ShowUI<TutorialUI>();
     }
 }

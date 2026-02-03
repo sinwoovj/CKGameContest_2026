@@ -46,6 +46,11 @@ public class RoomLobbyUI : UIBase
     protected override string ConfirmMessage => "방을 나가시겠습니까?";
     protected override UnityAction OnConfirmed => () =>
     {
+        if (NetworkManager.Instance.CurrentRoomState != GameState.Lobby)
+        {
+            return;
+        }
+
         PhotonNetwork.AutomaticallySyncScene = false;
         if (PhotonNetwork.InRoom)
         {
@@ -55,7 +60,7 @@ public class RoomLobbyUI : UIBase
 
     protected override void Init()
     {
-        UIManager.Instance().RegisterUI(this);
+        UIManager.Instance.RegisterUI(this);
 
         maxPlayerInput.onEndEdit.RemoveAllListeners();
         timeLimitInput.onValueChanged.RemoveAllListeners();
@@ -78,7 +83,7 @@ public class RoomLobbyUI : UIBase
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.F5) && !UIManager.Instance().GetUI<TutorialUI>().IsOpenned())
+        if (Input.GetKeyDown(KeyCode.F5) && !UIManager.Instance.GetUI<TutorialUI>().IsOpenned())
         {
             if (PhotonNetwork.IsMasterClient)
             {
@@ -144,7 +149,7 @@ public class RoomLobbyUI : UIBase
         curMaxPlayers = PhotonNetwork.CurrentRoom.MaxPlayers;
         maxPlayerInput.text = curMaxPlayers.ToString();
 
-        totalTimeLimitSeconds = (int)PhotonNetwork.CurrentRoom.CustomProperties[GameConstants.Network.ROOM_TIME_LIMIT_HASH_PROP];
+        totalTimeLimitSeconds = (int)PhotonNetwork.CurrentRoom.CustomProperties[GameConstants.Network.ROOM_TIME_LIMIT_KEY];
         int min = totalTimeLimitSeconds / 60;
         int sec = totalTimeLimitSeconds % 60;
         timeLimitInput.text = $"{min:00} : {sec:00}";
@@ -152,12 +157,16 @@ public class RoomLobbyUI : UIBase
 
     private void OnClickGameStartButton()
     {
-        UIManager.Instance().HideRoomLobbyUI();
+        //UIManager.Instance.HideRoomLobbyUI();
 
         // #Critical
         // Load the Room Level.
-        PhotonNetwork.MasterClient.SetCustomProperties(new ExitGames.Client.Photon.Hashtable { { "pNum", 0 } });
-        PhotonNetwork.LoadLevel("InGame");
+        PhotonNetwork.MasterClient.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
+        {
+            { GameConstants.Network.PLAYER_NUMBER_KEY, 0 }
+        });
+
+        NetworkManager.Instance.SetGameState(GameState.Boot);
     }
 
     private bool CheckGameStartable()
@@ -311,7 +320,7 @@ public class RoomLobbyUI : UIBase
 
         PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
         {
-            { GameConstants.Network.ROOM_TIME_LIMIT_HASH_PROP, totalTimeLimitSeconds }
+            { GameConstants.Network.ROOM_TIME_LIMIT_KEY, totalTimeLimitSeconds }
         });
     }
 
@@ -322,9 +331,9 @@ public class RoomLobbyUI : UIBase
             return;
         }
 
-        if (propertiesThatChanged.TryGetValue(GameConstants.Network.ROOM_TIME_LIMIT_HASH_PROP, out object value))
+        if (propertiesThatChanged.TryGetValue(GameConstants.Network.ROOM_TIME_LIMIT_KEY, out object timeLimit))
         {
-            totalTimeLimitSeconds = (int)value;
+            totalTimeLimitSeconds = (int)timeLimit;
 
             int min = totalTimeLimitSeconds / 60;
             int sec = totalTimeLimitSeconds % 60;
@@ -362,9 +371,9 @@ public class RoomLobbyUI : UIBase
             playerObj.gameObject.SetActive(true);
             playerObj.Init(player);
 
-            if (player.CustomProperties.ContainsKey(GameConstants.Network.PLAYER_STATUS_HASH_PROP))
+            if (player.CustomProperties.ContainsKey(GameConstants.Network.PLAYER_STATUS_KEY))
             {
-                playerStatusDict[player.UserId] = (PlayerInfoObj.Status)(int)player.CustomProperties[GameConstants.Network.PLAYER_STATUS_HASH_PROP];
+                playerStatusDict[player.UserId] = (PlayerInfoObj.Status)(int)player.CustomProperties[GameConstants.Network.PLAYER_STATUS_KEY];
             }
         }
     }
@@ -378,7 +387,7 @@ public class RoomLobbyUI : UIBase
 
         if (PhotonNetwork.LocalPlayer == newMaster)
         {
-            NetworkManager.Instance().SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.Ready);
+            NetworkManager.Instance.SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.Ready);
             //playerInfoObjects.Find(p => p.Info == PhotonNetwork.LocalPlayer).Init(PhotonNetwork.LocalPlayer);
             Setup().Forget();
         }
@@ -386,7 +395,7 @@ public class RoomLobbyUI : UIBase
 
     private void OnValueChangedReadyToggle(bool isOn)
     {
-        NetworkManager.Instance().SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, isOn ? PlayerInfoObj.Status.Ready : PlayerInfoObj.Status.NotReady);
+        NetworkManager.Instance.SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, isOn ? PlayerInfoObj.Status.Ready : PlayerInfoObj.Status.NotReady);
         CalcReadyCool().Forget();
 
         readyToggle.transform.GetChild(0).gameObject.SetActive(!isOn);
@@ -403,8 +412,8 @@ public class RoomLobbyUI : UIBase
     private void OnClickTutorialButton()
     {
         CalcBusyCool().Forget();
-        NetworkManager.Instance().SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.Busy);
-        UIManager.Instance().ShowUI<TutorialUI>(hidePrev: false);
+        NetworkManager.Instance.SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.Busy);
+        UIManager.Instance.ShowUI<TutorialUI>(hidePrev: false);
     }
 
     private async UniTaskVoid CalcBusyCool()

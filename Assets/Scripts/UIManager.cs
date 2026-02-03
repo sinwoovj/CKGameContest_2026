@@ -13,25 +13,31 @@ namespace Shurub
     public class UIManager : Singleton<UIManager>
     {
         public bool IsInterrupted { get; private set; }
-        
-        public bool isInGame = false;
 
         private bool isControlCool = false;
 
 
         private Dictionary<Type, UIBase> uis = new Dictionary<Type, UIBase>();
-        Stack<UIBase> uiStack = new Stack<UIBase>();
+        private Stack<UIBase> uiStack = new Stack<UIBase>();
+
+        public void ClearAllUIs()
+        {
+            uiStack.Clear();
+        }
 
         private void Update()
         {
-            if (ModalManager.Instance().GetActiveModalCount() >= 1)
+            if (ModalManager.Instance.GetActiveModalCount() >= 1)
             {
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape) && !isInGame)
+            if (NetworkManager.Instance.CurrentRoomState == GameState.Lobby)
             {
-                ReturnPrevUI();
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    ReturnPrevUI();
+                }
             }
         }
 
@@ -145,19 +151,21 @@ namespace Shurub
                 }
             }
         }
+
         public void HideRoomLobbyUI()
         {
-            photonView.RPC(
-                "RPC_HideRoomLobbyUI",
-                RpcTarget.All
-            );
+            //photonView.RPC(
+            //    "RPC_HideRoomLobbyUI",
+            //    RpcTarget.All
+            //);
         }
 
-        [PunRPC]
-        public void RPC_HideRoomLobbyUI()
-        {
-            this.gameObject.GetComponentInChildren<RoomLobbyUI>().Hide();
-        }
+        //[PunRPC]
+        //public void RPC_HideRoomLobbyUI()
+        //{
+        //    //this.gameObject.GetComponentInChildren<RoomLobbyUI>().Hide();
+        //    //HideUI<RoomLobbyUI>(force: true);
+        //}
 
         public void ReturnPrevUI(bool force = false)
         {

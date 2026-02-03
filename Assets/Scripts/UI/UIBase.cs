@@ -52,6 +52,9 @@ public abstract class UIBase : MonoBehaviour
         canvasGroup.blocksRaycasts = false;
     }
 
+    /// <summary>
+    /// 직접 호출 금지. UIManager 통해서 호출
+    /// </summary>
     public virtual void Show()
     {
         canvasGroup.alpha = 1f;
@@ -60,6 +63,9 @@ public abstract class UIBase : MonoBehaviour
         isShowing = true;
     }
 
+    /// <summary>
+    /// 직접 호출 금지. UIManager 통해서 호출
+    /// </summary>
     public virtual void Hide()
     {
         canvasGroup.alpha = 0f;
@@ -68,6 +74,10 @@ public abstract class UIBase : MonoBehaviour
         isShowing = false;
     }
 
+    /// <summary>
+    /// 직접 호출 금지. UIManager 통해서 호출
+    /// Hide시 확인이 필요할 때. ex) Room Lobby에서 나가기 시도할 때
+    /// </summary>
     public virtual void ConfirmHide(UnityAction onCompleted, bool force)
     {
         if (force)
@@ -78,7 +88,7 @@ public abstract class UIBase : MonoBehaviour
             return;
         }
 
-        ModalManager.Instance().OpenNewModal(ConfirmTitle, ConfirmMessage, yesAction: () =>
+        ModalManager.Instance.OpenNewModal(ConfirmTitle, ConfirmMessage, yesAction: () =>
         {
             OnConfirmed?.Invoke();
             onCompleted?.Invoke();

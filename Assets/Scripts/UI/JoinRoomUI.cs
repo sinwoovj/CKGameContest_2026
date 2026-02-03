@@ -23,7 +23,7 @@ public class JoinRoomUI : UIBase
 
     protected override void Init()
     {
-        UIManager.Instance().RegisterUI(this);
+        UIManager.Instance.RegisterUI(this);
 
         searchRoomInput.onValueChanged.RemoveAllListeners();
         searchRoomInput.onValueChanged.AddListener(OnValueChangedSearchRoomInput);

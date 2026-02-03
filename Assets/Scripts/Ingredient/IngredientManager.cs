@@ -39,6 +39,8 @@ namespace Shurub
         // 모든 Ingredient 제거
         public void ClearIngredient()
         {
+            if (!PhotonNetwork.IsMasterClient) return;
+
             // 역순 제거 (안전)
             for (int i = ingredients.Count - 1; i >= 0; i--)
             {

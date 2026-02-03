@@ -12,7 +12,7 @@ public class TitleUI : UIBase
 
     protected override void Init()
     {
-        UIManager.Instance().RegisterUI(this);
+        UIManager.Instance.RegisterUI(this);
     }
 
     public override void Show()
@@ -31,7 +31,7 @@ public class TitleUI : UIBase
 
     private void OnClickPlayButton()
     {
-        UIManager.Instance().ShowUI<PlayUI>();
+        UIManager.Instance.ShowUI<PlayUI>();
     }
 
     private void OnClickSettingButton()
@@ -41,6 +41,6 @@ public class TitleUI : UIBase
 
     private void OnClickExitButton()
     {
-        ModalManager.Instance().OpenNewModal("확인", "게임을 종료 하시겠습니까?", yesAction: Application.Quit);
+        ModalManager.Instance.OpenNewModal("확인", "게임을 종료 하시겠습니까?", yesAction: Application.Quit);
     }
 }
