@@ -150,6 +150,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &552590328 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7702404097555102946, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+  m_PrefabInstance: {fileID: 7067529828285447785}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &876129872 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4756895455254014309, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
@@ -1072,6 +1083,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7702404097555102946, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+      propertyPath: m_fontSize
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 7702404097555102946, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 300
+      objectReference: {fileID: 0}
     - target: {fileID: 8376659692345461936, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1107,6 +1126,18 @@ PrefabInstance:
     - target: {fileID: 8454523159753258128, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8545444699401281510, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 800
+      objectReference: {fileID: 0}
+    - target: {fileID: 8545444699401281510, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 800
+      objectReference: {fileID: 0}
+    - target: {fileID: 8545444699401281510, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8570131853691318629, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1166,7 +1197,7 @@ MonoBehaviour:
   HPUIObj: {fileID: 7067529828285447786}
   playTimeText: {fileID: 7067529828285447787}
   totalTimeText: {fileID: 876129872}
-  isPause: 0
+  countDownText: {fileID: 552590328}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

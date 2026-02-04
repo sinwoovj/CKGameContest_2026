@@ -83,13 +83,15 @@ namespace Shurub
             {
                 case GameState.Loading:
                     GameInit();
+                    SetPlayerInput(false);
                     NetworkManager.Instance.SetGameState(GameState.Ready);
                     break;
                 case GameState.Ready:
                     //카운트 다운
-                    NetworkManager.Instance.SetGameState(GameState.Playing);
+                    GUIManager.Instance.CountDownUI();
                     break;
                 case GameState.Playing:
+                    SetPlayerInput(true);
                     break;
                 case GameState.Result:
                     OpenResultUI();
@@ -108,7 +110,6 @@ namespace Shurub
             playTime = 0f;
             SetPlayTime(playTime);
             CloseResultUI();
-            SetPlayerInput(true);
             PlayerManager.LocalPlayerInstance.GetComponent<PlayerController>().InitAnim();
             IngredientManager.Instance.ClearIngredient();
             TestManager.Instance.InstantiateTest();
