@@ -12,11 +12,11 @@ GameObject:
   - component: {fileID: 4334807571363873693}
   - component: {fileID: 5751016326007576013}
   - component: {fileID: 5818833229347579949}
-  - component: {fileID: 2591472032879890567}
   - component: {fileID: -5818906749835168113}
   - component: {fileID: 7592001675049996846}
+  - component: {fileID: 2760849302300320036}
   m_Layer: 6
-  m_Name: Cabbage
+  m_Name: Ice
   m_TagString: Ingredient
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 2, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
@@ -84,12 +84,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -1278312920778776356, guid: c0ad78ee0895b3441bb530fd22b0a88a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 76add71b9cc87534fa060087f2cf47b4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.56, y: 2.29}
+  m_Size: {x: 2.56, y: 2.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -133,8 +133,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.56, y: 2.29}
-    newSize: {x: 2.56, y: 2.29}
+    oldSize: {x: 2.56, y: 2.56}
+    newSize: {x: 2.56, y: 2.56}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -168,19 +168,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &2591472032879890567
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 791661959370561837}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a857bdc9321d6642b1e974b454eb595, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Cabbage
-  state: 0
 --- !u!114 &-5818906749835168113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,3 +207,19 @@ MonoBehaviour:
   m_SynchronizeAngularVelocity: 0
   m_TeleportEnabled: 0
   m_TeleportIfDistanceGreaterThan: 3
+--- !u!114 &2760849302300320036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 791661959370561837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cea8346adc53534fae3f72efaed3bcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Ice
+  sprites:
+  - {fileID: 21300000, guid: 76add71b9cc87534fa060087f2cf47b4, type: 3}
+  holdState: 0
+  state: 0

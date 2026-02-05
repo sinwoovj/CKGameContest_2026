@@ -2,7 +2,7 @@
 - Project name: CKGameContest_2026
 - Unity version: Unity 6000.2.12f1
 - Active game object:
-  - Name: Scroll View
+  - Name: SpawnPoint 1
   - Tag: Untagged
-  - Layer: UI
+  - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->

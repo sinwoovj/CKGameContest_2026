@@ -1,4 +1,4 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,8 +6,18 @@ namespace Shurub
 {
     public class IngredientManager : MonoBehaviourPun
     {
+        [HideInInspector]
         public static IngredientManager Instance { get; private set; }
-
+        private static readonly string[] ingredientPrefabPaths = {
+            "Prefabs/Ingredient/Lettuce",
+            "Prefabs/Ingredient/Apple",
+            "Prefabs/Ingredient/Rice",
+            "Prefabs/Ingredient/Meat",
+            "Prefabs/Ingredient/Fish",
+            "Prefabs/Ingredient/Ice",
+            "Prefabs/Ingredient/Water",
+        };
+        public enum IngredientType { Lettuce, Apple, Rice, Meat, Fish, Ice, Water, Count };
         private static readonly List<Ingredient> ingredients = new List<Ingredient>();
 
         private void Awake()
@@ -21,7 +31,21 @@ namespace Shurub
             Instance = this;
         }
 
-        // µî·Ï
+        // ìƒì„±
+        public void InstantiateIngredient(IngredientType type, Vector3 pos)
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+            PhotonNetwork.Instantiate(ingredientPrefabPaths[(int)type], pos, Quaternion.identity);
+        }
+
+        // ì‚­ì œ
+        public void DestroyIngredient(Ingredient ingredient)
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+            PhotonNetwork.Destroy(ingredient.gameObject);
+        }
+
+        // ë“±ë¡
         public static void Register(Ingredient ingredient)
         {
             if (!ingredients.Contains(ingredient))
@@ -30,33 +54,33 @@ namespace Shurub
             }
         }
 
-        // ÇØÁ¦
+        // í•´ì œ
         public static void Unregister(Ingredient ingredient)
         {
             ingredients.Remove(ingredient);
         }
 
-        // ¸ðµç Ingredient Á¦°Å
+        // ëª¨ë“  Ingredient ì œê±°
         public void ClearIngredient()
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
-            // ¿ª¼ø Á¦°Å (¾ÈÀü)
+            // ì—­ìˆœ ì œê±° (ì•ˆì „)
             for (int i = ingredients.Count - 1; i >= 0; i--)
             {
                 if (ingredients[i] != null)
                 {
-                    PhotonNetwork.Destroy(ingredients[i].gameObject);
+                    DestroyIngredient(ingredients[i]);
                 }
             }
 
             ingredients.Clear();
         }
 
-        // ¿ÜºÎ Á¶È¸¿ë
+        // ì™¸ë¶€ ì¡°íšŒìš©
         public IReadOnlyList<Ingredient> Ingredients => ingredients;
 
-        // Æ¯Á¤ Å¸ÀÔ °Ë»ö
+        // íŠ¹ì • íƒ€ìž… ê²€ìƒ‰
         public List<T> GetIngredients<T>() where T : Ingredient
         {
             List<T> result = new List<T>();

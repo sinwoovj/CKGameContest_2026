@@ -1,4 +1,4 @@
-using Photon.Pun;
+﻿using Photon.Pun;
 using UnityEngine;
 
 namespace Shurub
@@ -8,13 +8,28 @@ namespace Shurub
         protected Rigidbody2D rb;
         protected Collider2D col;
 
-        public enum IngredientState
+        protected virtual string IngredientName => "Ingredient";
+        protected virtual bool IsCuttable => false;
+        protected virtual bool IsBakable => false;
+
+        public Sprite[] sprites; //IngredientState 순서에 맞춰서 스프라이트 패치
+
+        public enum HoldState
         {
+            None,
             World, 
             Held,  
             Thrown 
         }
-        public IngredientState state;
+        public HoldState holdState;
+
+        public enum IngredientState
+        {
+            unCooked = 0,
+            cooked = 1, // cut, baked
+            burned = 2
+        }
+        public IngredientState state = 0;
 
         private const float STOP_SPEED = 0.1f;
         private const float STOP_TIME = 0.2f;
@@ -22,6 +37,7 @@ namespace Shurub
 
         private Vector3 originalScale;
 
+        // Monohaviour Functions
         protected virtual void Awake()
         {
             rb = GetComponent<Rigidbody2D>();
@@ -34,7 +50,7 @@ namespace Shurub
             if (!photonView.IsMine)
                 return;
 
-            if (state != IngredientState.Thrown)
+            if (holdState != HoldState.Thrown)
                 return;
 
             if (rb.linearVelocity.magnitude < STOP_SPEED)
@@ -51,6 +67,8 @@ namespace Shurub
                 stopTimer = 0f;
             }
         }
+
+        // Callback Functions
         protected virtual void OnEnable()
         {
             IngredientManager.Register(this);
@@ -61,9 +79,14 @@ namespace Shurub
             IngredientManager.Unregister(this);
         }
 
+        protected virtual void OnDestroy()
+        {
+            IngredientManager.Destroy(this);
+        }
+
         public virtual void OnStopped()
         {
-            state = IngredientState.World;
+            holdState = HoldState.World;
             stopTimer = 0f;
 
             rb.linearVelocity = Vector2.zero;
@@ -71,12 +94,19 @@ namespace Shurub
             col.enabled = true;
         }
 
+        protected virtual void OnChangedIndegrientState()
+        {
+            // 스프라이트 바꿔주는 코드
+
+        }
+
+        // RPC Functions
         [PunRPC]
         public virtual void RPC_Pick(int holderViewId)
         {
             PhotonView holderPV = PhotonView.Find(holderViewId);
 
-            state = IngredientState.Held;
+            holdState = HoldState.Held;
 
             rb.simulated = false;
             col.enabled = false;
@@ -88,7 +118,7 @@ namespace Shurub
         [PunRPC]
         public virtual void RPC_Drop(Vector2 worldPos)
         {
-            state = IngredientState.World;
+            holdState = HoldState.World;
 
             transform.SetParent(null);
             transform.position = worldPos;
@@ -103,7 +133,7 @@ namespace Shurub
         [PunRPC]
         public virtual void RPC_Throw(Vector2 dir, float force)
         {
-            state = IngredientState.Thrown;
+            holdState = HoldState.Thrown;
 
             transform.SetParent(null);
 

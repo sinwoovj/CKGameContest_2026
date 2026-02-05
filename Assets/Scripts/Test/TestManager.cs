@@ -1,4 +1,4 @@
-using Photon.Pun;
+﻿using Photon.Pun;
 using UnityEngine;
 
 namespace Shurub
@@ -8,7 +8,7 @@ namespace Shurub
         public static TestManager Instance;
 
         [SerializeField]
-        public string TestObjPath;
+        public bool isTest;
         [SerializeField]
         public Vector3 TestPos;
         [SerializeField]
@@ -21,11 +21,12 @@ namespace Shurub
 
         public void InstantiateTest()
         {
-            if (PhotonNetwork.IsMasterClient)
+            if (!isTest) return;
+            for (int i = 0; i < spawnCount; i++)
             {
-                for (int i = 0; i < spawnCount; i++)
+                for (int j = 0; j < (int)IngredientManager.IngredientType.Count; j++)
                 {
-                    PhotonNetwork.Instantiate("Prefabs/" + TestObjPath, TestPos, Quaternion.identity);
+                    IngredientManager.Instance.InstantiateIngredient((IngredientManager.IngredientType)j, TestPos);
                 }
             }
         }
