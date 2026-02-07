@@ -1,7 +1,8 @@
-using Photon.Pun;
+Ôªøusing Photon.Pun;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static Shurub.PlayerController;
 using static UnityEditor.Progress;
 
 
@@ -15,14 +16,20 @@ namespace Shurub
         private Movement2D movement2D;
         private Animator anim;
 
+        //Interact Variable
+        public InteractionState interactionState = InteractionState.Idle;
+
+        public float offsetDistance = 0.5f;
+        public float castDistance = 0.1f;
+
         //PickUpOrThrow Variable
-        enum HoldState
+        public enum HoldState
         {
-            Empty,          // æ¯¿Ω
-            Holding,        // µÈ∞Ì ¿÷¿Ω (¥Î±‚)
-            Charging        // ¥¯¡ˆ±‚ ¬˜¬° ¡ﬂ
-        } 
-        HoldState holdState = HoldState.Empty;
+            Empty,          // ÏóÜÏùå
+            Holding,        // Îì§Í≥† ÏûàÏùå (ÎåÄÍ∏∞)
+            Charging        // ÎçòÏßÄÍ∏∞ Ï∞®Ïßï Ï§ë
+        }
+        public HoldState holdState = HoldState.Empty;
 
         public Transform holdPoint;
         public Ingredient heldIngredient;
@@ -37,6 +44,7 @@ namespace Shurub
         private Vector2 moveLastInput = Vector2.zero;
         [SerializeField]
         private Vector2 moveInput = Vector2.zero;
+        public Vector2 moveDir = Vector2.zero;
 
         private void Awake()
         {
@@ -85,8 +93,10 @@ namespace Shurub
                 anim.SetFloat("LastInputX", moveInput.x);
                 anim.SetFloat("LastInputY", moveInput.y);
                 moveLastInput = moveInput;
+                moveDir = moveInput;
             }
             moveInput = context.ReadValue<Vector2>();
+            if (!context.canceled) moveDir = moveInput;
             anim.SetFloat("InputX", moveInput.x);
             anim.SetFloat("InputY", moveInput.y);
         }
@@ -101,12 +111,49 @@ namespace Shurub
             anim.SetTrigger("Default");
         }
 
-        public void OnInteract(InputAction.CallbackContext context) // J
+        public void OnInteract(InputAction.CallbackContext context) // K
         {
-            PlayerManager.Instance.isIntreact = context.canceled ? false : true;
+            if (!context.performed)
+                return;
+
+            switch (interactionState)
+            {
+                case InteractionState.Idle:
+                {
+                    IInteractable interactable = DetectInteractable();
+                    if (interactable == null)
+                        return;
+                    interactable.Interact(this);
+                    break;
+                }
+
+                case InteractionState.InProgress:
+                    // ÏßÑÌñâ Ï§ë ÏûÖÎ†• Ï≤òÎ¶¨
+                    break;
+            }
+        }
+        private IInteractable DetectInteractable()
+        {
+            Vector2 dir = moveDir;
+            Vector2 origin = (Vector2)transform.position - new Vector2(0, 0.55f);
+            Vector2 offsetOrigin = origin + dir.normalized * offsetDistance;
+            LayerMask mask = LayerMask.GetMask("Structure");
+
+            if (TestManager.Instance.isTest)
+            {
+                Debug.DrawRay(offsetOrigin, dir * castDistance, Color.red, 3f);
+            }
+
+            RaycastHit2D hit =
+                Physics2D.Raycast(offsetOrigin, dir, castDistance, mask);
+
+            if (hit.collider == null)
+                return null;
+
+            return hit.collider.GetComponent<IInteractable>();
         }
 
-        public void OnPickUpOrThrow(InputAction.CallbackContext context) // K
+        public void OnPickUpOrThrow(InputAction.CallbackContext context) // L
         {
             if (context.started)
             {
@@ -126,7 +173,7 @@ namespace Shurub
                 if (holdState != HoldState.Charging)
                     return;
 
-                // æ∆¡˜ ¿”∞Ë Ω√∞£ æ» ≥—∞Â¿∏∏È µÂ∑”
+                // ÏïÑÏßÅ ÏûÑÍ≥Ñ ÏãúÍ∞Ñ Ïïà ÎÑòÍ≤ºÏúºÎ©¥ ÎìúÎ°≠
                 if (chargeTimer < throwChargeTime)
                 {
                     DropIngredient();
@@ -152,7 +199,12 @@ namespace Shurub
                 holdState = HoldState.Holding;
         }
 
-
+        public void RemoveIngredient()
+        {
+            IngredientManager.Instance.DestroyIngredient(heldIngredient);
+            heldIngredient = null;
+            holdState = HoldState.Empty;
+        }
         void TryPickIngredient()
         {
 

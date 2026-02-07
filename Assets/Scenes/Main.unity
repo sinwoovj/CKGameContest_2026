@@ -16217,7 +16217,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9b3eace2bb7a1649a4fb5f245177116, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shurub.UIManager
-  isInGame: 0
 --- !u!1 &1951685762
 GameObject:
   m_ObjectHideFlags: 0

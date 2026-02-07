@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Fish : Ingredient
 {
-    protected override string IngredientName => "Fish";
-    protected override bool IsCuttable => false;
-    protected override bool IsBakable => true;
+    public override string IngredientName => "Fish";
+    public override bool IsCuttable => false;
+    public override bool IsBakable => true;
 }

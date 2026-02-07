@@ -584,6 +584,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameManager
       objectReference: {fileID: 0}
+    - target: {fileID: 8062576269537748509, guid: cfbf238e16c024b4cb86a43ebf619441, type: 3}
+      propertyPath: maxHp
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8062576269537748509, guid: cfbf238e16c024b4cb86a43ebf619441, type: 3}
+      propertyPath: currentHp
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -637,41 +645,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1327805016074745750, guid: 759d285aa243e48419c2022bcef52b4a, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1327805016074745750, guid: 759d285aa243e48419c2022bcef52b4a, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -2.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4854650892924402784, guid: 759d285aa243e48419c2022bcef52b4a, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4854650892924402784, guid: 759d285aa243e48419c2022bcef52b4a, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.5
-      objectReference: {fileID: 0}
     - target: {fileID: 5429727711912448507, guid: 759d285aa243e48419c2022bcef52b4a, type: 3}
       propertyPath: m_Name
       value: PlayerSpawner
-      objectReference: {fileID: 0}
-    - target: {fileID: 6531583263473474089, guid: 759d285aa243e48419c2022bcef52b4a, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6531583263473474089, guid: 759d285aa243e48419c2022bcef52b4a, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -2.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7459552320643448444, guid: 759d285aa243e48419c2022bcef52b4a, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7459552320643448444, guid: 759d285aa243e48419c2022bcef52b4a, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

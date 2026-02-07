@@ -8,9 +8,9 @@ namespace Shurub
         protected Rigidbody2D rb;
         protected Collider2D col;
 
-        protected virtual string IngredientName => "Ingredient";
-        protected virtual bool IsCuttable => false;
-        protected virtual bool IsBakable => false;
+        public virtual string IngredientName => "Ingredient";
+        public virtual bool IsCuttable => false;
+        public virtual bool IsBakable => false;
 
         public Sprite[] sprites; //IngredientState 순서에 맞춰서 스프라이트 패치
 
@@ -29,7 +29,7 @@ namespace Shurub
             cooked = 1, // cut, baked
             burned = 2
         }
-        public IngredientState state = 0;
+        public IngredientState state = IngredientState.unCooked;
 
         private const float STOP_SPEED = 0.1f;
         private const float STOP_TIME = 0.2f;
@@ -94,13 +94,16 @@ namespace Shurub
             col.enabled = true;
         }
 
-        protected virtual void OnChangedIndegrientState()
+        protected virtual void OnChangedIndegrientState(IngredientState newState)
         {
+            state = newState;
             // 스프라이트 바꿔주는 코드
-
+            this.GetComponent<SpriteRenderer>().sprite = sprites[(int)state];
         }
 
-        // RPC Functions
+        public virtual void OnBaked() { }
+        public virtual void OnCut() { }
+
         [PunRPC]
         public virtual void RPC_Pick(int holderViewId)
         {

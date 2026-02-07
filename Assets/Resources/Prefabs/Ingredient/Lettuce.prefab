@@ -84,7 +84,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 1476140979647752040, guid: ca9c49fb9a0878d4e8ac5de392af6250, type: 3}
+  m_Sprite: {fileID: 1476140979647752040, guid: f4fa2002d6c18c546a18bdbec10ea9b2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Cabbage
   sprites:
-  - {fileID: 1476140979647752040, guid: ca9c49fb9a0878d4e8ac5de392af6250, type: 3}
+  - {fileID: 1476140979647752040, guid: f4fa2002d6c18c546a18bdbec10ea9b2, type: 3}
   - {fileID: 0}
   holdState: 0
   state: 0

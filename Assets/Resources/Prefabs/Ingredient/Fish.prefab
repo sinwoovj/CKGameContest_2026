@@ -84,7 +84,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 8966945178157639174, guid: 2537d4d8be6490847a047005017bfe0b, type: 3}
+  m_Sprite: {fileID: 8966945178157639174, guid: 4104bc99c757a744b8fda35282b99d6b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Fish
   sprites:
-  - {fileID: 8966945178157639174, guid: 2537d4d8be6490847a047005017bfe0b, type: 3}
+  - {fileID: 8966945178157639174, guid: 4104bc99c757a744b8fda35282b99d6b, type: 3}
   - {fileID: 0}
   - {fileID: 0}
   holdState: 0

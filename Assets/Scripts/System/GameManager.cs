@@ -19,8 +19,8 @@ namespace Shurub
         }
 
         // Room Properties
-        public float maxHp = 100f;
-        public float currentHp = 0f;
+        public float maxHp;
+        public float currentHp;
         public float playTime = 0f;
 
         // Logic of Hp Decrease
