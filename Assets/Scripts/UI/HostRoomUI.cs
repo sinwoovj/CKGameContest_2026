@@ -23,6 +23,7 @@ public class HostRoomUI : UIBase
 
     [SerializeField] private Toggle privateCheckToggle;
     [SerializeField] private TMP_InputField passwordInput;
+    [SerializeField] private Toggle showPasswordToggle;
 
     //[SerializeField] private Button timeLimitPlusButton;
     //[SerializeField] private Button timeLimitMinusButton;
@@ -58,6 +59,9 @@ public class HostRoomUI : UIBase
         passwordInput.onEndEdit.RemoveAllListeners();
         passwordInput.onEndEdit.AddListener(OnEndEditPassword);
 
+        showPasswordToggle.onValueChanged.RemoveAllListeners();
+        showPasswordToggle.onValueChanged.AddListener(OnValueChangedShowPasswordToggle);
+
         //timeLimitInput.onValidateInput += ValidateTimeLimitChar;
         //timeLimitInput.onValueChanged.RemoveAllListeners();
         //timeLimitInput.onValueChanged.AddListener(OnValueChangedTimeLimitInput);
@@ -84,6 +88,7 @@ public class HostRoomUI : UIBase
         privateCheckToggle.isOn = false;
         passwordInput.interactable = false;
         passwordInput.text = "";
+        showPasswordToggle.isOn = false;
 
         difficultyInput.interactable = false;
         difficultyInput.text = "";
@@ -219,6 +224,11 @@ public class HostRoomUI : UIBase
     private void OnValueChangedPrivateCheckToggle(bool isOn)
     {
         passwordInput.interactable = isOn;
+        //if (!isOn)
+        //{
+        //    password = "";
+        //    passwordInput.text = "";
+        //}
     }
 
     private void OnEndEditPassword(string value)
@@ -229,6 +239,13 @@ public class HostRoomUI : UIBase
         }
 
         password = value;
+    }
+
+    private void OnValueChangedShowPasswordToggle(bool isOn)
+    {
+        passwordInput.contentType = isOn ? TMP_InputField.ContentType.Standard : TMP_InputField.ContentType.Password;
+        passwordInput.inputType = isOn ? TMP_InputField.InputType.Standard : TMP_InputField.InputType.Password;
+        passwordInput.ForceLabelUpdate();
     }
 
     //private char ValidateTimeLimitChar(string text, int charIndex, char addedChar)

@@ -28,6 +28,7 @@ public class RoomLobbyUI : UIBase
 
     [SerializeField] private Toggle privateCheckToggle;
     [SerializeField] private TMP_InputField passwordInput;
+    [SerializeField] private Toggle showPasswordToggle;
 
     [SerializeField] private Button difficultyPlusButton;
     [SerializeField] private Button difficultyMinusButton;
@@ -80,6 +81,9 @@ public class RoomLobbyUI : UIBase
 
         privateCheckToggle.onValueChanged.RemoveAllListeners();
         passwordInput.onEndEdit.RemoveAllListeners();
+
+        showPasswordToggle.onValueChanged.RemoveAllListeners();
+        showPasswordToggle.onValueChanged.AddListener(OnValueChangedShowPasswordToggle);
 
         readyToggle.onValueChanged.RemoveAllListeners();
     }
@@ -187,6 +191,7 @@ public class RoomLobbyUI : UIBase
 
         privateCheckToggle.isOn = isPrivate;
         passwordInput.text = password ?? "";
+        showPasswordToggle.isOn = false;
 
         //totalTimeLimitSeconds = (int)PhotonNetwork.CurrentRoom.CustomProperties[GameConstants.Network.ROOM_TIME_LIMIT_KEY];
         //int min = totalTimeLimitSeconds / 60;
@@ -488,6 +493,13 @@ public class RoomLobbyUI : UIBase
         }
 
         passwordInput.text = password;
+    }
+
+    private void OnValueChangedShowPasswordToggle(bool isOn)
+    {
+        passwordInput.contentType = isOn ? TMP_InputField.ContentType.Standard : TMP_InputField.ContentType.Password;
+        passwordInput.inputType = isOn ? TMP_InputField.InputType.Standard : TMP_InputField.InputType.Password;
+        passwordInput.ForceLabelUpdate();
     }
 
     public void OnUpdatedCustomProperties(Hashtable propertiesThatChanged)

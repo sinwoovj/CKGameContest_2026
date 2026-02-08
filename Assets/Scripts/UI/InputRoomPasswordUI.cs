@@ -15,17 +15,22 @@ namespace Shurub
         [SerializeField] private TMP_InputField passwordInput;
         [SerializeField] private Button joinButton;
         [SerializeField] private Button cancelButton;
+        [SerializeField] private Toggle showPasswordToggle;
 
         protected override void Init()
         {
             UIManager.Instance.RegisterUI(this);
 
             passwordInput.onValidateInput += CharUtils.ValidatePasswordChar;
+            showPasswordToggle.onValueChanged.RemoveAllListeners();
+            showPasswordToggle.onValueChanged.AddListener(OnValueChangedShowPasswordToggle);
         }
 
         public override void Show()
         {
             base.Show();
+
+            showPasswordToggle.isOn = false;
             passwordInput.ActivateInputField();
         }
 
@@ -33,6 +38,13 @@ namespace Shurub
         {
             targetRoom = room;
             roomNameText.text = targetRoom.Name;
+        }
+
+        private void OnValueChangedShowPasswordToggle(bool isOn)
+        {
+            passwordInput.contentType = isOn ? TMP_InputField.ContentType.Standard : TMP_InputField.ContentType.Password;
+            passwordInput.inputType = isOn ? TMP_InputField.InputType.Standard : TMP_InputField.InputType.Password;
+            passwordInput.ForceLabelUpdate();
         }
 
         private void OnClickJoinButton()
