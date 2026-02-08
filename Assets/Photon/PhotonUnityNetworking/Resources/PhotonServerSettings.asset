@@ -53,6 +53,13 @@ MonoBehaviour:
   - RPC_OnInteractionSuccess
   - RPC_RequestInteract
   - RPC_SyncState
+  - RPC_UpdateUI
+  - OnInteractionStart
+  - RPC_InteractProcess
+  - RPC_UpdateProcess
+  - RPC_OnBurned
+  - RPC_OnCooked
+  - RPC_SetActive
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

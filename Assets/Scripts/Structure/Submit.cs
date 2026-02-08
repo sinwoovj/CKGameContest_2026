@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using UnityEngine;
 
 namespace Shurub
@@ -8,41 +9,40 @@ namespace Shurub
         public override InteractionKind Kind => InteractionKind.Instant;
         protected override string StructureName => "Submit";
         protected override bool IsInteractable => true;
-
-        protected override void Start()
+        protected override bool CanInteract()
         {
-            base.Start();
-
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-
-        }
-        protected override bool CanInteract(PlayerController pc)
-        {
-            if (pc.heldIngredient != null) //재료나 접시를 들고있는가?
+            if (currPC.heldIngredient == null) //음식이 담긴 접시를 들고있는가?
             {
-                //빈 손이 아님
-                Debug.Log("빈 손이 아님");
+                //빈 손임
+                Debug.Log("빈 손임");
                 return false;
             }
             return true;
         }
-        protected override void InstantInteract(PlayerController pc)
+        protected override void InstantInteract()
         {
-            //접시를 획득함
+            //오더리스트에 해당하는 음식을 들고 있는가?
+
+            //성공적으로 음식 제출 시...
+            OnInteractionSuccess();
+            //아니라면 Failed 호출
         }
         protected override void OnInteractionStart(int playerViewId)
         {
-            Debug.Log("Interaction Start");
+            Debug.Log("Submit Start");
             base.OnInteractionStart(playerViewId);
         }
-        protected override void OnInteractionSuccess(int playerViewId)
+        [PunRPC]
+        protected override void RPC_OnInteractionSuccess(int playerViewId)
         {
-            Debug.Log("Interaction Complete");
-            base.OnInteractionSuccess(playerViewId);
+            Debug.Log("Submit Complete");
+            base.RPC_OnInteractionSuccess(playerViewId);
+        }
+        [PunRPC]
+        protected override void RPC_OnInteractionFailed(int playerViewId)
+        {
+            Debug.Log("Submit Failed");
+            base.RPC_OnInteractionFailed(playerViewId);
         }
     }
 }

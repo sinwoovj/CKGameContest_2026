@@ -10,7 +10,7 @@ namespace Shurub
         [SerializeField]
         public bool isTest;
         [SerializeField]
-        public Vector3 TestPos;
+        public GameObject TestPos;
         [SerializeField]
         public int spawnCount;
 
@@ -26,7 +26,7 @@ namespace Shurub
             {
                 for (int j = 0; j < (int)IngredientManager.IngredientType.Count; j++)
                 {
-                    IngredientManager.Instance.InstantiateIngredient((IngredientManager.IngredientType)j, TestPos);
+                    IngredientManager.Instance.InstantiateIngredient((IngredientManager.IngredientType)j, TestPos.transform.position);
                 }
             }
         }

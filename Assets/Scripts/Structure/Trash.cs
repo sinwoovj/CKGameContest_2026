@@ -9,21 +9,9 @@ namespace Shurub
         public override InteractionKind Kind => InteractionKind.Instant;
         protected override string StructureName => "Trash";
         protected override bool IsInteractable => true;
-
-        protected override void Start()
+        protected override bool CanInteract()
         {
-            base.Start();
-
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-
-        }
-        protected override bool CanInteract(PlayerController pc)
-        {
-            if (pc.heldIngredient == null) //재료를 들고있는가?
+            if (currPC.heldIngredient == null) //재료를 들고있는가?
             {
                 //재료를 들고 있지 않음
                 Debug.Log("재료를 들고 있지 않음");
@@ -31,20 +19,28 @@ namespace Shurub
             }
             return true;
         }
-        protected override void InstantInteract(PlayerController pc)
+        protected override void InstantInteract()
         {
-            pc.RemoveIngredient();
-            OnInteractionSuccess(currentPlayerViewId);
+            currPC.RemoveIngredient();
+            OnInteractionSuccess();
         }
+        [PunRPC]
         protected override void OnInteractionStart(int playerViewId)
         {
             Debug.Log("Throw Out Start");
             base.OnInteractionStart(playerViewId);
         }
-        protected override void OnInteractionSuccess(int playerViewId)
+        [PunRPC]
+        protected override void RPC_OnInteractionSuccess(int playerViewId)
         {
             Debug.Log("Throw Out Complete");
-            base.OnInteractionSuccess(playerViewId);
+            base.RPC_OnInteractionSuccess(playerViewId);
+        }
+        [PunRPC]
+        protected override void RPC_OnInteractionFailed(int playerViewId)
+        {
+            Debug.Log("Throw Out Failed");
+            base.RPC_OnInteractionFailed(playerViewId);
         }
     }
 }

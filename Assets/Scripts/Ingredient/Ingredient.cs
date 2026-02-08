@@ -101,8 +101,44 @@ namespace Shurub
             this.GetComponent<SpriteRenderer>().sprite = sprites[(int)state];
         }
 
-        public virtual void OnBaked() { }
-        public virtual void OnCut() { }
+        public virtual void SetActive(bool val)
+        {
+            photonView.RPC(
+                nameof(RPC_SetActive),
+                RpcTarget.All,
+                val
+            );
+        }
+        [PunRPC]
+        protected virtual void RPC_SetActive(bool val)
+        {
+            gameObject.SetActive(val);
+        }
+
+        public virtual void OnCooked()
+        {
+            photonView.RPC(
+                nameof(RPC_OnCooked),
+                RpcTarget.All
+            );
+        }
+        [PunRPC]
+        protected virtual void RPC_OnCooked()
+        {
+            OnChangedIndegrientState(IngredientState.cooked);
+        }
+        public virtual void OnBurned()
+        {
+            photonView.RPC(
+                nameof(RPC_OnBurned),
+                RpcTarget.All
+            );
+        }
+        [PunRPC]
+        protected virtual void RPC_OnBurned()
+        {
+            OnChangedIndegrientState(IngredientState.burned);
+        }
 
         [PunRPC]
         public virtual void RPC_Pick(int holderViewId)

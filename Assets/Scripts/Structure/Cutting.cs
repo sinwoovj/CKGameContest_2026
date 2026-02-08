@@ -11,34 +11,28 @@ namespace Shurub
 
         public override float Progress => progress; // 0~1
         private float progress = 0f;
-        private const float PROCESS_INTERVAL = 1f / 6f;
         public override InteractionKind Kind => InteractionKind.Process;
         protected override string StructureName => "Cutting";
         protected override bool IsInteractable => true;
 
-        protected override void Start()
+        protected override bool CanInteract()
         {
-            base.Start();
-
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-
-        }
-        protected override bool CanInteract(PlayerController pc)
-        {
-            if (pc.heldIngredient == null) //재료를 들고있는가?
+            if (currPC.heldIngredient == null) //재료를 들고있는가?
             {
                 //재료를 들고 있지 않음
                 Debug.Log("재료를 들고 있지 않음");
                 return false;
             }
-            if (!pc.heldIngredient.IsCuttable) //이 재료는 썰 수 있는가?
+            if (!currPC.heldIngredient.IsCuttable) //이 재료는 썰 수 있는가?
             {
                 //이 재료는 썰 수 없음
                 Debug.Log("이 재료는 썰 수 없음");
+                return false;
+            }
+            if (currPC.heldIngredient.state != Ingredient.IngredientState.unCooked) //이 재료는 조리되지 않은 상태인가?
+            {
+                //이 재료는 이미 조리되었거나 탄 재료임
+                Debug.Log("이 재료는 이미 조리되었거나 탄 재료임");
                 return false;
             }
             return true;
@@ -51,50 +45,58 @@ namespace Shurub
         {
             Debug.Log("Cut Start");
             base.OnInteractionStart(playerViewId);
+            //재료를 안보이게 비활성화 함
+            currPC.heldIngredient.SetActive(false);
         }
-        protected override void OnInteractionSuccess(int playerViewId)
+        public override void OnInteractionSuccess()
         {
             Debug.Log("Cut Complete");
-            base.OnInteractionSuccess(playerViewId);
+            //재료 state 바꾸면서 스프라이트도 변경
+            //다시 재료가 보이게 됨
+            currPC.heldIngredient.OnCooked();
+            currPC.heldIngredient.SetActive(true);
+            base.OnInteractionSuccess();
+        }
+        public override void OnInteractionCanceled()
+        {
+            Debug.Log("Cut Canceled");
+
+            //다시 재료가 보이게 됨
+            currPC.heldIngredient.SetActive(true);
+            base.OnInteractionCanceled();
         }
         [PunRPC]
-        protected override void RPC_SyncState(int newState)
+        protected override void RPC_OnInteractionSuccess(int playerViewId)
         {
-            base.RPC_SyncState(newState);
-            InteractionUI.Instance.UpdateUI(this);
+            base.RPC_OnInteractionSuccess(playerViewId);
         }
-        public void CancelInteraction()
+        [PunRPC]
+        protected override void RPC_OnInteractionCanceled(int playerViewId)
         {
-            if (!PhotonNetwork.IsMasterClient) return;
-
-            OnInteractionCanceled(currentPlayerViewId);
+            base.RPC_OnInteractionCanceled(playerViewId);
         }
-        public void OnInteractInput()
+        protected override void EndInteraction()
         {
-            if (!photonView.IsMine) return;
-
-            if (state != InteractionState.InProgress)
-                return;
-            
-            AddProgress(PROCESS_INTERVAL);
+            base.EndInteraction();
+            UpdateProgress(0f);
         }
-        protected void AddProgress(float amount)
+        public override void UpdateProgress(float _progress)
         {
             if (!PhotonNetwork.IsMasterClient)
                 return;
 
-            progress = Mathf.Clamp01(progress + amount);
+            progress = _progress;
 
             photonView.RPC(
-                nameof(RPC_SyncState),
-                RpcTarget.All,
-                (int)state
+                nameof(RPC_UpdateUI),
+                RpcTarget.All
             );
+        }
 
-            if (progress >= 1f)
-            {
-                OnInteractionSuccess(currentPlayerViewId);
-            }
+        [PunRPC]
+        protected void RPC_UpdateUI()
+        {
+            InteractionUI.Instance.UpdateUI(this);
         }
     }
 }

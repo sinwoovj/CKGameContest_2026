@@ -1,4 +1,5 @@
 ﻿using Photon.Pun;
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -45,6 +46,9 @@ namespace Shurub
         [SerializeField]
         private Vector2 moveInput = Vector2.zero;
         public Vector2 moveDir = Vector2.zero;
+        public bool isWalking = false;
+
+        public IInteractable currentInteractable;
 
         private void Awake()
         {
@@ -66,6 +70,8 @@ namespace Shurub
 
         private void Update()
         {
+            if (photonView.IsMine == false && PhotonNetwork.IsConnected == true) return;
+
             if (isCharging)
             {
                 chargeTimer += Time.deltaTime;
@@ -78,17 +84,21 @@ namespace Shurub
                     }
                 }
             }
-
-            if (photonView.IsMine == false && PhotonNetwork.IsConnected == true) return;
+            if (interactionState == InteractionState.InProgress)
+            {
+                currentInteractable.UpdateProcess(Time.deltaTime);
+            }
 
             movement2D.MoveDirection = moveInput;
         }
 
         public void OnMove(InputAction.CallbackContext context)
         {
+            isWalking = true;
             anim.SetBool("IsWalking", true);
             if (context.canceled)
             {
+                isWalking = false;
                 anim.SetBool("IsWalking", false);
                 anim.SetFloat("LastInputX", moveInput.x);
                 anim.SetFloat("LastInputY", moveInput.y);
@@ -99,6 +109,13 @@ namespace Shurub
             if (!context.canceled) moveDir = moveInput;
             anim.SetFloat("InputX", moveInput.x);
             anim.SetFloat("InputY", moveInput.y);
+            if(holdState == HoldState.Holding)
+                UpdateIngredientPosition(moveDir);
+        }
+
+        private void UpdateIngredientPosition(Vector2 moveDir)
+        {
+
         }
 
         public void InitAnim()
@@ -120,15 +137,16 @@ namespace Shurub
             {
                 case InteractionState.Idle:
                 {
-                    IInteractable interactable = DetectInteractable();
-                    if (interactable == null)
+                    currentInteractable = DetectInteractable();
+                    if (currentInteractable == null)
                         return;
-                    interactable.Interact(this);
+                    currentInteractable.Interact(this);
                     break;
                 }
 
                 case InteractionState.InProgress:
                     // 진행 중 입력 처리
+                    currentInteractable.InteractProcess();
                     break;
             }
         }
@@ -205,6 +223,7 @@ namespace Shurub
             heldIngredient = null;
             holdState = HoldState.Empty;
         }
+
         void TryPickIngredient()
         {
 

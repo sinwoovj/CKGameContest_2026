@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using UnityEngine;
 
 namespace Shurub
@@ -10,23 +11,9 @@ namespace Shurub
         protected override bool IsInteractable => true;
 
         public enum TableState { Blank, Ingredient, Dish }
-
-        // Use this for initialization
-        protected override void Start()
+        protected override bool CanInteract()
         {
-            base.Start();
-
-        }
-
-        // Update is called once per frame
-        protected override void Update()
-        {
-            base.Update();
-
-        }
-        protected override bool CanInteract(PlayerController pc)
-        {
-            if (pc.heldIngredient != null) //재료나 접시를 들고있는가?
+            if (currPC.heldIngredient != null) //재료나 접시를 들고있는가?
             {
                 //빈 손이 아님
                 Debug.Log("빈 손이 아님");
@@ -34,19 +21,26 @@ namespace Shurub
             }
             return true;
         }
-        protected override void InstantInteract(PlayerController pc)
+        protected override void InstantInteract()
         {
             //접시를 획득함
         }
         protected override void OnInteractionStart(int playerViewId)
         {
-            Debug.Log("Interaction Start");
+            Debug.Log("Table Interaction Start");
             base.OnInteractionStart(playerViewId);
         }
-        protected override void OnInteractionSuccess(int playerViewId)
+        [PunRPC]
+        protected override void RPC_OnInteractionSuccess(int playerViewId)
         {
-            Debug.Log("Interaction Complete");
-            base.OnInteractionSuccess(playerViewId);
+            Debug.Log("Table Interaction Complete");
+            base.RPC_OnInteractionSuccess(playerViewId);
+        }
+        [PunRPC]
+        protected override void RPC_OnInteractionFailed(int playerViewId)
+        {
+            Debug.Log("Table Interaction Failed");
+            base.RPC_OnInteractionFailed(playerViewId);
         }
     }
 }

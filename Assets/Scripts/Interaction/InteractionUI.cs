@@ -8,6 +8,11 @@ namespace Shurub
     {
         [SerializeField] private Slider progressBar;
 
+        private void Start()
+        {
+            Hide();    
+        }
+
         public void UpdateUI(Structure structure)
         {
             progressBar.value = structure.Progress;
@@ -17,6 +22,7 @@ namespace Shurub
                 case InteractionState.InProgress:
                     Show();
                     break;
+                case InteractionState.Idle:
                 case InteractionState.Success:
                 case InteractionState.Failed:
                 case InteractionState.Cancelled:

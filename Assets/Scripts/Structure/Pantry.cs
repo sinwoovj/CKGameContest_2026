@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using System.Collections;
 using UnityEngine;
 
 namespace Shurub
@@ -8,21 +9,9 @@ namespace Shurub
         public override InteractionKind Kind => InteractionKind.Instant;
         protected override string StructureName => "Pantry";
         protected override bool IsInteractable => true;
-
-        protected override void Start()
+        protected override bool CanInteract()
         {
-            base.Start();
-
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-
-        }
-        protected override bool CanInteract(PlayerController pc)
-        {
-            if (pc.heldIngredient != null) //재료나 접시를 들고있는가?
+            if (currPC.heldIngredient != null) //재료나 접시를 들고있는가?
             {
                 //빈 손이 아님
                 Debug.Log("빈 손이 아님");
@@ -30,7 +19,7 @@ namespace Shurub
             }
             return true;
         }
-        protected override void InstantInteract(PlayerController pc)
+        protected override void InstantInteract()
         {
             //접시를 획득함
         }
@@ -39,10 +28,17 @@ namespace Shurub
             Debug.Log("Get Dish Start");
             base.OnInteractionStart(playerViewId);
         }
-        protected override void OnInteractionSuccess(int playerViewId)
+        [PunRPC]
+        protected override void RPC_OnInteractionSuccess(int playerViewId)
         {
             Debug.Log("Get Dish Complete");
-            base.OnInteractionSuccess(playerViewId);
+            base.RPC_OnInteractionSuccess(playerViewId);
+        }
+        [PunRPC]
+        protected override void RPC_OnInteractionFailed(int playerViewId)
+        {
+            Debug.Log("Get Dish Failed");
+            base.RPC_OnInteractionFailed(playerViewId);
         }
     }
 }
