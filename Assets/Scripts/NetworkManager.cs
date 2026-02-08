@@ -14,7 +14,8 @@ namespace Shurub
     {
         public bool IsConnecting { get; private set; }
 
-        public GameState CurrentRoomState { get; private set; } = GameState.Lobby;
+        public GameState CurrentRoomState { get; private set; }
+        public GameDifficulty CurrentRoomDifficulty { get; private set; }
 
         private Dictionary<string, RoomInfo> availableRooms = new Dictionary<string, RoomInfo>();
 
@@ -183,6 +184,11 @@ namespace Shurub
                     PhotonNetwork.CurrentRoom.IsOpen = true;
                     PhotonNetwork.CurrentRoom.IsVisible = true;
                 }
+            }
+
+            if (properties.TryGetValue(GameConstants.Network.GAME_DIFFICULTY_KEY, out object difficulty))
+            {
+                CurrentRoomDifficulty = (GameDifficulty)(int)difficulty;
             }
 
             if (properties.TryGetValue(GameConstants.Network.GAME_HP_KEY, out object hp))

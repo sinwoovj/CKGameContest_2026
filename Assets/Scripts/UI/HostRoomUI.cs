@@ -9,6 +9,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Windows;
+using System.Linq;
 
 public class HostRoomUI : UIBase
 {
@@ -18,17 +19,28 @@ public class HostRoomUI : UIBase
     [SerializeField] private Button maxPlayerMinusButton;
     [SerializeField] private TMP_InputField maxPlayerInput;
 
-    [SerializeField] private TMP_InputField roomIdInput;
+    [SerializeField] private TMP_InputField roomNameInput;
 
-    [SerializeField] private Button timeLimitPlusButton;
-    [SerializeField] private Button timeLimitMinusButton;
-    [SerializeField] private TMP_InputField timeLimitInput;
+    [SerializeField] private Toggle privateCheckToggle;
+    [SerializeField] private TMP_InputField passwordInput;
+
+    //[SerializeField] private Button timeLimitPlusButton;
+    //[SerializeField] private Button timeLimitMinusButton;
+    //[SerializeField] private TMP_InputField timeLimitInput;
+
+    [SerializeField] private Button difficultyPlusButton;
+    [SerializeField] private Button difficultyMinusButton;
+    [SerializeField] private TMP_InputField difficultyInput;
 
     [SerializeField] private CanvasGroup hostingPanel;
 
     private bool isHosting = false;
     private int curMaxPlayers = GameConstants.Network.MIN_PLAYERS_PER_ROOM;
-    private int totalTimeLimitSeconds = 0;
+
+    private string password = "";
+
+    private GameDifficulty curDifficulty = GameDifficulty.Easy;
+    //private int totalTimeLimitSeconds = 0;
 
     private const float HOSTING_PANEL_FADE_DURATION = 0.1f;
 
@@ -39,11 +51,18 @@ public class HostRoomUI : UIBase
         maxPlayerInput.onEndEdit.RemoveAllListeners();
         maxPlayerInput.onEndEdit.AddListener(OnEndEditMaxPlayerInput);
 
-        timeLimitInput.onValidateInput += ValidateTimeLimitChar;
-        timeLimitInput.onValueChanged.RemoveAllListeners();
-        timeLimitInput.onValueChanged.AddListener(OnValueChangedTimeLimitInput);
-        timeLimitInput.onEndEdit.RemoveAllListeners();
-        timeLimitInput.onEndEdit.AddListener(OnEndEditTimeLimitInput);
+        privateCheckToggle.onValueChanged.RemoveAllListeners();
+        privateCheckToggle.onValueChanged.AddListener(OnValueChangedPrivateCheckToggle);
+
+        passwordInput.onValidateInput += ValidatePasswordChar;
+        passwordInput.onEndEdit.RemoveAllListeners();
+        passwordInput.onEndEdit.AddListener(OnEndEditPassword);
+
+        //timeLimitInput.onValidateInput += ValidateTimeLimitChar;
+        //timeLimitInput.onValueChanged.RemoveAllListeners();
+        //timeLimitInput.onValueChanged.AddListener(OnValueChangedTimeLimitInput);
+        //timeLimitInput.onEndEdit.RemoveAllListeners();
+        //timeLimitInput.onEndEdit.AddListener(OnEndEditTimeLimitInput);
     }
 
     public override void Show()
@@ -57,9 +76,18 @@ public class HostRoomUI : UIBase
 
         isHosting = false;
         curMaxPlayers = GameConstants.Network.MIN_PLAYERS_PER_ROOM;
-        totalTimeLimitSeconds = 0;
+        curDifficulty = GameDifficulty.Easy;
+        password = "";
+        //totalTimeLimitSeconds = 0;
 
-        roomIdInput.text = "";
+        roomNameInput.text = "";
+        privateCheckToggle.isOn = false;
+        passwordInput.interactable = false;
+        passwordInput.text = "";
+
+        difficultyInput.interactable = false;
+        difficultyInput.text = "";
+
         hostingPanel.alpha = 0f;
         hostingPanel.interactable = false;
         hostingPanel.blocksRaycasts = false;
@@ -86,7 +114,12 @@ public class HostRoomUI : UIBase
         hostRoomButton.interactable = false;
         isHosting = true;
 
-        string name = string.IsNullOrEmpty(roomIdInput.text) ? Guid.NewGuid().ToString()[..16] : roomIdInput.text;
+        if (privateCheckToggle.isOn && string.IsNullOrEmpty(password))
+        {
+            password = Guid.NewGuid().ToString("N");
+        }
+
+        string name = string.IsNullOrEmpty(roomNameInput.text) ? Guid.NewGuid().ToString()[..16] : roomNameInput.text;
         RoomOptions options = new RoomOptions
         {
             IsOpen = true,
@@ -95,10 +128,18 @@ public class HostRoomUI : UIBase
             MaxPlayers = curMaxPlayers,
             CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
             {
-                { GameConstants.Network.GAME_STATE_KEY, (int)NetworkManager.Instance.CurrentRoomState },
-                { GameConstants.Network.ROOM_TIME_LIMIT_KEY, totalTimeLimitSeconds }
+                { GameConstants.Network.ROOM_PRIVATE_KEY, privateCheckToggle.isOn },
+                { GameConstants.Network.ROOM_PASSWORD_KEY, password },
+                { GameConstants.Network.GAME_STATE_KEY, GameState.Lobby },
+                { GameConstants.Network.GAME_DIFFICULTY_KEY, (int)curDifficulty }
+                //{ GameConstants.Network.ROOM_TIME_LIMIT_KEY, totalTimeLimitSeconds }
             },
-            CustomRoomPropertiesForLobby = new string[] { GameConstants.Network.ROOM_TIME_LIMIT_KEY }
+            CustomRoomPropertiesForLobby = new string[]
+            {
+                GameConstants.Network.ROOM_PRIVATE_KEY,
+                GameConstants.Network.ROOM_PASSWORD_KEY,
+                GameConstants.Network.GAME_DIFFICULTY_KEY
+            }
         };
         PhotonNetwork.CreateRoom(name, options);
     }
@@ -148,67 +189,125 @@ public class HostRoomUI : UIBase
         maxPlayerInput.text = curMaxPlayers.ToString();
     }
 
-    private char ValidateTimeLimitChar(string text, int charIndex, char addedChar)
+    private void OnClickDifficultyPlusButton()
     {
-        if (char.IsDigit(addedChar))
+        if ((int)curDifficulty == Enum.GetValues(typeof(GameDifficulty)).Length - 2)
         {
-            return addedChar;
-        }
-
-        return '\0';
-    }
-
-    private void OnValueChangedTimeLimitInput(string value)
-    {
-    }
-
-    private void OnEndEditTimeLimitInput(string value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            totalTimeLimitSeconds = 0;
-            UpdateTimeLimitInput();
             return;
         }
 
-        string digits = "";
-        foreach (char c in value)
+        curDifficulty++;
+        UpdateDifficultyInput();
+    }
+
+    private void OnClickDifficultyMinusButton()
+    {
+        if (curDifficulty == 0)
         {
-            if (char.IsDigit(c))
-            {
-                digits += c;
-            }
+            return;
         }
 
-        digits = digits.PadRight(4, '0')[..4];
-        value = digits.Insert(2, ":");
+        curDifficulty--;
+        UpdateDifficultyInput();
+    }
 
-        if (!value.TryParseTime(out totalTimeLimitSeconds))
+    private void UpdateDifficultyInput()
+    {
+        difficultyInput.text = curDifficulty.ToString();
+    }
+
+    private void OnValueChangedPrivateCheckToggle(bool isOn)
+    {
+        passwordInput.interactable = isOn;
+        if (!isOn)
         {
-            totalTimeLimitSeconds = 0;
+            password = "";
+            passwordInput.text = "";
+        }
+    }
+
+    private char ValidatePasswordChar(string text, int charIndex, char addedChar)
+    {
+        if (text.Length >= passwordInput.characterLimit) return '\0';                           // 길이 제한
+        if (char.IsWhiteSpace(addedChar)) return '\0';                                          // 공백
+        if (addedChar >= 0xAC00 && addedChar <= 0xD7A3) return '\0';                            // 한글
+        if (char.IsSurrogate(addedChar)) return '\0';                                           // 이모지
+        if (!(char.IsLetterOrDigit(addedChar) || "!@#$%^&*".Contains(addedChar))) return '\0';  // 일부 특수문자
+
+        return addedChar;
+    }
+
+    private void OnEndEditPassword(string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return;
         }
 
-        UpdateTimeLimitInput();
+        password = value;
     }
 
-    private void OnClickTimeLimitPlusButton()
-    {
-        totalTimeLimitSeconds++;
-        totalTimeLimitSeconds = Mathf.Clamp(totalTimeLimitSeconds, 0, 59 * 60 + 59);
-        UpdateTimeLimitInput();
-    }
+    //private char ValidateTimeLimitChar(string text, int charIndex, char addedChar)
+    //{
+    //    if (char.IsDigit(addedChar))
+    //    {
+    //        return addedChar;
+    //    }
 
-    private void OnClickTimeLimitMinusButton()
-    {
-        totalTimeLimitSeconds--;
-        totalTimeLimitSeconds = Mathf.Clamp(totalTimeLimitSeconds, 0, 59 * 60 + 59);
-        UpdateTimeLimitInput();
-    }
+    //    return '\0';
+    //}
 
-    private void UpdateTimeLimitInput()
-    {
-        int min = totalTimeLimitSeconds / 60;
-        int sec = totalTimeLimitSeconds % 60;
-        timeLimitInput.text = $"{min:00} : {sec:00}";
-    }
+    //private void OnValueChangedTimeLimitInput(string value)
+    //{
+    //}
+
+    //private void OnEndEditTimeLimitInput(string value)
+    //{
+    //    if (string.IsNullOrEmpty(value))
+    //    {
+    //        totalTimeLimitSeconds = 0;
+    //        UpdateTimeLimitInput();
+    //        return;
+    //    }
+
+    //    string digits = "";
+    //    foreach (char c in value)
+    //    {
+    //        if (char.IsDigit(c))
+    //        {
+    //            digits += c;
+    //        }
+    //    }
+
+    //    digits = digits.PadRight(4, '0')[..4];
+    //    value = digits.Insert(2, ":");
+
+    //    if (!value.TryParseTime(out totalTimeLimitSeconds))
+    //    {
+    //        totalTimeLimitSeconds = 0;
+    //    }
+
+    //    UpdateTimeLimitInput();
+    //}
+
+    //private void OnClickTimeLimitPlusButton()
+    //{
+    //    totalTimeLimitSeconds++;
+    //    totalTimeLimitSeconds = Mathf.Clamp(totalTimeLimitSeconds, 0, 59 * 60 + 59);
+    //    UpdateTimeLimitInput();
+    //}
+
+    //private void OnClickTimeLimitMinusButton()
+    //{
+    //    totalTimeLimitSeconds--;
+    //    totalTimeLimitSeconds = Mathf.Clamp(totalTimeLimitSeconds, 0, 59 * 60 + 59);
+    //    UpdateTimeLimitInput();
+    //}
+
+    //private void UpdateTimeLimitInput()
+    //{
+    //    int min = totalTimeLimitSeconds / 60;
+    //    int sec = totalTimeLimitSeconds % 60;
+    //    timeLimitInput.text = $"{min:00} : {sec:00}";
+    //}
 }

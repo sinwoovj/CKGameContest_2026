@@ -28,6 +28,11 @@ public class PlayUI : UIBase
         hostButton.interactable = false;
         joinButton.interactable = false;
 
+        if (!PhotonNetwork.InLobby)
+        {
+            PhotonNetwork.JoinLobby();
+        }
+
         await UniTask.WaitUntil(() => PhotonNetwork.InLobby, cancellationToken: this.GetCancellationTokenOnDestroy());
 
         hostButton.interactable = true;

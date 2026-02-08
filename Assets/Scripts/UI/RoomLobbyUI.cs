@@ -13,7 +13,7 @@ using UnityEngine.Events;
 
 public class RoomLobbyUI : UIBase
 {
-    [SerializeField] private TMP_Text roomIdText;
+    [SerializeField] private TMP_Text roomNameText;
 
     [SerializeField] private Toggle readyToggle;
     [SerializeField] private Button gameStartButton;
@@ -22,9 +22,16 @@ public class RoomLobbyUI : UIBase
     [SerializeField] private Button maxPlayerMinusButton;
     [SerializeField] private TMP_InputField maxPlayerInput;
 
-    [SerializeField] private Button timeLimitPlusButton;
-    [SerializeField] private Button timeLimitMinusButton;
-    [SerializeField] private TMP_InputField timeLimitInput;
+    //[SerializeField] private Button timeLimitPlusButton;
+    //[SerializeField] private Button timeLimitMinusButton;
+    //[SerializeField] private TMP_InputField timeLimitInput;
+
+    [SerializeField] private Toggle privateCheckToggle;
+    [SerializeField] private TMP_InputField passwordInput;
+
+    [SerializeField] private Button difficultyPlusButton;
+    [SerializeField] private Button difficultyMinusButton;
+    [SerializeField] private TMP_InputField difficultyInput;
 
     [SerializeField] private ToggleGroup playerListToggleGroup;
     [SerializeField] private PlayerInfoObj playerInfoPrefab;
@@ -34,7 +41,9 @@ public class RoomLobbyUI : UIBase
     private List<PlayerInfoObj> playerInfoObjects = new List<PlayerInfoObj>();
 
     private int curMaxPlayers;
-    private int totalTimeLimitSeconds;
+    private string password = "";
+    private GameDifficulty curDifficulty;
+    //private int totalTimeLimitSeconds;
 
     private bool isReadyCool = false;
     private bool isBusyCool = false;
@@ -62,9 +71,15 @@ public class RoomLobbyUI : UIBase
     {
         UIManager.Instance.RegisterUI(this);
 
+        maxPlayerPlusButton.onClick.RemoveAllListeners();
+        maxPlayerMinusButton.onClick.RemoveAllListeners();
         maxPlayerInput.onEndEdit.RemoveAllListeners();
-        timeLimitInput.onValueChanged.RemoveAllListeners();
-        timeLimitInput.onEndEdit.RemoveAllListeners();
+        //timeLimitInput.onValueChanged.RemoveAllListeners();
+        //timeLimitInput.onEndEdit.RemoveAllListeners();
+
+        privateCheckToggle.onValueChanged.RemoveAllListeners();
+        passwordInput.onEndEdit.RemoveAllListeners();
+
         readyToggle.onValueChanged.RemoveAllListeners();
     }
 
@@ -112,7 +127,7 @@ public class RoomLobbyUI : UIBase
         }
 
         maxPlayerInput.interactable = false;
-        timeLimitInput.interactable = false;
+        //timeLimitInput.interactable = false;
         readyToggle.interactable = false;
         gameStartButton.interactable = false;
 
@@ -126,16 +141,31 @@ public class RoomLobbyUI : UIBase
             gameStartButton.gameObject.SetActive(true);
 
             maxPlayerInput.interactable = true;
-            timeLimitInput.interactable = true;
+            //timeLimitInput.interactable = true;
 
+            maxPlayerPlusButton.onClick.AddListener(OnClickMaxPlayerPlusButton);
+            maxPlayerMinusButton.onClick.AddListener(OnClickMaxPlayerMinusButton);
             maxPlayerInput.onEndEdit.AddListener(OnEndEditMaxPlayerInput);
 
-            timeLimitInput.onValidateInput += ValidateTimeLimitChar;
-            timeLimitInput.onValueChanged.AddListener(OnValueChangedTimeLimitInput);
-            timeLimitInput.onEndEdit.AddListener(OnEndEditTimeLimitInput);
+            //timeLimitInput.onValidateInput += ValidateTimeLimitChar;
+            //timeLimitInput.onValueChanged.AddListener(OnValueChangedTimeLimitInput);
+            //timeLimitInput.onEndEdit.AddListener(OnEndEditTimeLimitInput);
+
+            password = (string)PhotonNetwork.CurrentRoom.CustomProperties.Get(GameConstants.Network.ROOM_PASSWORD_KEY, null);
+            privateCheckToggle.isOn = !string.IsNullOrEmpty(password);
+            passwordInput.interactable = !string.IsNullOrEmpty(password);
+            passwordInput.text = password ?? "";
+
+            privateCheckToggle.interactable = true;
+            privateCheckToggle.onValueChanged.AddListener(OnValueChangedPrivateCheckToggle);
+
+            passwordInput.onValidateInput += ValidatePasswordChar;
+            passwordInput.onEndEdit.AddListener(OnEndEditPassword);
         }
         else
         {
+            privateCheckToggle.interactable = false;
+
             readyToggle.gameObject.SetActive(true);
 
             readyToggle.isOn = false;
@@ -144,15 +174,18 @@ public class RoomLobbyUI : UIBase
             readyToggle.onValueChanged.AddListener(OnValueChangedReadyToggle);
         }
 
-        roomIdText.text = PhotonNetwork.CurrentRoom.Name;
+        roomNameText.text = PhotonNetwork.CurrentRoom.Name;
 
         curMaxPlayers = PhotonNetwork.CurrentRoom.MaxPlayers;
         maxPlayerInput.text = curMaxPlayers.ToString();
 
-        totalTimeLimitSeconds = (int)PhotonNetwork.CurrentRoom.CustomProperties[GameConstants.Network.ROOM_TIME_LIMIT_KEY];
-        int min = totalTimeLimitSeconds / 60;
-        int sec = totalTimeLimitSeconds % 60;
-        timeLimitInput.text = $"{min:00} : {sec:00}";
+        curDifficulty = (GameDifficulty)(int)PhotonNetwork.CurrentRoom.CustomProperties.Get(GameConstants.Network.GAME_DIFFICULTY_KEY, -1);
+        difficultyInput.text = curDifficulty.ToString();
+
+        //totalTimeLimitSeconds = (int)PhotonNetwork.CurrentRoom.CustomProperties[GameConstants.Network.ROOM_TIME_LIMIT_KEY];
+        //int min = totalTimeLimitSeconds / 60;
+        //int sec = totalTimeLimitSeconds % 60;
+        //timeLimitInput.text = $"{min:00} : {sec:00}";
     }
 
     private void OnClickGameStartButton()
@@ -205,6 +238,11 @@ public class RoomLobbyUI : UIBase
 
     private void OnClickMaxPlayerPlusButton()
     {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
+
         if (curMaxPlayers >= GameConstants.Network.MAX_PLAYERS_PER_ROOM)
         {
             return;
@@ -215,6 +253,11 @@ public class RoomLobbyUI : UIBase
 
     private void OnClickMaxPlayerMinusButton()
     {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
+
         if (curMaxPlayers <= GameConstants.Network.MIN_PLAYERS_PER_ROOM)
         {
             return;
@@ -225,6 +268,12 @@ public class RoomLobbyUI : UIBase
 
     private void OnEndEditMaxPlayerInput(string value)
     {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            maxPlayerInput.text = curMaxPlayers.ToString();
+            return;
+        }
+
         if (string.IsNullOrEmpty(value))
         {
             maxPlayerInput.text = curMaxPlayers.ToString();
@@ -254,74 +303,156 @@ public class RoomLobbyUI : UIBase
         maxPlayerInput.text = curMaxPlayers.ToString();
     }
 
-    private char ValidateTimeLimitChar(string text, int charIndex, char addedChar)
+    //private char ValidateTimeLimitChar(string text, int charIndex, char addedChar)
+    //{
+    //    if (char.IsDigit(addedChar))
+    //    {
+    //        return addedChar;
+    //    }
+
+    //    return '\0';
+    //}
+
+    //private void OnValueChangedTimeLimitInput(string value)
+    //{
+    //}
+
+    //private void OnEndEditTimeLimitInput(string value)
+    //{
+    //    if (string.IsNullOrEmpty(value))
+    //    {
+    //        totalTimeLimitSeconds = 0;
+    //        UpdateTimeLimit();
+    //        return;
+    //    }
+
+    //    string digits = "";
+    //    foreach (char c in value)
+    //    {
+    //        if (char.IsDigit(c))
+    //        {
+    //            digits += c;
+    //        }
+    //    }
+
+    //    digits = digits.PadRight(4, '0')[..4];
+    //    value = digits.Insert(2, ":");
+
+    //    if (!value.TryParseTime(out totalTimeLimitSeconds))
+    //    {
+    //        totalTimeLimitSeconds = 0;
+    //    }
+
+    //    UpdateTimeLimit();
+    //}
+
+    //private void OnClickTimeLimitPlusButton()
+    //{
+    //    totalTimeLimitSeconds++;
+    //    totalTimeLimitSeconds = Mathf.Clamp(totalTimeLimitSeconds, 0, 59 * 60 + 59);
+    //    UpdateTimeLimit();
+    //}
+
+    //private void OnClickTimeLimitMinusButton()
+    //{
+    //    totalTimeLimitSeconds--;
+    //    totalTimeLimitSeconds = Mathf.Clamp(totalTimeLimitSeconds, 0, 59 * 60 + 59);
+    //    UpdateTimeLimit();
+    //}
+
+    //private void UpdateTimeLimit()
+    //{
+    //    if (!PhotonNetwork.IsMasterClient)
+    //    {
+    //        return;
+    //    }
+
+    //    PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
+    //    {
+    //        { GameConstants.Network.ROOM_TIME_LIMIT_KEY, totalTimeLimitSeconds }
+    //    });
+    //}
+
+    private void OnClickDifficultyPlusButton()
     {
-        if (char.IsDigit(addedChar))
+        if ((int)curDifficulty == Enum.GetValues(typeof(GameDifficulty)).Length - 1)
         {
-            return addedChar;
+            return;
         }
 
-        return '\0';
+        curDifficulty++;
     }
 
-    private void OnValueChangedTimeLimitInput(string value)
+    private void OnClickDifficultyMinusButton()
     {
+        if (curDifficulty == 0)
+        {
+            return;
+        }
+
+        curDifficulty--;
     }
 
-    private void OnEndEditTimeLimitInput(string value)
+    private void UpdateDifficulty()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
+            {
+                { GameConstants.Network.GAME_DIFFICULTY_KEY, (int)curDifficulty }
+            });
+        }
+        else
+        {
+            difficultyInput.text = curDifficulty.ToString();
+        }
+    }
+
+    private void OnValueChangedPrivateCheckToggle(bool isOn)
+    {
+        passwordInput.interactable = isOn;
+        if (!isOn)
+        {
+            password = "";
+            passwordInput.text = "";
+        }
+    }
+
+    private char ValidatePasswordChar(string text, int charIndex, char addedChar)
+    {
+        if (text.Length >= passwordInput.characterLimit) return '\0';                           // 길이 제한
+        if (char.IsWhiteSpace(addedChar)) return '\0';                                          // 공백
+        if (addedChar >= 0xAC00 && addedChar <= 0xD7A3) return '\0';                            // 한글
+        if (char.IsSurrogate(addedChar)) return '\0';                                           // 이모지
+        if (!(char.IsLetterOrDigit(addedChar) || "!@#$%^&*".Contains(addedChar))) return '\0';  // 일부 특수문자
+
+        return addedChar;
+    }
+
+    private void OnEndEditPassword(string value)
     {
         if (string.IsNullOrEmpty(value))
         {
-            totalTimeLimitSeconds = 0;
-            UpdateTimeLimit();
+            passwordInput.text = password;
             return;
         }
 
-        string digits = "";
-        foreach (char c in value)
+        password = value;
+    }
+
+    private void UpdatePassword()
+    {
+        if (PhotonNetwork.IsMasterClient)
         {
-            if (char.IsDigit(c))
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
             {
-                digits += c;
-            }
+                { GameConstants.Network.ROOM_PASSWORD_KEY, password }
+            });
         }
-
-        digits = digits.PadRight(4, '0')[..4];
-        value = digits.Insert(2, ":");
-
-        if (!value.TryParseTime(out totalTimeLimitSeconds))
+        else
         {
-            totalTimeLimitSeconds = 0;
+            passwordInput.text = password;
         }
-
-        UpdateTimeLimit();
-    }
-
-    private void OnClickTimeLimitPlusButton()
-    {
-        totalTimeLimitSeconds++;
-        totalTimeLimitSeconds = Mathf.Clamp(totalTimeLimitSeconds, 0, 59 * 60 + 59);
-        UpdateTimeLimit();
-    }
-
-    private void OnClickTimeLimitMinusButton()
-    {
-        totalTimeLimitSeconds--;
-        totalTimeLimitSeconds = Mathf.Clamp(totalTimeLimitSeconds, 0, 59 * 60 + 59);
-        UpdateTimeLimit();
-    }
-
-    private void UpdateTimeLimit()
-    {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            return;
-        }
-
-        PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
-        {
-            { GameConstants.Network.ROOM_TIME_LIMIT_KEY, totalTimeLimitSeconds }
-        });
     }
 
     public void OnUpdatedCustomProperties(Hashtable propertiesThatChanged)
@@ -331,13 +462,25 @@ public class RoomLobbyUI : UIBase
             return;
         }
 
-        if (propertiesThatChanged.TryGetValue(GameConstants.Network.ROOM_TIME_LIMIT_KEY, out object timeLimit))
-        {
-            totalTimeLimitSeconds = (int)timeLimit;
+        //if (propertiesThatChanged.TryGetValue(GameConstants.Network.ROOM_TIME_LIMIT_KEY, out object timeLimit))
+        //{
+        //    totalTimeLimitSeconds = (int)timeLimit;
 
-            int min = totalTimeLimitSeconds / 60;
-            int sec = totalTimeLimitSeconds % 60;
-            timeLimitInput.text = $"{min:00} : {sec:00}";
+        //    int min = totalTimeLimitSeconds / 60;
+        //    int sec = totalTimeLimitSeconds % 60;
+        //    timeLimitInput.text = $"{min:00} : {sec:00}";
+        //}
+
+        if (propertiesThatChanged.TryGetValue(GameConstants.Network.GAME_DIFFICULTY_KEY, out object difficulty))
+        {
+            curDifficulty = (GameDifficulty)(int)difficulty;
+            UpdateDifficulty();
+        }
+
+        if (propertiesThatChanged.TryGetValue(GameConstants.Network.ROOM_PASSWORD_KEY, out object password))
+        {
+            this.password = (string)password;
+            UpdatePassword();
         }
     }
 
