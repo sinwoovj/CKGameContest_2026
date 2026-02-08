@@ -74,7 +74,6 @@ public class JoinRoomUI : UIBase
         for (int i = 0; i < roomList.Count; i++)
         {
             RoomInfo room = roomList[i];
-            print((bool)room.CustomProperties.Get(GameConstants.Network.ROOM_PRIVATE_KEY, false));
             if (!privateCheckToggle.isOn && (bool)room.CustomProperties.Get(GameConstants.Network.ROOM_PRIVATE_KEY, false))
             {
                 continue;

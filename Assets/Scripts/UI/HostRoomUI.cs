@@ -219,11 +219,6 @@ public class HostRoomUI : UIBase
     private void OnValueChangedPrivateCheckToggle(bool isOn)
     {
         passwordInput.interactable = isOn;
-        if (!isOn)
-        {
-            password = "";
-            passwordInput.text = "";
-        }
     }
 
     private void OnEndEditPassword(string value)

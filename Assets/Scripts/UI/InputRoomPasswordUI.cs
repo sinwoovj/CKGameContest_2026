@@ -23,6 +23,12 @@ namespace Shurub
             passwordInput.onValidateInput += CharUtils.ValidatePasswordChar;
         }
 
+        public override void Show()
+        {
+            base.Show();
+            passwordInput.ActivateInputField();
+        }
+
         public void Setup(RoomInfo room)
         {
             targetRoom = room;

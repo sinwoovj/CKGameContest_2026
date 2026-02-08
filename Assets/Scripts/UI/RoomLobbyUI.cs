@@ -41,6 +41,7 @@ public class RoomLobbyUI : UIBase
     private List<PlayerInfoObj> playerInfoObjects = new List<PlayerInfoObj>();
 
     private int curMaxPlayers;
+    private bool isPrivate;
     private string password = "";
     private GameDifficulty curDifficulty;
     //private int totalTimeLimitSeconds;
@@ -117,6 +118,9 @@ public class RoomLobbyUI : UIBase
         UpdateTutorialButton();
         UpdateGameStartButton();
         UpdateMaxPlayers();
+        UpdateDifficultyInput();
+        UpdatePrivateRoomToggle();
+        UpdatePasswordInput();
     }
 
     private async UniTask Setup()
@@ -151,14 +155,10 @@ public class RoomLobbyUI : UIBase
             //timeLimitInput.onValueChanged.AddListener(OnValueChangedTimeLimitInput);
             //timeLimitInput.onEndEdit.AddListener(OnEndEditTimeLimitInput);
 
-            password = (string)PhotonNetwork.CurrentRoom.CustomProperties.Get(GameConstants.Network.ROOM_PASSWORD_KEY, null);
-            privateCheckToggle.isOn = !string.IsNullOrEmpty(password);
-            passwordInput.interactable = !string.IsNullOrEmpty(password);
-            passwordInput.text = password ?? "";
-
             privateCheckToggle.interactable = true;
             privateCheckToggle.onValueChanged.AddListener(OnValueChangedPrivateCheckToggle);
 
+            passwordInput.interactable = isPrivate;
             passwordInput.onValidateInput += CharUtils.ValidatePasswordChar;
             passwordInput.onEndEdit.AddListener(OnEndEditPassword);
         }
@@ -181,6 +181,12 @@ public class RoomLobbyUI : UIBase
 
         curDifficulty = (GameDifficulty)(int)PhotonNetwork.CurrentRoom.CustomProperties.Get(GameConstants.Network.GAME_DIFFICULTY_KEY, -1);
         difficultyInput.text = curDifficulty.ToString();
+
+        isPrivate = (bool)PhotonNetwork.CurrentRoom.CustomProperties.Get(GameConstants.Network.ROOM_PRIVATE_KEY, false);
+        password = (string)PhotonNetwork.CurrentRoom.CustomProperties.Get(GameConstants.Network.ROOM_PASSWORD_KEY, null);
+
+        privateCheckToggle.isOn = isPrivate;
+        passwordInput.text = password ?? "";
 
         //totalTimeLimitSeconds = (int)PhotonNetwork.CurrentRoom.CustomProperties[GameConstants.Network.ROOM_TIME_LIMIT_KEY];
         //int min = totalTimeLimitSeconds / 60;
@@ -375,12 +381,13 @@ public class RoomLobbyUI : UIBase
 
     private void OnClickDifficultyPlusButton()
     {
-        if ((int)curDifficulty == Enum.GetValues(typeof(GameDifficulty)).Length - 1)
+        if ((int)curDifficulty == Enum.GetValues(typeof(GameDifficulty)).Length - 2)
         {
             return;
         }
 
         curDifficulty++;
+        SetDifficulty();
     }
 
     private void OnClickDifficultyMinusButton()
@@ -391,31 +398,61 @@ public class RoomLobbyUI : UIBase
         }
 
         curDifficulty--;
+        SetDifficulty();
     }
 
-    private void UpdateDifficulty()
+    private void SetDifficulty()
     {
-        if (PhotonNetwork.IsMasterClient)
+        if (!PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
-            {
-                { GameConstants.Network.GAME_DIFFICULTY_KEY, (int)curDifficulty }
-            });
+            return;
         }
-        else
+
+        PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
         {
-            difficultyInput.text = curDifficulty.ToString();
-        }
+            { GameConstants.Network.GAME_DIFFICULTY_KEY, (int)curDifficulty }
+        });
+    }
+
+    private void UpdateDifficultyInput()
+    {
+        difficultyInput.text = curDifficulty.ToString();
     }
 
     private void OnValueChangedPrivateCheckToggle(bool isOn)
     {
-        passwordInput.interactable = isOn;
-        if (!isOn)
+        if (!PhotonNetwork.IsMasterClient)
         {
-            password = "";
-            passwordInput.text = "";
+            return;
         }
+
+        isPrivate = isOn;
+        passwordInput.interactable = isPrivate;
+
+        SetPrivateRoom();
+    }
+
+    private void SetPrivateRoom()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
+
+        PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
+        {
+            { GameConstants.Network.ROOM_PRIVATE_KEY, isPrivate }
+        });
+    }
+
+    private void UpdatePrivateRoomToggle()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
+
+        privateCheckToggle.isOn = isPrivate;
     }
 
     private void OnEndEditPassword(string value)
@@ -427,21 +464,30 @@ public class RoomLobbyUI : UIBase
         }
 
         password = value;
+        SetPassword();
     }
 
-    private void UpdatePassword()
+    private void SetPassword()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
+
+        PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
+        {
+            { GameConstants.Network.ROOM_PASSWORD_KEY, password }
+        });
+    }
+
+    private void UpdatePasswordInput()
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
-            {
-                { GameConstants.Network.ROOM_PASSWORD_KEY, password }
-            });
+            return;
         }
-        else
-        {
-            passwordInput.text = password;
-        }
+
+        passwordInput.text = password;
     }
 
     public void OnUpdatedCustomProperties(Hashtable propertiesThatChanged)
@@ -463,13 +509,16 @@ public class RoomLobbyUI : UIBase
         if (propertiesThatChanged.TryGetValue(GameConstants.Network.GAME_DIFFICULTY_KEY, out object difficulty))
         {
             curDifficulty = (GameDifficulty)(int)difficulty;
-            UpdateDifficulty();
+        }
+
+        if (propertiesThatChanged.TryGetValue(GameConstants.Network.ROOM_PRIVATE_KEY, out object isPrivate))
+        {
+            this.isPrivate = (bool)isPrivate;
         }
 
         if (propertiesThatChanged.TryGetValue(GameConstants.Network.ROOM_PASSWORD_KEY, out object password))
         {
             this.password = (string)password;
-            UpdatePassword();
         }
     }
 

@@ -16,28 +16,23 @@ public class PlayUI : UIBase
         UIManager.Instance.RegisterUI(this);
     }
 
-    public override void Show()
-    {
-        ProcessShow().Forget();
-    }
+    //public override void Show()
+    //{
+    //    ProcessShow().Forget();
+    //}
 
-    private async UniTaskVoid ProcessShow()
-    {
-        base.Show();
+    //private async UniTaskVoid ProcessShow()
+    //{
+    //    base.Show();
 
-        hostButton.interactable = false;
-        joinButton.interactable = false;
+    //    hostButton.interactable = false;
+    //    joinButton.interactable = false;
 
-        if (!PhotonNetwork.InLobby)
-        {
-            PhotonNetwork.JoinLobby();
-        }
+    //    await UniTask.WaitUntil(() => PhotonNetwork.InLobby, cancellationToken: this.GetCancellationTokenOnDestroy());
 
-        await UniTask.WaitUntil(() => PhotonNetwork.InLobby, cancellationToken: this.GetCancellationTokenOnDestroy());
-
-        hostButton.interactable = true;
-        joinButton.interactable = true;
-    }
+    //    hostButton.interactable = true;
+    //    joinButton.interactable = true;
+    //}
 
     private void OnClickSingleButton()
     {
@@ -46,11 +41,21 @@ public class PlayUI : UIBase
 
     private void OnClickHostButton()
     {
+        if (!PhotonNetwork.InLobby)
+        {
+            return;
+        }
+
         UIManager.Instance.ShowUI<HostRoomUI>();
     }
 
     private void OnClickJoinButton()
     {
+        if (!PhotonNetwork.InLobby)
+        {
+            return;
+        }
+
         UIManager.Instance.ShowUI<JoinRoomUI>();
     }
 

@@ -15,22 +15,27 @@ public class TitleUI : UIBase
         UIManager.Instance.RegisterUI(this);
     }
 
-    public override void Show()
-    {
-        ProcessShow().Forget();
-    }
+    //public override void Show()
+    //{
+    //    ProcessShow().Forget();
+    //}
 
-    private async UniTaskVoid ProcessShow()
-    {
-        base.Show();
+    //private async UniTaskVoid ProcessShow()
+    //{
+    //    base.Show();
 
-        playButton.interactable = false;
-        await UniTask.WaitUntil(() => PhotonNetwork.IsConnectedAndReady, cancellationToken: this.GetCancellationTokenOnDestroy());
-        playButton.interactable = true;
-    }
+    //    playButton.interactable = false;
+    //    await UniTask.WaitUntil(() => PhotonNetwork.IsConnectedAndReady, cancellationToken: this.GetCancellationTokenOnDestroy());
+    //    playButton.interactable = true;
+    //}
 
     private void OnClickPlayButton()
     {
+        if (!PhotonNetwork.IsConnectedAndReady)
+        {
+            return;
+        }
+
         UIManager.Instance.ShowUI<PlayUI>();
     }
 
