@@ -159,7 +159,7 @@ public class RoomLobbyUI : UIBase
             privateCheckToggle.interactable = true;
             privateCheckToggle.onValueChanged.AddListener(OnValueChangedPrivateCheckToggle);
 
-            passwordInput.onValidateInput += ValidatePasswordChar;
+            passwordInput.onValidateInput += CharUtils.ValidatePasswordChar;
             passwordInput.onEndEdit.AddListener(OnEndEditPassword);
         }
         else
@@ -416,17 +416,6 @@ public class RoomLobbyUI : UIBase
             password = "";
             passwordInput.text = "";
         }
-    }
-
-    private char ValidatePasswordChar(string text, int charIndex, char addedChar)
-    {
-        if (text.Length >= passwordInput.characterLimit) return '\0';                           // 길이 제한
-        if (char.IsWhiteSpace(addedChar)) return '\0';                                          // 공백
-        if (addedChar >= 0xAC00 && addedChar <= 0xD7A3) return '\0';                            // 한글
-        if (char.IsSurrogate(addedChar)) return '\0';                                           // 이모지
-        if (!(char.IsLetterOrDigit(addedChar) || "!@#$%^&*".Contains(addedChar))) return '\0';  // 일부 특수문자
-
-        return addedChar;
     }
 
     private void OnEndEditPassword(string value)
