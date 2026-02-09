@@ -60,6 +60,11 @@ MonoBehaviour:
   - RPC_OnBurned
   - RPC_OnCooked
   - RPC_SetActive
+  - RPC_SyncProgress
+  - RPC_DropIngredient
+  - RPC_PickIngredient
+  - RPC_ThrowIngredient
+  - RPC_RequestCancel
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

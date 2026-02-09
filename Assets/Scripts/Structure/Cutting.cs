@@ -8,9 +8,6 @@ namespace Shurub
     {
         [SerializeField]
         private CutProcess processPrefab;
-
-        public override float Progress => progress; // 0~1
-        private float progress = 0f;
         public override InteractionKind Kind => InteractionKind.Process;
         protected override string StructureName => "Cutting";
         protected override bool IsInteractable => true;
@@ -64,39 +61,6 @@ namespace Shurub
             //다시 재료가 보이게 됨
             currPC.heldIngredient.SetActive(true);
             base.OnInteractionCanceled();
-        }
-        [PunRPC]
-        protected override void RPC_OnInteractionSuccess(int playerViewId)
-        {
-            base.RPC_OnInteractionSuccess(playerViewId);
-        }
-        [PunRPC]
-        protected override void RPC_OnInteractionCanceled(int playerViewId)
-        {
-            base.RPC_OnInteractionCanceled(playerViewId);
-        }
-        protected override void EndInteraction()
-        {
-            base.EndInteraction();
-            UpdateProgress(0f);
-        }
-        public override void UpdateProgress(float _progress)
-        {
-            if (!PhotonNetwork.IsMasterClient)
-                return;
-
-            progress = _progress;
-
-            photonView.RPC(
-                nameof(RPC_UpdateUI),
-                RpcTarget.All
-            );
-        }
-
-        [PunRPC]
-        protected void RPC_UpdateUI()
-        {
-            InteractionUI.Instance.UpdateUI(this);
         }
     }
 }

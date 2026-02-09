@@ -1,10 +1,7 @@
 ﻿using Photon.Pun;
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static Shurub.PlayerController;
-using static UnityEditor.Progress;
 
 
 namespace Shurub
@@ -18,8 +15,6 @@ namespace Shurub
         private Animator anim;
 
         //Interact Variable
-        public InteractionState interactionState = InteractionState.Idle;
-
         public float offsetDistance = 0.5f;
         public float castDistance = 0.1f;
 
@@ -28,15 +23,14 @@ namespace Shurub
         {
             Empty,          // 없음
             Holding,        // 들고 있음 (대기)
-            Charging        // 던지기 차징 중
         }
         public HoldState holdState = HoldState.Empty;
 
         public Transform holdPoint;
         public Ingredient heldIngredient;
 
-        private float chargeTimer;
         private bool isCharging;
+        private float chargeTimer;
 
         private const float throwPower = 30f;
         private const float throwChargeTime = 0.3f;
@@ -49,6 +43,10 @@ namespace Shurub
         public bool isWalking = false;
 
         public IInteractable currentInteractable;
+
+        [SerializeField]
+        private GameObject progressUIPrefab;
+        public ProgressUI progressUI = null;
 
         private void Awake()
         {
@@ -70,23 +68,22 @@ namespace Shurub
 
         private void Update()
         {
-            if (photonView.IsMine == false && PhotonNetwork.IsConnected == true) return;
+            if (!photonView.IsMine && PhotonNetwork.IsConnected)
+                return;
 
             if (isCharging)
             {
                 chargeTimer += Time.deltaTime;
-                if (heldIngredient != null)
+
+                if (chargeTimer >= throwChargeTime)
                 {
-                    if (chargeTimer >= throwChargeTime)
-                    {
-                        ThrowIngredient();
-                        StopCharging();
-                    }
+                    ThrowIngredient();   // RPC
+                    StopCharging();
                 }
             }
-            if (interactionState == InteractionState.InProgress)
+            if (isWalking && currentInteractable != null)
             {
-                currentInteractable.UpdateProcess(Time.deltaTime);
+                currentInteractable.RequestCancel(photonView.ViewID);
             }
 
             movement2D.MoveDirection = moveInput;
@@ -117,6 +114,13 @@ namespace Shurub
         {
 
         }
+        public void EnsureProcessUI()
+        {
+            if (progressUI != null)
+                return;
+
+            progressUI = Instantiate(progressUIPrefab, gameObject.transform).GetComponent<ProgressUI>();
+        }
 
         public void InitAnim()
         {
@@ -130,24 +134,17 @@ namespace Shurub
 
         public void OnInteract(InputAction.CallbackContext context) // K
         {
-            if (!context.performed)
-                return;
+            if (!context.performed) return;
+            if (!photonView.IsMine) return;
 
-            switch (interactionState)
+            if (currentInteractable == null)
             {
-                case InteractionState.Idle:
-                {
-                    currentInteractable = DetectInteractable();
-                    if (currentInteractable == null)
-                        return;
-                    currentInteractable.Interact(this);
-                    break;
-                }
-
-                case InteractionState.InProgress:
-                    // 진행 중 입력 처리
-                    currentInteractable.InteractProcess();
-                    break;
+                currentInteractable = DetectInteractable();
+                currentInteractable?.Interact(this);
+            }
+            else
+            {
+                currentInteractable.InteractProcess(photonView.ViewID);
             }
         }
         private IInteractable DetectInteractable()
@@ -173,25 +170,24 @@ namespace Shurub
 
         public void OnPickUpOrThrow(InputAction.CallbackContext context) // L
         {
+            if (!photonView.IsMine) return;
+
             if (context.started)
             {
-                switch (holdState)
+                if (holdState == HoldState.Empty)
                 {
-                    case HoldState.Empty:
-                        TryPickIngredient();
-                        break;
-
-                    case HoldState.Holding:
-                        StartCharging();
-                        break;
+                    TryPickIngredient();
+                }
+                else if (holdState == HoldState.Holding)
+                {
+                    StartCharging();
                 }
             }
             else if (context.canceled)
             {
-                if (holdState != HoldState.Charging)
+                if (!isCharging)
                     return;
 
-                // 아직 임계 시간 안 넘겼으면 드롭
                 if (chargeTimer < throwChargeTime)
                 {
                     DropIngredient();
@@ -202,19 +198,14 @@ namespace Shurub
         }
         void StartCharging()
         {
-            holdState = HoldState.Charging;
-            chargeTimer = 0f;
             isCharging = true;
+            chargeTimer = 0f;
         }
+
         void StopCharging()
         {
             isCharging = false;
             chargeTimer = 0f;
-
-            if (heldIngredient == null)
-                holdState = HoldState.Empty;
-            else
-                holdState = HoldState.Holding;
         }
 
         public void RemoveIngredient()
@@ -226,54 +217,99 @@ namespace Shurub
 
         void TryPickIngredient()
         {
+            if (holdState != HoldState.Empty)
+                return;
 
             Collider2D hit = Physics2D.OverlapCircle(
                 transform.position, 0.5f, LayerMask.GetMask("Ingredient"));
 
-            if (hit && hit.TryGetComponent(out Ingredient ingredient))
-            {
-                heldIngredient = ingredient;
+            if (!hit) return;
+            if (!hit.TryGetComponent(out Ingredient ingredient)) return;
 
-                if (!heldIngredient.photonView.IsMine)
-                    heldIngredient.photonView.RequestOwnership();
+            photonView.RPC(
+                nameof(RPC_PickIngredient),
+                RpcTarget.All,
+                ingredient.photonView.ViewID
+            );
+        }
+        [PunRPC]
+        void RPC_PickIngredient(int ingredientViewId)
+        {
+            PhotonView pv = PhotonView.Find(ingredientViewId);
+            if (!pv) return;
 
-                ingredient.photonView.RPC(
-                    "RPC_Pick",
-                    RpcTarget.All,
-                    photonView.ViewID
-                );
-                holdState = HoldState.Holding;
-            }
+            Ingredient ingredient = pv.GetComponent<Ingredient>();
+            if (!ingredient) return;
+
+            heldIngredient = ingredient;
+            holdState = HoldState.Holding;
+
+            // Ingredient 쪽 시각적 처리
+            ingredient.photonView.RPC(
+                nameof(Ingredient.RPC_Pick),
+                RpcTarget.All,
+                photonView.ViewID
+            );
         }
 
         void DropIngredient()
         {
-            if (!heldIngredient.photonView.IsMine)
-                heldIngredient.photonView.RequestOwnership();
+            if (holdState != HoldState.Holding || heldIngredient == null)
+                return;
 
-            heldIngredient.photonView.RPC(
-                "RPC_Drop",
+            photonView.RPC(
+                nameof(RPC_DropIngredient),
                 RpcTarget.All,
                 (Vector2)transform.position
             );
+        }
+        [PunRPC]
+        void RPC_DropIngredient(Vector2 dropPos)
+        {
+            if (heldIngredient == null)
+                return;
+
+            heldIngredient.photonView.RPC(
+                nameof(Ingredient.RPC_Drop),
+                RpcTarget.All,
+                dropPos
+            );
+
             heldIngredient = null;
             holdState = HoldState.Empty;
         }
 
         void ThrowIngredient()
         {
-            if (!heldIngredient.photonView.IsMine)
-                heldIngredient.photonView.RequestOwnership();
+            if (holdState != HoldState.Holding || heldIngredient == null)
+                return;
 
-            heldIngredient.photonView.RPC(
-                "RPC_Throw",
+            Vector2 dir = moveInput != Vector2.zero ? moveInput : moveLastInput;
+
+            photonView.RPC(
+                nameof(RPC_ThrowIngredient),
                 RpcTarget.All,
-                moveInput != Vector2.zero ? moveInput : moveLastInput, 
+                dir,
                 throwPower
             );
+        }
+        [PunRPC]
+        void RPC_ThrowIngredient(Vector2 dir, float power)
+        {
+            if (heldIngredient == null)
+                return;
+
+            heldIngredient.photonView.RPC(
+                nameof(Ingredient.RPC_Throw),
+                RpcTarget.All,
+                dir,
+                power
+            );
+
             heldIngredient = null;
             holdState = HoldState.Empty;
         }
+
     }
 
 }

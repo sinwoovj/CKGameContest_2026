@@ -8,7 +8,7 @@ namespace Shurub
     {
         [SerializeField]
         private BakeProcess processPrefab;
-        
+
         public override float Progress => progress; // 0~1
         private float progress = 0f;
         private const float PROCESS_INTERVAL = 1f;
@@ -94,29 +94,6 @@ namespace Shurub
         protected override void RPC_OnInteractionCanceled(int playerViewId)
         {
             base.RPC_OnInteractionCanceled(playerViewId);
-        }
-        protected override void EndInteraction()
-        {
-            base.EndInteraction();
-            UpdateProgress(0f);
-        }
-        public override void UpdateProgress(float _progress)
-        {
-            if (!PhotonNetwork.IsMasterClient)
-                return;
-
-            progress = _progress;
-
-            photonView.RPC(
-                nameof(RPC_UpdateUI),
-                RpcTarget.All
-            );
-        }
-
-        [PunRPC]
-        protected void RPC_UpdateUI()
-        {
-            InteractionUI.Instance.UpdateUI(this);
         }
     }
 }

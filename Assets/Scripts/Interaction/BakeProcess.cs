@@ -28,9 +28,8 @@ namespace Shurub
 
         }
 
-        public override void UpdateProcess(float deltaTime)
+        private void Update()
         {
-            base.UpdateProcess(deltaTime);
 
             //타이밍 맞게 입력( 데바데 발전기 시스템) (재료 당 3번의 기회를 줌)
         }
@@ -38,7 +37,7 @@ namespace Shurub
         // 입력 이벤트 수신
         public override void InteractProcess()
         {
-            if(CheckTiming())
+            if (CheckTiming())
             {
                 // 횟수 카운트 증가 및 검사
                 owner.UpdateProgress((float)++pressCount / PROCESS_MAX_COUNT);
@@ -53,7 +52,7 @@ namespace Shurub
             }
             else
             {
-                if(++failedCount >= PROCESS_FAIL_MAX_COUNT)
+                if (++failedCount >= PROCESS_FAIL_MAX_COUNT)
                 {
                     FailedProcess();
                 }

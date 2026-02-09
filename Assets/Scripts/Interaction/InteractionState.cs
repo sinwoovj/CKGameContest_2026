@@ -8,6 +8,6 @@ namespace Shurub
         InProgress,
         Success,
         Failed,
-        Cancelled
+        Canceled
     }
 }

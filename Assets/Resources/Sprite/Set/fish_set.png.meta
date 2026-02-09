@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 99b1500fceb0048428b3f28f837f4813
+guid: dc99c990f86866a43bc58e249fe6de56
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5472708214955781444
-    second: cutting board_0
+      213: 1720610977870203820
+    second: fish_set_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cutting board_0
+      name: fish_set_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 118
-        height: 75
+        width: 513
+        height: 406
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cb2d238cfd80d04b0800000000000000
-      internalID: -5472708214955781444
+      spriteID: cab47947196d0e710800000000000000
+      internalID: 1720610977870203820
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      cutting board_0: -5472708214955781444
+      fish_set_0: 1720610977870203820
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
