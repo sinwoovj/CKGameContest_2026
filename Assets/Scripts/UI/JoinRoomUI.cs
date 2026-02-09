@@ -20,8 +20,7 @@ public class JoinRoomUI : UIBase
 
     private string curSearchRoomStr = "";
 
-    private List<RoomInfo> cachedAvailableRooms;
-    private List<RoomInfo> privateAvailableRooms = new List<RoomInfo>();
+    private List<RoomInfo> cachedAvailableRooms = new List<RoomInfo>();
     private List<RoomInfoObj> roomInfoObjects = new List<RoomInfoObj>();
 
     protected override void Init()
@@ -37,6 +36,7 @@ public class JoinRoomUI : UIBase
     public override void Show()
     {
         base.Show();
+        OnUpdatedRoomList(cachedAvailableRooms);
         foreach (RoomInfoObj room in roomInfoObjects)
         {
             room.InfoToggle.isOn = false;
@@ -57,6 +57,11 @@ public class JoinRoomUI : UIBase
     public void OnUpdatedRoomList(List<RoomInfo> roomList)
     {
         cachedAvailableRooms = roomList;
+
+        if (!IsOpenned())
+        {
+            return;
+        }
 
         for (int i = 0; i < roomInfoObjects.Count; i++)
         {

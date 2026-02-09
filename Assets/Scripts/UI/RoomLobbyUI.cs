@@ -13,6 +13,11 @@ using UnityEngine.Events;
 
 public class RoomLobbyUI : UIBase
 {
+    //public override bool CheckDontDestroyOnLoad()
+    //{
+    //    return true;
+    //}
+
     [SerializeField] private TMP_Text roomNameText;
 
     [SerializeField] private Toggle readyToggle;
@@ -62,7 +67,6 @@ public class RoomLobbyUI : UIBase
             return;
         }
 
-        PhotonNetwork.AutomaticallySyncScene = false;
         if (PhotonNetwork.InRoom)
         {
             PhotonNetwork.LeaveRoom();
@@ -90,8 +94,6 @@ public class RoomLobbyUI : UIBase
 
     public override async void Show()
     {
-        PhotonNetwork.AutomaticallySyncScene = true;
-
         await Setup();
         base.Show();
     }

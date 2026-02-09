@@ -9,8 +9,12 @@ using UnityEngine.UI;
 
 public abstract class UIBase : MonoBehaviour
 {
+    //public virtual bool CheckDontDestroyOnLoad()
+    //{
+    //    return false;
+    //}
+
     protected CanvasGroup canvasGroup;
-    private bool isShowing = false;
 
     public virtual bool NeedConfirmWhenHide => false;
     protected virtual string ConfirmTitle => "확인";
@@ -24,7 +28,7 @@ public abstract class UIBase : MonoBehaviour
 
     private void Awake()
     {
-        CanvasSetup();
+        Prepare();
         AutoBind();
         AutoConnectButtons();
         Init();
@@ -37,15 +41,13 @@ public abstract class UIBase : MonoBehaviour
         {
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
-
-        isShowing = false;
-        Prepare();
     }
 
     protected abstract void Init();
 
     public void Prepare()
     {
+        CanvasSetup();
         gameObject.SetActive(true);
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
@@ -60,7 +62,6 @@ public abstract class UIBase : MonoBehaviour
         canvasGroup.alpha = 1f;
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
-        isShowing = true;
     }
 
     /// <summary>
@@ -71,7 +72,6 @@ public abstract class UIBase : MonoBehaviour
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
-        isShowing = false;
     }
 
     /// <summary>
@@ -96,7 +96,15 @@ public abstract class UIBase : MonoBehaviour
         });
     }
 
-    public bool IsOpenned() => isShowing;
+    public bool IsOpenned()
+    {
+        if (canvasGroup == null)
+        {
+            return false;
+        }
+
+        return canvasGroup.alpha > 0.999f && canvasGroup.isActiveAndEnabled;
+    }
 
     /// <summary>
     /// [SerializeField]로 선언된 필드에 대해 자동으로 할당합니다.

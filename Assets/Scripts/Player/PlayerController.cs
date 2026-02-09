@@ -1,26 +1,27 @@
-using Photon.Pun;
+ï»¿using Photon.Pun;
+using Photon.Pun.Demo.PunBasics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static UnityEditor.Progress;
 
 
 namespace Shurub
 {
     public class PlayerController : MonoBehaviourPun
     {
-        static public PlayerController Instance;
         [HideInInspector]
         public PlayerInput playerInput;
         private Movement2D movement2D;
         private Animator anim;
 
+        private PlayerManager playerManager;
+
         //PickUpOrThrow Variable
         enum HoldState
         {
-            Empty,          // ¾øÀ½
-            Holding,        // µé°í ÀÖÀ½ (´ë±â)
-            Charging        // ´øÁö±â Â÷Â¡ Áß
+            Empty,          // ì—†ìŒ
+            Holding,        // ë“¤ê³  ìˆìŒ (ëŒ€ê¸°)
+            Charging        // ë˜ì§€ê¸° ì°¨ì§• ì¤‘
         } 
         HoldState holdState = HoldState.Empty;
 
@@ -47,13 +48,9 @@ namespace Shurub
                 playerInput.enabled = false;
             }
 
+            playerManager = GetComponent<PlayerManager>();
             movement2D = GetComponent<Movement2D>();
             anim = GetComponent<Animator>();
-        }
-
-        private void Start()
-        {
-            Instance = this;
         }
 
         private void Update()
@@ -93,7 +90,7 @@ namespace Shurub
 
         public void OnInteract(InputAction.CallbackContext context) // J
         {
-            PlayerManager.Instance.isIntreact = context.canceled ? false : true;
+            playerManager.isIntreact = context.canceled ? false : true;
         }
 
         public void OnPickUpOrThrow(InputAction.CallbackContext context) // K
@@ -116,7 +113,7 @@ namespace Shurub
                 if (holdState != HoldState.Charging)
                     return;
 
-                // ¾ÆÁ÷ ÀÓ°è ½Ã°£ ¾È ³Ñ°åÀ¸¸é µå·Ó
+                // ì•„ì§ ì„ê³„ ì‹œê°„ ì•ˆ ë„˜ê²¼ìœ¼ë©´ ë“œë¡­
                 if (chargeTimer < throwChargeTime)
                 {
                     DropIngredient();

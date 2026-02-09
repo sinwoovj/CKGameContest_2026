@@ -42,7 +42,7 @@ namespace Shurub
         {
             IsPaused = !IsPaused;
             pausePanel.SetActive(IsPaused);
-            PlayerController.Instance.playerInput.enabled = !IsPaused;
+            GameManager.Instance.LocalPlayer.GetComponent<PlayerController>().playerInput.enabled = !IsPaused;
         }
 
         public void OpenPausePanel()
@@ -51,7 +51,7 @@ namespace Shurub
             {
                 IsPaused = true;
                 pausePanel.SetActive(IsPaused);
-                PlayerController.Instance.playerInput.enabled = !IsPaused;
+                GameManager.Instance.LocalPlayer.GetComponent<PlayerController>().playerInput.enabled = !IsPaused;
             }
         }
 
@@ -61,7 +61,7 @@ namespace Shurub
             {
                 IsPaused = false;
                 pausePanel.SetActive(IsPaused);
-                PlayerController.Instance.playerInput.enabled = !IsPaused;
+                GameManager.Instance.LocalPlayer.GetComponent<PlayerController>().playerInput.enabled = !IsPaused;
             }
         }
 

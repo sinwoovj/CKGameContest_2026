@@ -1,3 +1,4 @@
+﻿using Cysharp.Threading.Tasks;
 using Photon.Pun;
 using Photon.Pun.Demo.PunBasics;
 using System.Collections.Generic;
@@ -5,25 +6,24 @@ using UnityEngine;
 
 namespace Shurub
 {
-    public class PlayerSpawner : MonoBehaviourPunCallbacks
+    public class PlayerSpawner : Singleton<PlayerSpawner>
     {
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private List<GameObject> playerSpawnPointObject;
 
-        static public PlayerSpawner Instance;
+        private bool isSpawned = false;
+
+        protected override bool CheckDontDestroyOnLoad()
+        {
+            return false;
+        }
 
         private void Start()
         {
-            Instance = this;
             TrySpawnPlayer();
         }
 
-        public override void OnJoinedRoom()
-        {
-            TrySpawnPlayer();
-        }
-
-        public void TrySpawnPlayer()
+        private void TrySpawnPlayer()
         {
             if (!PhotonNetwork.InRoom)
                 return;
@@ -46,12 +46,22 @@ namespace Shurub
             );
 
             PhotonNetwork.LocalPlayer.TagObject = player;
+            GameManager.Instance.RegisterPlayer(player.GetComponent<Player>());
+
+            isSpawned = true;
         }
 
         public void ReSpawnPlayer()
         {
+            ProcessRespawnPlayer().Forget();
+        }
+
+        private async UniTaskVoid ProcessRespawnPlayer()
+        {
             if (!PhotonNetwork.InRoom)
                 return;
+
+            await UniTask.WaitUntil(() => isSpawned, cancellationToken: this.GetCancellationTokenOnDestroy());
 
             int myPNum = 0;
 
@@ -64,8 +74,8 @@ namespace Shurub
             {
                 Debug.LogError("pNum could not load");
             }
-            
-            PlayerManager.LocalPlayerInstance.transform.position = playerSpawnPointObject[myPNum].transform.position;
+
+            GameManager.Instance.LocalPlayer.transform.position = playerSpawnPointObject[myPNum].transform.position;
         }
     }
 }

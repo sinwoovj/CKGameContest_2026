@@ -17,6 +17,8 @@ namespace Shurub
         [SerializeField] private Button cancelButton;
         [SerializeField] private Toggle showPasswordToggle;
 
+        private bool isJoining = false;
+
         protected override void Init()
         {
             UIManager.Instance.RegisterUI(this);
@@ -37,6 +39,7 @@ namespace Shurub
         public void Setup(RoomInfo room)
         {
             targetRoom = room;
+            isJoining = false;
             roomNameText.text = targetRoom.Name;
         }
 
@@ -49,7 +52,7 @@ namespace Shurub
 
         private void OnClickJoinButton()
         {
-            if (targetRoom == null || string.IsNullOrEmpty(passwordInput.text))
+            if (isJoining || targetRoom == null || string.IsNullOrEmpty(passwordInput.text))
             {
                 return;
             }
@@ -58,6 +61,7 @@ namespace Shurub
             {
                 if (passwordInput.text == (string)pw)
                 {
+                    isJoining = true;
                     PhotonNetwork.JoinRoom(targetRoom.Name, null);
                 }
                 else

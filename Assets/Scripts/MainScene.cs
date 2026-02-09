@@ -9,9 +9,9 @@ using UnityEngine.UI;
 
 public class MainScene : MonoBehaviour
 {
-    private void Start()
-    {
-        UIManager.Instance.ClearAllUIs();
-        UIManager.Instance.ShowUI<TitleUI>();
-    }
+    //private void Start()
+    //{
+    //    UIManager.Instance.ClearAllUis();
+    //    UIManager.Instance.ShowUI<TitleUI>();
+    //}
 }

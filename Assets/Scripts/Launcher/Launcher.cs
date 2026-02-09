@@ -1,4 +1,4 @@
- using UnityEngine;
+﻿ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using System;
@@ -100,7 +100,7 @@ namespace Shurub
 
                 // #Critical
                 // Load the Room Level.
-                PhotonNetwork.LoadLevel("InGame");
+                SceneManager.Instance.LoadLevel("InGame");
             }
         }
 

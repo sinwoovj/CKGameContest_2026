@@ -7,22 +7,37 @@ using System.Collections.Generic;
 using Photon.Pun.Demo.PunBasics;
 using Cysharp.Threading.Tasks;
 using Photon.Pun;
+using static GameConstants;
 
 namespace Shurub
 {
     public class UIManager : Singleton<UIManager>
     {
+        //[SerializeField] private Canvas canvasDDO;
+
         public bool IsInterrupted { get; private set; }
 
         private bool isControlCool = false;
 
-
         private Dictionary<Type, UIBase> uis = new Dictionary<Type, UIBase>();
         private Stack<UIBase> uiStack = new Stack<UIBase>();
 
-        public void ClearAllUIs()
+        //protected override void OnAwake()
+        //{
+        //    DontDestroyOnLoad(canvasDDO.gameObject);
+        //}
+
+        public void ClearAllUis()
         {
-            uiStack.Clear();
+            print(uiStack.Count);
+            while (uiStack.Count > 0)
+            {
+                UIBase ui = uiStack.Pop();
+                if (ui.IsOpenned())
+                {
+                    ui.Hide();
+                }
+            }
         }
 
         private void Update()
@@ -44,6 +59,13 @@ namespace Shurub
         public void RegisterUI<T>(T ui) where T : UIBase
         {
             uis[typeof(T)] = ui;
+
+            //if (ui.CheckDontDestroyOnLoad())
+            //{
+            //    DontDestroyOnLoad(ui.gameObject);
+            //    ui.GetComponent<RectTransform>().position = Vector3.zero;
+            //    ui.transform.SetParent(canvasDDO.transform);
+            //}
         }
 
         public T GetUI<T>() where T : UIBase
