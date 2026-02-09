@@ -164,6 +164,7 @@ MonoBehaviour:
   moveDir: {x: 0, y: -1}
   isWalking: 0
   progressUIPrefab: {fileID: 5078066084531250378, guid: ec837823ce241154988b296f31bed7d9, type: 3}
+  progressUI: {fileID: 0}
 --- !u!114 &499160806948557619
 MonoBehaviour:
   m_ObjectHideFlags: 0
