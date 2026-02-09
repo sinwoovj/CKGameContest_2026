@@ -104,13 +104,33 @@ namespace Shurub
             anim.SetFloat("InputX", moveInput.x);
             anim.SetFloat("InputY", moveInput.y);
             if(holdState == HoldState.Holding)
-                UpdateIngredientPosition(moveDir);
+                UpdateIngredient(moveDir);
         }
 
-        private void UpdateIngredientPosition(Vector2 moveDir)
+        private void UpdateIngredient(Vector2 moveDir)
         {
-
+            float x = moveDir.x;
+            float y = moveDir.y;
+            float newX = Mathf.Abs(x);
+            if(newX == 0)
+            {
+                newX = 0;
+            }
+            else if(newX < 1)
+            {
+                newX = 0.17f;
+            }
+            else
+            {
+                newX = 0.34f;
+            }
+            newX *= x < 0 ? -1 : 1;
+            Vector3 newPos = new Vector3(newX, -0.25f, 0);
+            newPos += transform.position;
+            heldIngredient.ChangeTransform(newPos);
+            heldIngredient.ChangeSpriteSortingOrder(y <= 0 ? 2 : 0);
         }
+
         public void EnsureProcessUI()
         {
             if (progressUI != null)

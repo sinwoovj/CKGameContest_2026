@@ -100,7 +100,33 @@ namespace Shurub
             // 스프라이트 바꿔주는 코드
             this.GetComponent<SpriteRenderer>().sprite = sprites[(int)state];
         }
-
+        public void ChangeTransform(Vector3 pos)
+        {
+            transform.position = pos;
+            photonView.RPC(
+                nameof(RPC_ChangeTransform),
+                RpcTarget.All,
+                pos
+            );
+        }
+        [PunRPC]
+        protected void RPC_ChangeTransform(Vector3 pos)
+        {
+            transform.position = pos;
+        }
+        public void ChangeSpriteSortingOrder(int order)
+        {
+            photonView.RPC(
+                nameof(RPC_ChangeSpriteSortingLayer),
+                RpcTarget.All,
+                order
+            );
+        }
+        [PunRPC]
+        protected void RPC_ChangeSpriteSortingLayer(int order)
+        {
+            this.GetComponent<SpriteRenderer>().sortingOrder = order;
+        }
         public virtual void SetActive(bool val)
         {
             photonView.RPC(
