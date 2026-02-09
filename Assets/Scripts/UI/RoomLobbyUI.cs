@@ -388,6 +388,11 @@ public class RoomLobbyUI : UIBase
 
     private void OnClickDifficultyPlusButton()
     {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
+
         if ((int)curDifficulty == Enum.GetValues(typeof(GameDifficulty)).Length - 2)
         {
             return;
@@ -399,6 +404,11 @@ public class RoomLobbyUI : UIBase
 
     private void OnClickDifficultyMinusButton()
     {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
+
         if (curDifficulty == 0)
         {
             return;
