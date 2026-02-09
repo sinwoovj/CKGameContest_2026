@@ -16,9 +16,11 @@ public class JoinRoomUI : UIBase
     [SerializeField] private ToggleGroup roomListToggleGroup;
     [SerializeField] private RoomInfoObj roomInfoPrefab;
 
+    [SerializeField] private Toggle privateCheckToggle;
+
     private string curSearchRoomStr = "";
 
-    private List<RoomInfo> cachedAvailableRooms;
+    private List<RoomInfo> cachedAvailableRooms = new List<RoomInfo>();
     private List<RoomInfoObj> roomInfoObjects = new List<RoomInfoObj>();
 
     protected override void Init()
@@ -27,11 +29,14 @@ public class JoinRoomUI : UIBase
 
         searchRoomInput.onValueChanged.RemoveAllListeners();
         searchRoomInput.onValueChanged.AddListener(OnValueChangedSearchRoomInput);
+        privateCheckToggle.onValueChanged.RemoveAllListeners();
+        privateCheckToggle.onValueChanged.AddListener(OnValueChangedPrivateCheckToggle);
     }
 
     public override void Show()
     {
         base.Show();
+        OnUpdatedRoomList(cachedAvailableRooms);
         foreach (RoomInfoObj room in roomInfoObjects)
         {
             room.InfoToggle.isOn = false;
@@ -53,6 +58,11 @@ public class JoinRoomUI : UIBase
     {
         cachedAvailableRooms = roomList;
 
+        if (!IsOpenned())
+        {
+            return;
+        }
+
         for (int i = 0; i < roomInfoObjects.Count; i++)
         {
             roomInfoObjects[i].gameObject.SetActive(false);
@@ -69,6 +79,11 @@ public class JoinRoomUI : UIBase
         for (int i = 0; i < roomList.Count; i++)
         {
             RoomInfo room = roomList[i];
+            if (!privateCheckToggle.isOn && (bool)room.CustomProperties.Get(GameConstants.Network.ROOM_PRIVATE_KEY, false))
+            {
+                continue;
+            }
+
             if (room.Name.Contains(curSearchRoomStr))
             {
                 RoomInfoObj roomObj = roomInfoObjects[i];
@@ -76,5 +91,10 @@ public class JoinRoomUI : UIBase
                 roomObj.Init(room);
             }
         }
+    }
+
+    private void OnValueChangedPrivateCheckToggle(bool isOn)
+    {
+        OnUpdatedRoomList(cachedAvailableRooms);
     }
 }

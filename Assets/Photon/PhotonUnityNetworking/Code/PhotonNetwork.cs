@@ -1,4 +1,4 @@
-// ----------------------------------------------------------------------------
+﻿// ----------------------------------------------------------------------------
 // <copyright file="PhotonNetwork.cs" company="Exit Games GmbH">
 //   PhotonNetwork Framework for Unity - Copyright (C) 2018 Exit Games GmbH
 // </copyright>
@@ -3108,6 +3108,25 @@ namespace Photon.Pun
             PhotonNetwork.IsMessageQueueRunning = false;
             loadingLevelAndPausedNetwork = true;
             _AsyncLevelLoadingOperation = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Single);
+        }
+
+        public static AsyncOperation LoadLevelAsync(string levelName)
+        {
+            if (PhotonHandler.AppQuits)
+            {
+                return null;
+            }
+
+            if (PhotonNetwork.AutomaticallySyncScene)
+            {
+                SetLevelInPropsIfSynced(levelName);
+            }
+
+            PhotonNetwork.IsMessageQueueRunning = false;
+            loadingLevelAndPausedNetwork = true;
+            _AsyncLevelLoadingOperation = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Single);
+
+            return _AsyncLevelLoadingOperation;
         }
 
         /// <summary>

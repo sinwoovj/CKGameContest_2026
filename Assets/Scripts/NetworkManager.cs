@@ -14,11 +14,13 @@ namespace Shurub
     {
         public bool IsConnecting { get; private set; }
 
-        public GameState CurrentRoomState { get; private set; } = GameState.Lobby;
+        public GameState CurrentRoomState { get; set; }
+        public GameDifficulty CurrentRoomDifficulty { get; private set; }
 
         private Dictionary<string, RoomInfo> availableRooms = new Dictionary<string, RoomInfo>();
 
-        protected override void OnAwake()
+        [RuntimeInitializeOnLoadMethod]
+        static void InitilizedOnLoaded()
         {
             PhotonNetwork.AutomaticallySyncScene = false;
             PhotonNetwork.IsMessageQueueRunning = true;
@@ -27,7 +29,10 @@ namespace Shurub
             PhotonNetwork.SerializationRate = 60;
             PhotonNetwork.NickName = Guid.NewGuid().ToString()[..4];
 
-            Connect();
+            UIManager.Instance.ClearAllUis();
+            UIManager.Instance.ShowUI<TitleUI>();
+
+            Instance.Connect();
         }
 
         public override void OnConnectedToMaster()
@@ -162,7 +167,7 @@ namespace Shurub
                 if (CurrentRoomState != newState)
                 {
                     CurrentRoomState = newState;
-                    if (GameManager.Instance != null)
+                    if (GameManager.HasInstance)
                     {
                         GameManager.Instance.OnGameStateChanged(CurrentRoomState);
                     }
@@ -174,8 +179,7 @@ namespace Shurub
                     PhotonNetwork.CurrentRoom.IsVisible = false;
 
                     UIManager.Instance.HideUI<RoomLobbyUI>(force: true);
-                    PhotonNetwork.LoadLevel("InGame");
-                    SetGameState(GameState.Loading);
+                    SceneManager.Instance.LoadLevel("InGame");
                 }
 
                 if (newState == GameState.Lobby)
@@ -183,6 +187,11 @@ namespace Shurub
                     PhotonNetwork.CurrentRoom.IsOpen = true;
                     PhotonNetwork.CurrentRoom.IsVisible = true;
                 }
+            }
+
+            if (properties.TryGetValue(GameConstants.Network.GAME_DIFFICULTY_KEY, out object difficulty))
+            {
+                CurrentRoomDifficulty = (GameDifficulty)(int)difficulty;
             }
 
             if (properties.TryGetValue(GameConstants.Network.GAME_HP_KEY, out object hp))
@@ -279,9 +288,9 @@ namespace Shurub
             }
 
             target.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
-        {
-            { GameConstants.Network.PLAYER_STATUS_KEY, (int)status }
-        });
+            {
+                { GameConstants.Network.PLAYER_STATUS_KEY, (int)status }
+            });
         }
 
         public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
@@ -295,18 +304,18 @@ namespace Shurub
 
                 if (targetPlayer == PhotonNetwork.LocalPlayer)
                 {
-                    if (PlayerManager.LocalPlayerInstance != null && PlayerSpawner.Instance != null)
+                    if (GameManager.HasInstance && PlayerSpawner.HasInstance)
                     {
                         int myPNum;
                         if (changedProps.TryGetValue(GameConstants.Network.PLAYER_NUMBER_KEY, out object value))
                         {
                             myPNum = (int)value;
                             Debug.Log("MyPNum updated: " + myPNum);
-                            if (!PlayerManager.LocalPlayerInstance.GetComponent<Player>().isSpawned)
-                            {
-                                PlayerSpawner.Instance.ReSpawnPlayer();
-                                PlayerManager.LocalPlayerInstance.GetComponent<Player>().isSpawned = true;
-                            }
+                            //if (!GameManager.Instance.LocalPlayer.isSpawned)
+                            //{
+                            //    PlayerSpawner.Instance.ReSpawnPlayer();
+                            //    GameManager.Instance.LocalPlayer.isSpawned = true;
+                            //}
                         }
                     }
 

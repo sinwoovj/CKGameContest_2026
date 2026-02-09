@@ -13,7 +13,10 @@ public static class GameConstants
         public const int ROOM_LOBBY_UPDATE_DELAY = 500; // milliseconds
 
         // Room Property Keys
-        public const string ROOM_TIME_LIMIT_KEY = "tl";
+        //public const string ROOM_TIME_LIMIT_KEY = "tl";
+        public const string ROOM_PASSWORD_KEY = "pw";
+        public const string ROOM_PRIVATE_KEY = "pvr";
+        public const string GAME_DIFFICULTY_KEY = "df";
         public const string GAME_STATE_KEY = "state";
         public const string GAME_HP_KEY = "gHp";
         public const string GAME_PLAYTIME_KEY = "pT";

@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 
@@ -17,12 +17,12 @@ namespace Shurub
 
         void OnEnable()
         {
-            SceneManager.sceneLoaded += OnSceneLoaded;
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
         void OnDisable()
         {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
         void Start()
@@ -46,7 +46,7 @@ namespace Shurub
             if (!photonView.IsMine)
                 return;
 
-            // ¾À ¹Ù²ð ¶§¸¶´Ù ´Ù½Ã ¿¬°á
+            // ì”¬ ë°”ë€” ë•Œë§ˆë‹¤ ë‹¤ì‹œ ì—°ê²°
             TryStartFollowing();
         }
 

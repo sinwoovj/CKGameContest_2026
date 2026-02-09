@@ -8,7 +8,6 @@ namespace Shurub
 {
     public class PlayerController : MonoBehaviourPun
     {
-        static public PlayerController Instance;
         [HideInInspector]
         public PlayerInput playerInput;
         private Movement2D movement2D;
@@ -17,6 +16,8 @@ namespace Shurub
         //Interact Variable
         public float offsetDistance = 0.5f;
         public float castDistance = 0.1f;
+
+        private PlayerManager playerManager;
 
         //PickUpOrThrow Variable
         public enum HoldState
@@ -57,13 +58,9 @@ namespace Shurub
                 playerInput.enabled = false;
             }
 
+            playerManager = GetComponent<PlayerManager>();
             movement2D = GetComponent<Movement2D>();
             anim = GetComponent<Animator>();
-        }
-
-        private void Start()
-        {
-            Instance = this;
         }
 
         private void Update()

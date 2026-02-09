@@ -18,9 +18,25 @@ namespace Shurub
             return false;
         }
 
+        private List<Player> players = new List<Player>();
+
+        private Player localPlayer = null;
+        public Player LocalPlayer
+        {
+            get
+            {
+                if (localPlayer == null)
+                {
+                    localPlayer = GetLocalPlayer();
+                }
+
+                return localPlayer;
+            }
+        }
+
         // Room Properties
-        public float maxHp;
-        public float currentHp;
+        public float maxHp = 100f;
+        public float currentHp = 0f;
         public float playTime = 0f;
 
         // Logic of Hp Decrease
@@ -31,11 +47,11 @@ namespace Shurub
 
         // Monohaviour Functions
 
-        //void Start()
-        //{
-            
-        //    //로비에서부터 준비 시작-> 로딩 -> 레디 -> 이후 플레잉으로 진행, 하지만 지금은 생략
-        //}
+        void Start()
+        {
+            //로비에서부터 준비 시작-> 로딩 -> 레디 -> 이후 플레잉으로 진행, 하지만 지금은 생략
+            NetworkManager.Instance.SetGameState(GameState.Loading);
+        }
 
         private void Update()
         {
@@ -57,11 +73,43 @@ namespace Shurub
             }
         }
 
+        public List<Player> GetAllPlayers() => players;
+
+        public void RegisterPlayer(Player newPlayer)
+        {
+            if (players.Contains(newPlayer))
+            {
+                return;
+            }
+
+            players.Add(newPlayer);
+        }
+
+        public void UnregisterPlayer(Player removedPlayer)
+        {
+            players.Remove(removedPlayer);
+        }
+
+        public Player GetLocalPlayer()
+        {
+            Player local = null;
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i].GetComponent<PlayerManager>().photonView.IsMine)
+                {
+                    local = players[i];
+                    break;
+                }
+            }
+
+            return local;
+        }
+
         // Private Functions
 
         private void SetPlayerInput(bool val)
         {
-            PlayerManager.LocalPlayerInstance.GetComponent<PlayerInput>().enabled = val;
+            LocalPlayer.GetComponent<PlayerInput>().enabled = val;
         }
 
         private void OpenResultUI()
@@ -89,6 +137,7 @@ namespace Shurub
                 case GameState.Ready:
                     //카운트 다운
                     GUIManager.Instance.CountDownUI();
+                    NetworkManager.Instance.SetGameState(GameState.Playing);
                     break;
                 case GameState.Playing:
                     SetPlayerInput(true);
@@ -102,15 +151,14 @@ namespace Shurub
                     break;
             }
         }
-
-        public void GameInit()
+        void GameInit()
         {
             PlayerSpawner.Instance.ReSpawnPlayer();
             SetHP(maxHp);
             playTime = 0f;
             SetPlayTime(playTime);
             CloseResultUI();
-            PlayerManager.LocalPlayerInstance.GetComponent<PlayerController>().InitAnim();
+            LocalPlayer.GetComponent<Animator>().SetTrigger("Default");
             IngredientManager.Instance.ClearIngredient();
             TestManager.Instance.InstantiateTest();
         }
@@ -213,8 +261,15 @@ namespace Shurub
 
         public void GoToMain()
         {
+            //NetworkManager.Instance.SetGameState(GameState.Lobby);
+            NetworkManager.Instance.CurrentRoomState = GameState.Lobby;
             PhotonNetwork.LeaveRoom();
-            SceneManager.LoadScene(GameConstants.Scene.MAIN_SCENE_NAME);
+            UIManager.Instance.ClearAllUis();
+
+            SceneManager.Instance.LoadScene(GameConstants.Scene.MAIN_SCENE_NAME, (scene, mode) =>
+            {
+                UIManager.Instance.ShowUI<TitleUI>();
+            });
         }
     }
 }
