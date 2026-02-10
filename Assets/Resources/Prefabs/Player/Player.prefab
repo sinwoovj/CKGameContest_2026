@@ -163,8 +163,9 @@ MonoBehaviour:
   moveInput: {x: 0, y: 0}
   moveDir: {x: 0, y: -1}
   isWalking: 0
-  progressUIPrefab: {fileID: 5078066084531250378, guid: ec837823ce241154988b296f31bed7d9, type: 3}
+  progressUIPrefab: {fileID: 4126666739965337986, guid: 041ac653d3b935b46891e981c43399cb, type: 3}
   progressUI: {fileID: 0}
+  isProgressUI: 0
 --- !u!114 &499160806948557619
 MonoBehaviour:
   m_ObjectHideFlags: 0

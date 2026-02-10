@@ -48,6 +48,7 @@ namespace Shurub
         [SerializeField]
         private GameObject progressUIPrefab;
         public ProgressUI progressUI = null;
+        public bool isProgressUI = false;
 
         private void Awake()
         {
@@ -133,10 +134,10 @@ namespace Shurub
 
         public void EnsureProcessUI()
         {
-            if (progressUI != null)
-                return;
-
-            progressUI = Instantiate(progressUIPrefab, gameObject.transform).GetComponent<ProgressUI>();
+            if (isProgressUI) return;
+            isProgressUI = true;
+            progressUI = Instantiate(progressUIPrefab, GameObject.Find("UIRoot").transform).GetComponent<ProgressUI>();
+            progressUI.Bind(transform);
         }
 
         public void InitAnim()
@@ -188,7 +189,7 @@ namespace Shurub
         public void OnPickUpOrThrow(InputAction.CallbackContext context) // L
         {
             if (!photonView.IsMine) return;
-
+            if (currentInteractable != null) return;
             if (context.started)
             {
                 if (holdState == HoldState.Empty)

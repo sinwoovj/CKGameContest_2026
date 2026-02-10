@@ -15,7 +15,6 @@ namespace Shurub
         public InteractionState state = InteractionState.Idle;
         protected int currentPlayerViewId;
         protected InteractionProcess currentProcess;
-        protected PlayerController currPC;
 
         // Reference Components
         protected Rigidbody2D rb;
@@ -73,8 +72,6 @@ namespace Shurub
 
             currentPlayerViewId = playerViewId;
 
-            currPC = PhotonView.Find(playerViewId).GetComponent<PlayerController>();
-
             // 조건 확인
             PlayerController player = playerView.GetComponent<PlayerController>();
             if (!CanInteract())
@@ -99,8 +96,6 @@ namespace Shurub
                 return;
 
             currentPlayerViewId = playerViewId;
-
-            currPC = PhotonView.Find(playerViewId).GetComponent<PlayerController>();
 
             if (currentProcess != null || state != InteractionState.Idle)
             {
@@ -142,7 +137,7 @@ namespace Shurub
 
             if (currentPlayerViewId != playerViewId)
                 return; // 다른 사람이 실행 못 함
-            
+
             currentProcess.InteractProcess();
         }
         public void RequestCancel(int playerViewId)
@@ -168,27 +163,24 @@ namespace Shurub
         {
             currentProcess = null;
         }
-        public void UpdateProgress(float _progress)
+        public void UpdateProgress(float _progress, bool active)
         {
             if (!PhotonNetwork.IsMasterClient)
                 return;
 
-            progress = _progress;
-
             photonView.RPC(
-                nameof(RPC_SyncState),
+                nameof(RPC_UpdateProgress),
                 RpcTarget.All,
                 currentPlayerViewId,
-                Progress,
-                (int)state,
-                photonView.ViewID
+                _progress,
+                photonView.ViewID,
+                active
             );
         }
         [PunRPC]
-        protected void RPC_SyncState(int playerViewId, float progress, int newState, int structureViewId)
+        protected void RPC_UpdateProgress(int playerViewId, float _progress, int structureViewId, bool active)
         {
-            state = (InteractionState)newState;
-
+            progress = _progress;
             PlayerController pc = PhotonView.Find(playerViewId)
                                             ?.GetComponent<PlayerController>();
             if (pc == null) return;
@@ -200,7 +192,12 @@ namespace Shurub
                       ?.GetComponent<IInteractable>();
             pc.EnsureProcessUI();   // 있으면 패스, 없으면 생성
             pc.progressUI.SetProgress(progress);
-            pc.progressUI.SetActive(state == InteractionState.InProgress);
+            pc.progressUI.SetActive(active);
+        }
+        [PunRPC]
+        protected void RPC_SyncState(int newState)
+        {
+            state = (InteractionState)newState;
         }
         protected virtual void OnInteractionStart(int playerViewId) // 애니메이션·이펙트 전환용 함수
         {
@@ -208,11 +205,9 @@ namespace Shurub
             photonView.RPC(
                 nameof(RPC_SyncState),
                 RpcTarget.All,
-                currentPlayerViewId,
-                Progress,
-                (int)InteractionState.InProgress,
-                photonView.ViewID
+                (int)InteractionState.InProgress
             );
+            UpdateProgress(0f, true);
         }
         public virtual void OnInteractionSuccess()
         {
@@ -267,13 +262,22 @@ namespace Shurub
             photonView.RPC(
                 nameof(RPC_SyncState),
                 RpcTarget.All,
-                currentPlayerViewId,
-                Progress,
-                (int)InteractionState.Idle,
-                photonView.ViewID
+                (int)InteractionState.Idle
             );
+            UpdateProgress(0, false);
+            photonView.RPC(
+                nameof(RPC_EndInteraction),
+                RpcTarget.All,
+                currentPlayerViewId
+            );
+        }
+        [PunRPC]
+        protected virtual void RPC_EndInteraction(int playerViewId)
+        {
+            PlayerController pc = PhotonView.Find(playerViewId)
+                                            ?.GetComponent<PlayerController>();
+            pc.currentInteractable = null;
             currentPlayerViewId = 0;
-            currPC = null;
         }
     }
 }

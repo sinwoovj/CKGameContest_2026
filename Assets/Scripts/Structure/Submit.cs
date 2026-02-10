@@ -11,7 +11,9 @@ namespace Shurub
         protected override bool IsInteractable => true;
         protected override bool CanInteract()
         {
-            if (currPC.heldIngredient == null) //음식이 담긴 접시를 들고있는가?
+            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+                                            ?.GetComponent<PlayerController>();
+            if (pc.heldIngredient == null) //음식이 담긴 접시를 들고있는가?
             {
                 //빈 손임
                 Debug.Log("빈 손임");

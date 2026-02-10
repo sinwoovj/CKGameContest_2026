@@ -4,13 +4,23 @@ using UnityEngine.UI;
 
 namespace Shurub
 {
-    public class ProgressUI : Singleton<ProgressUI>
+    public class ProgressUI : MonoBehaviour
     {
-        [SerializeField] private Slider progressBar;
+        Transform target; // 플레이어
 
+        public void Bind(Transform targetTransform)
+        {
+            target = targetTransform;
+        }
+
+        void LateUpdate()
+        {
+            if (target == null) return;
+            transform.position = target.position + Vector3.up;
+        }
         public void SetProgress(float value)
         {
-            progressBar.value = value;
+            gameObject.GetComponent<Slider>().value = value;
         }
         public void SetActive(bool value)
         {

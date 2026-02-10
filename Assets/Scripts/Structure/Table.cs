@@ -13,7 +13,9 @@ namespace Shurub
         public enum TableState { Blank, Ingredient, Dish }
         protected override bool CanInteract()
         {
-            if (currPC.heldIngredient != null) //재료나 접시를 들고있는가?
+            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+                                            ?.GetComponent<PlayerController>();
+            if (pc.heldIngredient != null) //재료나 접시를 들고있는가?
             {
                 //빈 손이 아님
                 Debug.Log("빈 손이 아님");

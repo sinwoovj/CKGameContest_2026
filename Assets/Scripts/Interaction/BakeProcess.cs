@@ -21,7 +21,7 @@ namespace Shurub
             base.StartProcess(playerViewId, structure);
             pressCount = 0;
             failedCount = 0;
-            owner.UpdateProgress(0);
+            owner.UpdateProgress(0, true);
         }
         private void InitProcess()
         {
@@ -40,7 +40,7 @@ namespace Shurub
             if (CheckTiming())
             {
                 // 횟수 카운트 증가 및 검사
-                owner.UpdateProgress((float)++pressCount / PROCESS_MAX_COUNT);
+                owner.UpdateProgress((float)++pressCount / PROCESS_MAX_COUNT, true);
                 if (pressCount >= PROCESS_MAX_COUNT)
                 {
                     SuccessProcess();

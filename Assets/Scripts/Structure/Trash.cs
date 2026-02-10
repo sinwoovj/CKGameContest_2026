@@ -11,7 +11,9 @@ namespace Shurub
         protected override bool IsInteractable => true;
         protected override bool CanInteract()
         {
-            if (currPC.heldIngredient == null) //재료를 들고있는가?
+            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+                                            ?.GetComponent<PlayerController>();
+            if (pc.heldIngredient == null) //재료를 들고있는가?
             {
                 //재료를 들고 있지 않음
                 Debug.Log("재료를 들고 있지 않음");
@@ -21,7 +23,9 @@ namespace Shurub
         }
         protected override void InstantInteract()
         {
-            currPC.RemoveIngredient();
+            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+                                            ?.GetComponent<PlayerController>();
+            pc.RemoveIngredient();
             OnInteractionSuccess();
         }
         [PunRPC]

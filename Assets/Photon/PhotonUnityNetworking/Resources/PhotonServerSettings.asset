@@ -67,6 +67,8 @@ MonoBehaviour:
   - RPC_RequestCancel
   - RPC_ChangeSpriteSortingLayer
   - RPC_ChangeTransform
+  - RPC_EndInteraction
+  - RPC_UpdateProgress
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
