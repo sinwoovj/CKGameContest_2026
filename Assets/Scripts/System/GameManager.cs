@@ -137,7 +137,6 @@ namespace Shurub
                 case GameState.Ready:
                     //카운트 다운
                     GUIManager.Instance.CountDownUI();
-                    NetworkManager.Instance.SetGameState(GameState.Playing);
                     break;
                 case GameState.Playing:
                     SetPlayerInput(true);
