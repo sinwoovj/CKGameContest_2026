@@ -129,7 +129,7 @@ namespace Shurub
             Vector3 newPos = new Vector3(newX, -0.25f, 0);
             newPos += transform.position;
             heldIngredient.ChangeTransform(newPos);
-            heldIngredient.ChangeSpriteSortingOrder(y <= 0 ? 2 : 0);
+            heldIngredient.ChangeSpriteSortingOrder(y < 0 ? 2 : 0);
         }
 
         public void EnsureProcessUI()
@@ -147,6 +147,7 @@ namespace Shurub
             anim.SetFloat("LastInputX", 0);
             anim.SetFloat("LastInputY", 0);
             anim.SetBool("IsWalking", false);
+            anim.SetBool("IsCarry", false);
             anim.SetTrigger("Default");
         }
 
@@ -249,6 +250,7 @@ namespace Shurub
                 RpcTarget.All,
                 ingredient.photonView.ViewID
             );
+            anim.SetBool("IsCarry", true);
         }
         [PunRPC]
         void RPC_PickIngredient(int ingredientViewId)
@@ -280,6 +282,7 @@ namespace Shurub
                 RpcTarget.All,
                 (Vector2)transform.position
             );
+            anim.SetBool("IsCarry", false);
         }
         [PunRPC]
         void RPC_DropIngredient(Vector2 dropPos)
@@ -304,6 +307,7 @@ namespace Shurub
 
             Vector2 dir = moveInput != Vector2.zero ? moveInput : moveLastInput;
 
+            anim.SetBool("IsCarry", false);
             photonView.RPC(
                 nameof(RPC_ThrowIngredient),
                 RpcTarget.All,

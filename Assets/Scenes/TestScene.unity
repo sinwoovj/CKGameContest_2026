@@ -297,7 +297,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &185223712
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1453,7 +1453,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1644164552098462632, guid: 7fffc4bd0d4c4c841b4854514fffd63f, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4596264328177276855, guid: 7fffc4bd0d4c4c841b4854514fffd63f, type: 3}
       propertyPath: sceneViewId
@@ -1503,6 +1503,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8936127759386748810, guid: 7fffc4bd0d4c4c841b4854514fffd63f, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 6d9981ebf097cf040bbd8cc09d182cdc, type: 3}
     - target: {fileID: 8936127759386748810, guid: 7fffc4bd0d4c4c841b4854514fffd63f, type: 3}
       propertyPath: m_SpriteSortPoint
       value: 0
