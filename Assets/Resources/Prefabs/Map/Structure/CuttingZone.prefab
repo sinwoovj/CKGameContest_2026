@@ -82,7 +82,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 3
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0, g: 0.7500148, b: 1, a: 1}
   m_FlipX: 0
@@ -179,6 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f46fad1a906678a4d994cd286c72c810, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shurub.Cutting
+  progressUIPrefab: {fileID: 0}
   state: 0
   processPrefab: {fileID: 1380223233708964059, guid: 571b09e1ac6072647ab3581995dd221d, type: 3}
 --- !u!114 &-2030926737987585549

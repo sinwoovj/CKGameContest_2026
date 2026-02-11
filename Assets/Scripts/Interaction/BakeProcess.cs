@@ -10,63 +10,71 @@ namespace Shurub
         private int pressCount = 0;
         private int failedCount = 0;
 
-        private const float PROCESS_MAX_TIME = 3f;
-        private const float SAFETY_TIME_INTERVAL = 0.5f;
-        private const float PROCESS_MAX_GOAL_TIME = 2f;
-        private float currTime = 0f;
-        private float goalTime = 0f;
+        [SerializeField]
+        private GameObject timingUIPrefab;
+        private TimingUI currentTimingUI;
+
         public override void StartProcess(int playerViewId, Structure structure)
         {
             //값 초기화
             base.StartProcess(playerViewId, structure);
             pressCount = 0;
             failedCount = 0;
+            PhotonView playerView = PhotonView.Find(playerViewId);
+
+            if (playerView != null && playerView.IsMine)
+            {
+                EnsureUI(playerViewId);
+            }
+
             owner.UpdateProgress(0, true);
         }
-        private void InitProcess()
+        private void EnsureUI(int playerViewId)
         {
-
-        }
-
-        private void Update()
-        {
-
-            //타이밍 맞게 입력( 데바데 발전기 시스템) (재료 당 3번의 기회를 줌)
+            if (currentTimingUI == null)
+            {
+                currentTimingUI = GameObject.Instantiate(timingUIPrefab, GameObject.Find("UIRootOverlay").transform).GetComponent<TimingUI>();
+                currentTimingUI.Init();
+            }
         }
 
         // 입력 이벤트 수신
-        public override void InteractProcess()
+        public override void InteractProcess(int playerViewId)
         {
-            if (CheckTiming())
+            PhotonView playerView = PhotonView.Find(playerViewId);
+
+            if (playerView != null && playerView.IsMine && currentTimingUI != null)
             {
-                // 횟수 카운트 증가 및 검사
+                bool success = currentTimingUI.CheckTiming();
+
+                owner.photonView.RPC(
+                    "RPC_SendTimingResult",
+                    RpcTarget.MasterClient,
+                    owner.photonView.ViewID,
+                    success
+                );
+            }
+        }
+        public void ApplyTimingResult(bool success)
+        {
+            if (success)
+            {
                 owner.UpdateProgress((float)++pressCount / PROCESS_MAX_COUNT, true);
+
                 if (pressCount >= PROCESS_MAX_COUNT)
-                {
                     SuccessProcess();
-                }
-                else
-                {
-                    InitProcess();
-                }
             }
             else
             {
                 if (++failedCount >= PROCESS_FAIL_MAX_COUNT)
-                {
                     FailedProcess();
-                }
-                else
-                {
-                    InitProcess();
-                }
             }
         }
-        private bool CheckTiming()
-        {
-            // 타이밍 판정
 
-            return false;
+        protected override void EndProcess()
+        {
+            currentTimingUI.End();
+            base.EndProcess();
         }
     }
 }

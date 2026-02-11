@@ -82,7 +82,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 3
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.5188679, g: 0.5188679, b: 0.5188679, a: 1}
   m_FlipX: 0
@@ -179,6 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc1fc854dd70ca24fa3e62f059061e96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shurub.Table
+  progressUIPrefab: {fileID: 0}
   state: 0
 --- !u!114 &4375645124028516259
 MonoBehaviour:

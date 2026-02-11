@@ -17,7 +17,7 @@ namespace Shurub
             currentPlayerViewId = playerViewId;
             owner = structure; 
         }
-        public abstract void InteractProcess();
+        public abstract void InteractProcess(int playerViewId);
 
         public virtual void CanceledProcess()
         {
@@ -37,7 +37,7 @@ namespace Shurub
             state = InteractionState.Success;
             EndProcess();
         }
-        protected void EndProcess()
+        protected virtual void EndProcess()
         {
             if (owner == null) return;
             owner.ClearProcess(); // currentProcess = null

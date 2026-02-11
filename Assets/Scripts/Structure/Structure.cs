@@ -31,11 +31,6 @@ namespace Shurub
             // 로컬 플레이어만 요청
             if (!player.photonView.IsMine) return;
 
-            if (photonView.ViewID == 0)
-            {
-                PhotonNetwork.AllocateViewID(photonView);
-            }
-
             if (state != InteractionState.Idle)
             {
                 //이미 다른 클라이언트가 상호작용 중
@@ -116,6 +111,16 @@ namespace Shurub
 
             // BakeProcess 생성
             currentProcess = CreateProcess();
+
+            photonView.RPC(nameof(RPC_StartProcess), RpcTarget.All, player.photonView.ViewID);
+
+        }
+        [PunRPC]
+        protected void RPC_StartProcess(int playerViewId)
+        {
+            if (currentProcess == null)
+                currentProcess = CreateProcess();
+
             currentProcess.StartProcess(playerViewId, this);
         }
         public void InteractProcess(int playerViewId)
@@ -138,7 +143,17 @@ namespace Shurub
             if (currentPlayerViewId != playerViewId)
                 return; // 다른 사람이 실행 못 함
 
-            currentProcess.InteractProcess();
+            currentProcess.InteractProcess(playerViewId);
+        }
+        [PunRPC]
+        private void RPC_SendTimingResult(int playerViewId, bool success)
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+
+            if (currentProcess == null) return;
+            if (currentPlayerViewId != playerViewId) return;
+
+            ((BakeProcess)currentProcess).ApplyTimingResult(success);
         }
         public void RequestCancel(int playerViewId)
         {

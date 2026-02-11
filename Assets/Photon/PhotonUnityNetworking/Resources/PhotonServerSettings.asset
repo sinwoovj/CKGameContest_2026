@@ -69,6 +69,8 @@ MonoBehaviour:
   - RPC_ChangeTransform
   - RPC_EndInteraction
   - RPC_UpdateProgress
+  - RPC_StartProcess
+  - RPC_SendTimingResult
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

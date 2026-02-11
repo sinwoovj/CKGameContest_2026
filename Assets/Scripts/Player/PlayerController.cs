@@ -129,14 +129,14 @@ namespace Shurub
             Vector3 newPos = new Vector3(newX, -0.25f, 0);
             newPos += transform.position;
             heldIngredient.ChangeTransform(newPos);
-            heldIngredient.ChangeSpriteSortingOrder(y < 0 ? 2 : 0);
+            heldIngredient.ChangeSpriteSortingOrder(y < 0 ? 4 : 2);
         }
 
         public void EnsureProcessUI()
         {
             if (isProgressUI) return;
             isProgressUI = true;
-            progressUI = Instantiate(progressUIPrefab, GameObject.Find("UIRoot").transform).GetComponent<ProgressUI>();
+            progressUI = Instantiate(progressUIPrefab, GameObject.Find("UIRootWorld").transform).GetComponent<ProgressUI>();
             progressUI.Bind(transform);
         }
 

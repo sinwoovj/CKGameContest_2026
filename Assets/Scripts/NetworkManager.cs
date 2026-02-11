@@ -22,7 +22,7 @@ namespace Shurub
         [RuntimeInitializeOnLoadMethod]
         static void InitilizedOnLoaded()
         {
-            PhotonNetwork.AutomaticallySyncScene = false;
+            PhotonNetwork.AutomaticallySyncScene = true;
             PhotonNetwork.IsMessageQueueRunning = true;
             PhotonNetwork.GameVersion = Application.version;
             PhotonNetwork.SendRate = 60;

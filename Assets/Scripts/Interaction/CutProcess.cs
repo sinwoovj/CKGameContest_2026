@@ -17,7 +17,7 @@ namespace Shurub
         }
 
         // 입력 이벤트 수신
-        public override void InteractProcess()
+        public override void InteractProcess(int playerViewId)
         {
             pressCount++;
             owner.UpdateProgress((float)pressCount / PROCESS_MAX_COUNT, true);
