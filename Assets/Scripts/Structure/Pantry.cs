@@ -9,9 +9,9 @@ namespace Shurub
         public override InteractionKind Kind => InteractionKind.Instant;
         protected override string StructureName => "Pantry";
         protected override bool IsInteractable => true;
-        protected override bool CanInteract()
+        protected override bool CanInteract(int playerViewId)
         {
-            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+            PlayerController pc = PhotonView.Find(playerViewId)
                                             ?.GetComponent<PlayerController>();
             if (pc.heldIngredient != null) //재료나 접시를 들고있는가?
             {
@@ -21,7 +21,7 @@ namespace Shurub
             }
             return true;
         }
-        protected override void InstantInteract()
+        protected override void InstantInteract(int playerViewId)
         {
             //접시를 획득함
         }

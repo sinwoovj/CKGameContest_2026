@@ -71,6 +71,9 @@ MonoBehaviour:
   - RPC_UpdateProgress
   - RPC_StartProcess
   - RPC_SendTimingResult
+  - RPC_ProcessEnded
+  - RPC_EndTimingUI
+  - RPC_RemoveIngredient
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

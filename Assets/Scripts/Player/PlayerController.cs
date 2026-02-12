@@ -75,7 +75,7 @@ namespace Shurub
 
                 if (chargeTimer >= throwChargeTime)
                 {
-                    ThrowIngredient();   // RPC
+                    ThrowIngredient();
                     StopCharging();
                 }
             }
@@ -230,11 +230,21 @@ namespace Shurub
         public void RemoveIngredient()
         {
             IngredientManager.Instance.DestroyIngredient(heldIngredient);
+            anim.SetBool("IsCarry", false);
+
+            photonView.RPC(
+                nameof(RPC_RemoveIngredient),
+                RpcTarget.All
+            );
+        }
+        [PunRPC]
+        protected void RPC_RemoveIngredient()
+        {
             heldIngredient = null;
             holdState = HoldState.Empty;
         }
 
-        void TryPickIngredient()
+        protected void TryPickIngredient()
         {
             if (holdState != HoldState.Empty)
                 return;
@@ -251,9 +261,10 @@ namespace Shurub
                 ingredient.photonView.ViewID
             );
             anim.SetBool("IsCarry", true);
+            UpdateIngredient(moveDir);
         }
         [PunRPC]
-        void RPC_PickIngredient(int ingredientViewId)
+        protected void RPC_PickIngredient(int ingredientViewId)
         {
             PhotonView pv = PhotonView.Find(ingredientViewId);
             if (!pv) return;
@@ -272,7 +283,7 @@ namespace Shurub
             );
         }
 
-        void DropIngredient()
+        protected void DropIngredient()
         {
             if (holdState != HoldState.Holding || heldIngredient == null)
                 return;
@@ -285,7 +296,7 @@ namespace Shurub
             anim.SetBool("IsCarry", false);
         }
         [PunRPC]
-        void RPC_DropIngredient(Vector2 dropPos)
+        protected void RPC_DropIngredient(Vector2 dropPos)
         {
             if (heldIngredient == null)
                 return;
@@ -300,7 +311,7 @@ namespace Shurub
             holdState = HoldState.Empty;
         }
 
-        void ThrowIngredient()
+        protected void ThrowIngredient()
         {
             if (holdState != HoldState.Holding || heldIngredient == null)
                 return;
@@ -316,7 +327,7 @@ namespace Shurub
             );
         }
         [PunRPC]
-        void RPC_ThrowIngredient(Vector2 dir, float power)
+        protected void RPC_ThrowIngredient(Vector2 dir, float power)
         {
             if (heldIngredient == null)
                 return;

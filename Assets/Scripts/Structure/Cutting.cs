@@ -12,9 +12,9 @@ namespace Shurub
         protected override string StructureName => "Cutting";
         protected override bool IsInteractable => true;
 
-        protected override bool CanInteract()
+        protected override bool CanInteract(int playerViewId)
         {
-            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+            PlayerController pc = PhotonView.Find(playerViewId)
                                             ?.GetComponent<PlayerController>();
             if (pc.heldIngredient == null) //재료를 들고있는가?
             {
@@ -42,33 +42,36 @@ namespace Shurub
         }
         protected override void OnInteractionStart(int playerViewId)
         {
-            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+            PlayerController pc = PhotonView.Find(playerViewId)
                                             ?.GetComponent<PlayerController>();
+            if (pc == null) return;
             Debug.Log("Cut Start");
             base.OnInteractionStart(playerViewId);
             //재료를 안보이게 비활성화 함
             pc.heldIngredient.SetActive(false);
         }
-        public override void OnInteractionSuccess()
+        public override void OnInteractionSuccess(int playerViewId)
         {
-            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+            PlayerController pc = PhotonView.Find(playerViewId)
                                             ?.GetComponent<PlayerController>();
+            if (pc == null) return;
             Debug.Log("Cut Complete");
             //재료 state 바꾸면서 스프라이트도 변경
             //다시 재료가 보이게 됨
             pc.heldIngredient.OnCooked();
             pc.heldIngredient.SetActive(true);
-            base.OnInteractionSuccess();
+            base.OnInteractionSuccess(playerViewId);
         }
-        public override void OnInteractionCanceled()
+        public override void OnInteractionCanceled(int playerViewId)
         {
-            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+            PlayerController pc = PhotonView.Find(playerViewId)
                                             ?.GetComponent<PlayerController>();
+            if (pc == null) return;
             Debug.Log("Cut Canceled");
 
             //다시 재료가 보이게 됨
             pc.heldIngredient.SetActive(true);
-            base.OnInteractionCanceled();
+            base.OnInteractionCanceled(playerViewId);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Shurub
                 EnsureUI(playerViewId);
             }
 
-            owner.UpdateProgress(0, true);
+            owner.UpdateProgress(playerViewId, 0, true);
         }
         private void EnsureUI(int playerViewId)
         {
@@ -42,39 +42,59 @@ namespace Shurub
         public override void InteractProcess(int playerViewId)
         {
             PhotonView playerView = PhotonView.Find(playerViewId);
+            if (playerView == null || !playerView.IsMine) return;
 
-            if (playerView != null && playerView.IsMine && currentTimingUI != null)
-            {
-                bool success = currentTimingUI.CheckTiming();
+            if (currentTimingUI == null) return;
 
-                owner.photonView.RPC(
-                    "RPC_SendTimingResult",
-                    RpcTarget.MasterClient,
-                    owner.photonView.ViewID,
-                    success
-                );
-            }
+            bool success = currentTimingUI.CheckTiming();
+
+            owner.photonView.RPC(
+                nameof(Structure.RPC_SendTimingResult),
+                RpcTarget.All,
+                playerViewId,
+                success
+            );
         }
-        public void ApplyTimingResult(bool success)
+        public void ApplyTimingResult(int playerViewId, bool success)
         {
+            PhotonView playerView = PhotonView.Find(playerViewId);
+            if (playerView == null || !playerView.IsMine) return;
+
+            if (currentTimingUI == null) return;
+
             if (success)
             {
-                owner.UpdateProgress((float)++pressCount / PROCESS_MAX_COUNT, true);
+                owner.UpdateProgress(playerViewId, (float)++pressCount / PROCESS_MAX_COUNT, true);
 
                 if (pressCount >= PROCESS_MAX_COUNT)
-                    SuccessProcess();
+                    SuccessProcess(playerViewId);
+                else
+                    currentTimingUI.Init();
             }
             else
             {
                 if (++failedCount >= PROCESS_FAIL_MAX_COUNT)
-                    FailedProcess();
+                    FailedProcess(playerViewId);
+                else
+                    currentTimingUI.Init();
             }
         }
 
-        protected override void EndProcess()
+        protected override void EndProcess(int playerViewId)
         {
+            EndTimingUI(playerViewId);
+            base.EndProcess(playerViewId);
+        }
+
+        public void EndTimingUI(int playerViewId)
+        {
+            PhotonView playerView = PhotonView.Find(playerViewId);
+            if (playerView == null || !playerView.IsMine) return;
+
+            if (currentTimingUI == null) return;
+
             currentTimingUI.End();
-            base.EndProcess();
+            currentTimingUI = null;
         }
     }
 }

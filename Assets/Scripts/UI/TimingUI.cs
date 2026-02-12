@@ -8,7 +8,7 @@ public class TimingUI : MonoBehaviour
     [SerializeField]
     private Slider pointSlider;
     private const float POINT_INTERVAL = 0.05f;
-    private const float SUCCESSZONE_INTERVAL = 0.5f;
+    private const float SUCCESSZONE_INTERVAL = 0.05f;
     [Range(0f, 1f)]
     public float speed = 1f;
     private float timer;
@@ -33,6 +33,7 @@ public class TimingUI : MonoBehaviour
     {
         isProcess = false;
         gameObject.SetActive(false);
+        Destroy(gameObject);
     }
     public bool CheckTiming() => (Mathf.Abs(pointSlider.value - timingSlider.value) <= SUCCESSZONE_INTERVAL);
 }

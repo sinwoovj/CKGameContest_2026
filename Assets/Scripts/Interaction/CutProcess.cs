@@ -13,17 +13,17 @@ namespace Shurub
             //값 초기화
             base.StartProcess(playerViewId, structure);
             pressCount = 0;
-            owner.UpdateProgress(0, true);
+            owner.UpdateProgress(playerViewId, 0, true);
         }
 
         // 입력 이벤트 수신
         public override void InteractProcess(int playerViewId)
         {
             pressCount++;
-            owner.UpdateProgress((float)pressCount / PROCESS_MAX_COUNT, true);
+            owner.UpdateProgress(playerViewId, (float)pressCount / PROCESS_MAX_COUNT, true);
 
             if (pressCount >= PROCESS_MAX_COUNT)
-                SuccessProcess();
+                SuccessProcess(playerViewId);
         }
     }
 }

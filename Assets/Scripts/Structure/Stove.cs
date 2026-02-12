@@ -9,17 +9,13 @@ namespace Shurub
         [SerializeField]
         private BakeProcess processPrefab;
 
-        private const float PROCESS_INTERVAL = 1f;
-        private const int FAILED_LIMIT = 3;
-        private int failedCount = 0;
-
         public override InteractionKind Kind => InteractionKind.Process;
         protected override string StructureName => "Stove";
         protected override bool IsInteractable => true;
 
-        protected override bool CanInteract()
+        protected override bool CanInteract(int playerViewId)
         {
-            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+            PlayerController pc = PhotonView.Find(playerViewId)
                                             ?.GetComponent<PlayerController>();
             if (pc.heldIngredient == null) //재료를 들고있는가?
             {
@@ -47,7 +43,7 @@ namespace Shurub
         }
         protected override void OnInteractionStart(int playerViewId)
         {
-            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+            PlayerController pc = PhotonView.Find(playerViewId)
                                             ?.GetComponent<PlayerController>();
             Debug.Log("Bake Start");
             base.OnInteractionStart(playerViewId);
@@ -55,37 +51,40 @@ namespace Shurub
             pc.heldIngredient.SetActive(false);
         }
 
-        public override void OnInteractionSuccess()
+        public override void OnInteractionSuccess(int playerViewId)
         {
-            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+            PlayerController pc = PhotonView.Find(playerViewId)
                                             ?.GetComponent<PlayerController>();
+            if (pc == null) return;
             Debug.Log("Bake Complete");
             //재료 state 바꾸면서 스프라이트도 변경
             //다시 재료가 보이게 됨
             pc.heldIngredient.OnCooked();
             pc.heldIngredient.SetActive(true);
-            base.OnInteractionSuccess();
+            base.OnInteractionSuccess(playerViewId);
         }
-        public override void OnInteractionFailed()
+        public override void OnInteractionFailed(int playerViewId)
         {
-            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+            PlayerController pc = PhotonView.Find(playerViewId)
                                             ?.GetComponent<PlayerController>();
+            if (pc == null) return;
             Debug.Log("Bake Canceled");
             //재료 state 바꾸면서 스프라이트도 변경
             //다시 재료가 보이게 됨
             pc.heldIngredient.OnBurned();
             pc.heldIngredient.SetActive(true);
-            base.OnInteractionFailed();
+            base.OnInteractionFailed(playerViewId);
         }
-        public override void OnInteractionCanceled()
+        public override void OnInteractionCanceled(int playerViewId)
         {
-            PlayerController pc = PhotonView.Find(currentPlayerViewId)
+            PlayerController pc = PhotonView.Find(playerViewId)
                                             ?.GetComponent<PlayerController>();
+            if (pc == null) return;
             Debug.Log("Bake Canceled");
 
             //다시 재료가 보이게 됨
             pc.heldIngredient.SetActive(true);
-            base.OnInteractionCanceled();
+            base.OnInteractionCanceled(playerViewId);
         }
         [PunRPC]
         protected override void RPC_OnInteractionSuccess(int playerViewId)
