@@ -2506,6 +2506,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Shurub.Pantry
   progressUIPrefab: {fileID: 0}
   state: 0
+  platePrefab: {fileID: 0}
 --- !u!61 &6877964380724431078
 BoxCollider2D:
   m_ObjectHideFlags: 0

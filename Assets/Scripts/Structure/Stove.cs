@@ -29,7 +29,7 @@ namespace Shurub
                 Debug.Log("이 재료는 구울 수 없음");
                 return false;
             }
-            if (pc.heldIngredient.state != Ingredient.IngredientState.unCooked) //이 재료는 조리되지 않은 상태인가?
+            if (pc.heldIngredient.State != Ingredient.IngredientState.unCooked) //이 재료는 조리되지 않은 상태인가?
             {
                 //이 재료는 이미 조리되었거나 탄 재료임
                 Debug.Log("이 재료는 이미 조리되었거나 탄 재료임");

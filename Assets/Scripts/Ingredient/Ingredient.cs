@@ -11,6 +11,8 @@ namespace Shurub
         public virtual string IngredientName => "Ingredient";
         public virtual bool IsCuttable => false;
         public virtual bool IsBakable => false;
+        public virtual IngredientManager.IngredientType kindOfIngredient => IngredientManager.IngredientType.Count;
+        public virtual IngredientManager.SetType kindOfSet => IngredientManager.SetType.Count;
 
         public Sprite[] sprites; //IngredientState 순서에 맞춰서 스프라이트 패치
 
@@ -22,14 +24,15 @@ namespace Shurub
             Thrown 
         }
         public HoldState holdState;
-
         public enum IngredientState
         {
             unCooked = 0,
             cooked = 1, // cut, baked
-            burned = 2
+            burned = 2,
+            unCookable = 3 // set, plate
         }
-        public IngredientState state = IngredientState.unCooked;
+        public virtual IngredientState State => state;
+        private IngredientState state = IngredientState.unCooked;
 
         private const float STOP_SPEED = 0.1f;
         private const float STOP_TIME = 0.2f;

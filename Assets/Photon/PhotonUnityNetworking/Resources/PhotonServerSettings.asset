@@ -74,6 +74,8 @@ MonoBehaviour:
   - RPC_ProcessEnded
   - RPC_EndTimingUI
   - RPC_RemoveIngredient
+  - RPC_RequestPlateSpawn
+  - RPC_RequestGetPlate
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

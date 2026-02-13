@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static Shurub.Ingredient;
 
 
 namespace Shurub
@@ -155,7 +156,7 @@ namespace Shurub
         {
             if (!context.performed) return;
             if (!photonView.IsMine) return;
-
+            Debug.Log("OnInteract called. current: " + currentInteractable);
             if (currentInteractable == null)
             {
                 currentInteractable = DetectInteractable();
@@ -243,7 +244,19 @@ namespace Shurub
             heldIngredient = null;
             holdState = HoldState.Empty;
         }
+        public void GetPlate(int plateViewId)
+        {
+            if (holdState != HoldState.Empty)
+                return;
 
+            photonView.RPC(
+                nameof(RPC_PickIngredient),
+                RpcTarget.All,
+                plateViewId
+            );
+            anim.SetBool("IsCarry", true);
+            UpdateIngredient(moveDir);
+        }
         protected void TryPickIngredient()
         {
             if (holdState != HoldState.Empty)

@@ -6,4 +6,5 @@ public class Water : Ingredient
     public override string IngredientName => "Water";
     public override bool IsCuttable => false;
     public override bool IsBakable => false;
+    public override IngredientManager.IngredientType kindOfIngredient => IngredientManager.IngredientType.Water;
 }

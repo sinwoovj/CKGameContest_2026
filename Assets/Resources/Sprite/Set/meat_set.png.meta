@@ -103,10 +103,10 @@ TextureImporter:
       name: meat_set_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 513
-        height: 380
+        x: 46
+        y: 71
+        width: 515
+        height: 382
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
