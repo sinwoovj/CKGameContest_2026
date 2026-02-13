@@ -1,0 +1,47 @@
+﻿using Photon.Pun;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace Shurub
+{
+    public class GamePauseUI : UIBase<GamePauseUI>
+    {
+        [SerializeField] private Button resumeButton;
+        [SerializeField] private Button playerManagementButton;
+        [SerializeField] private Button settingButton;
+        [SerializeField] private Button leaveButton;
+
+        protected override void OnAwake()
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                playerManagementButton.interactable = true;
+            }
+            else
+            {
+                playerManagementButton.interactable = false;
+            }
+        }
+
+        private void OnClickResumeButton()
+        {
+            UIManager.Instance.HideUI<GamePauseUI>();
+        }
+
+        private void OnClickPlayerManagementButton()
+        {
+            if (!PhotonNetwork.IsMasterClient)
+            {
+                return;
+            }
+
+            UIManager.Instance.ShowUI<GamePlayerManagementUI>();
+        }
+
+        private async void OnClickSettingButton()
+        {
+            await UIManager.Instance.CheckAndMakeUI<SettingUI>(GameConstants.UI.SETTING_UI_PATH);
+            UIManager.Instance.ShowUI<SettingUI>(hidePrev: false);
+        }
+    }
+}

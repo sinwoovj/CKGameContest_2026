@@ -271,5 +271,16 @@ namespace Shurub
                 UIManager.Instance.ShowUI<TitleUI>();
             });
         }
+
+        public void GoToRoomLobby()
+        {
+            NetworkManager.Instance.SetGameState(GameState.Lobby);
+            UIManager.Instance.ClearAllUis();
+
+            SceneManager.Instance.LoadScene(GameConstants.Scene.MAIN_SCENE_NAME, (scene, mode) =>
+            {
+                UIManager.Instance.ShowUI<RoomLobbyUI>();
+            });
+        }
     }
 }

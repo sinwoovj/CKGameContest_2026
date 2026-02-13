@@ -141,7 +141,7 @@ namespace Shurub
 
         public override void OnJoinedRoom()
         {
-            int status = PhotonNetwork.IsMasterClient ? (int)PlayerInfoObj.Status.Ready : (int)PlayerInfoObj.Status.NotReady;
+            int status = PhotonNetwork.IsMasterClient ? (int)PlayerStatus.Ready : (int)PlayerStatus.NotReady;
             PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
             {
                 { GameConstants.Network.PLAYER_STATUS_KEY, status }
@@ -178,6 +178,7 @@ namespace Shurub
                     PhotonNetwork.CurrentRoom.IsOpen = false;
                     PhotonNetwork.CurrentRoom.IsVisible = false;
 
+                    SetPlayerStatus(PhotonNetwork.LocalPlayer, PlayerStatus.Playing);
                     UIManager.Instance.HideUI<RoomLobbyUI>(force: true);
                     SceneManager.Instance.LoadLevel("InGame");
                 }
@@ -240,6 +241,11 @@ namespace Shurub
                 }
 
                 UIManager.Instance.GetUI<RoomLobbyUI>().OnUpdatedPlayerList();
+
+                if (GameManager.HasInstance)
+                {
+                    UIManager.Instance.GetUI<GamePlayerManagementUI>().OnUpdatedPlayerList();
+                }
             }
 
             Debug.LogFormat("플레이어가 퇴장함. Id: {0}, 플레이어 수: {1}", otherPlayer.UserId, PhotonNetwork.PlayerList.Length);
@@ -280,7 +286,7 @@ namespace Shurub
             });
         }
 
-        public void SetLobbyPlayerStatus(Photon.Realtime.Player target, PlayerInfoObj.Status status)
+        public void SetPlayerStatus(Photon.Realtime.Player target, PlayerStatus status)
         {
             if (!PhotonNetwork.InRoom || !PhotonNetwork.PlayerList.Contains(target))
             {

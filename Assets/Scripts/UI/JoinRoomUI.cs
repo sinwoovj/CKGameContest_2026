@@ -8,7 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class JoinRoomUI : UIBase
+public class JoinRoomUI : UIBase<JoinRoomUI>
 {
     [SerializeField] private Button searchRoomButton;
     [SerializeField] private TMP_InputField searchRoomInput;
@@ -23,10 +23,8 @@ public class JoinRoomUI : UIBase
     private List<RoomInfo> cachedAvailableRooms = new List<RoomInfo>();
     private List<RoomInfoObj> roomInfoObjects = new List<RoomInfoObj>();
 
-    protected override void Init()
+    protected override void OnAwake()
     {
-        UIManager.Instance.RegisterUI(this);
-
         searchRoomInput.onValueChanged.RemoveAllListeners();
         searchRoomInput.onValueChanged.AddListener(OnValueChangedSearchRoomInput);
         privateCheckToggle.onValueChanged.RemoveAllListeners();
@@ -36,6 +34,7 @@ public class JoinRoomUI : UIBase
     public override void Show()
     {
         base.Show();
+
         OnUpdatedRoomList(cachedAvailableRooms);
         foreach (RoomInfoObj room in roomInfoObjects)
         {

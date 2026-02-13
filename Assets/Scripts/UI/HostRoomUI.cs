@@ -11,7 +11,7 @@ using UnityEngine.UI;
 using UnityEngine.Windows;
 using System.Linq;
 
-public class HostRoomUI : UIBase
+public class HostRoomUI : UIBase<HostRoomUI>
 {
     [SerializeField] private Button hostRoomButton;
 
@@ -45,10 +45,8 @@ public class HostRoomUI : UIBase
 
     private const float HOSTING_PANEL_FADE_DURATION = 0.1f;
 
-    protected override void Init()
+    protected override void OnAwake()
     {
-        UIManager.Instance.RegisterUI(this);
-
         maxPlayerInput.onEndEdit.RemoveAllListeners();
         maxPlayerInput.onEndEdit.AddListener(OnEndEditMaxPlayerInput);
 

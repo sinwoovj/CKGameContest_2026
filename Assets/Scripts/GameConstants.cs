@@ -35,5 +35,7 @@ public static class GameConstants
     public static class UI
     {
         public const int CONTROL_COOL_TIME = 100; // milliseconds
+
+        public const string SETTING_UI_PATH = "Prefabs/UI/SettingUI";
     }
 }

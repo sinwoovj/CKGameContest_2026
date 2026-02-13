@@ -4,17 +4,12 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayUI : UIBase
+public class PlayUI : UIBase<PlayUI>
 {
     [SerializeField] private Button singleButton;
     [SerializeField] private Button hostButton;
     [SerializeField] private Button joinButton;
     [SerializeField] private Button tutorialButton;
-
-    protected override void Init()
-    {
-        UIManager.Instance.RegisterUI(this);
-    }
 
     //public override void Show()
     //{

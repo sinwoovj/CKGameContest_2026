@@ -4,16 +4,11 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TitleUI : UIBase
+public class TitleUI : UIBase<TitleUI>
 {
     [SerializeField] private Button playButton;
     [SerializeField] private Button settingButton;
     [SerializeField] private Button exitButton;
-
-    protected override void Init()
-    {
-        UIManager.Instance.RegisterUI(this);
-    }
 
     //public override void Show()
     //{
@@ -39,9 +34,10 @@ public class TitleUI : UIBase
         UIManager.Instance.ShowUI<PlayUI>();
     }
 
-    private void OnClickSettingButton()
+    private async void OnClickSettingButton()
     {
-
+        await UIManager.Instance.CheckAndMakeUI<SettingUI>(GameConstants.UI.SETTING_UI_PATH);
+        UIManager.Instance.ShowUI<SettingUI>(hidePrev: false);
     }
 
     private void OnClickExitButton()
