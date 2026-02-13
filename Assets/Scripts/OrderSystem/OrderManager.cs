@@ -10,7 +10,7 @@ namespace Shurub
         [SerializeField] private List<Recipe> recipePool;
         [SerializeField] private int maxOrderCount = 3;
         [SerializeField] private float spawnInterval = 5f;
-        const float HP_PANELTY = -5f;
+        const float HP_PANELTY = -15f;
 
         private List<OrderData> currentOrders = new();
         private float spawnTimer;
@@ -20,9 +20,12 @@ namespace Shurub
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
-            HandleTimer();
-            EnsureAtLeastOneOrder();
-            HandleSpawn();
+            if(NetworkManager.Instance.CurrentRoomState == GameState.Playing)
+            {
+                HandleTimer();
+                EnsureAtLeastOneOrder();
+                HandleSpawn();
+            }
         }
         void EnsureAtLeastOneOrder()
         {

@@ -4,19 +4,14 @@ using UnityEngine;
 
 namespace Shurub
 {
-    public class OrderUIManager : MonoBehaviour
+    public class OrderUIManager : Singleton<OrderUIManager>
     {
-        public static OrderUIManager Instance;
 
         [SerializeField] private GameObject orderUIPrefab;
         [SerializeField] private Transform orderRoot;
 
         private Dictionary<int, OrderUI> orderMap = new();
 
-        private void Awake()
-        {
-            Instance = this;
-        }
 
         public void AddOrder(int orderId, int recipeType, float totalTime)
         {

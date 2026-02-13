@@ -52,6 +52,7 @@ namespace Shurub
             // Master에게 제출 요청
             SubmitFunc(recipeType);
 
+            pc.RemoveIngredient();
             // 시각적/입력 상 성공 처리
             OnInteractionSuccess(playerViewId);
         }
