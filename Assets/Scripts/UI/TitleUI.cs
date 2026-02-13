@@ -10,19 +10,17 @@ public class TitleUI : UIBase<TitleUI>
     [SerializeField] private Button settingButton;
     [SerializeField] private Button exitButton;
 
-    //public override void Show()
-    //{
-    //    ProcessShow().Forget();
-    //}
+    public override void Show()
+    {
+        SoundManager.Instance.Play("MainBGM");
+        base.Show();
+    }
 
-    //private async UniTaskVoid ProcessShow()
-    //{
-    //    base.Show();
-
-    //    playButton.interactable = false;
-    //    await UniTask.WaitUntil(() => PhotonNetwork.IsConnectedAndReady, cancellationToken: this.GetCancellationTokenOnDestroy());
-    //    playButton.interactable = true;
-    //}
+    public override void Hide()
+    {
+        SoundManager.Instance.StopBGM();
+        base.Hide();
+    }
 
     private void OnClickPlayButton()
     {

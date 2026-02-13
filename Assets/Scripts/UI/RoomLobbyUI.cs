@@ -91,8 +91,18 @@ public class RoomLobbyUI : UIBase<RoomLobbyUI>
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.F5) && !UIManager.Instance.GetUI<TutorialUI>().IsOpenned())
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
+            UIManager.Instance.HideUI<RoomLobbyUI>();
+        }
+
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            if (!UIManager.Instance.HasUI<TutorialUI>() || UIManager.Instance.IsOpenned(UIManager.Instance.GetUI<TutorialUI>()))
+            {
+                return;
+            }
+
             if (PhotonNetwork.IsMasterClient)
             {
                 if (CheckGameStartable())
@@ -174,6 +184,8 @@ public class RoomLobbyUI : UIBase<RoomLobbyUI>
         privateCheckToggle.isOn = isPrivate;
         passwordInput.text = password ?? "";
         showPasswordToggle.isOn = false;
+
+        OnUpdatedPlayerList();
     }
 
     private void OnClickGameStartButton()
@@ -421,7 +433,7 @@ public class RoomLobbyUI : UIBase<RoomLobbyUI>
 
     public void OnUpdatedCustomProperties(Hashtable propertiesThatChanged)
     {
-        if (!IsOpenned())
+        if (!UIManager.Instance.IsOpenned(this))
         {
             return;
         }
@@ -444,7 +456,7 @@ public class RoomLobbyUI : UIBase<RoomLobbyUI>
 
     public void OnUpdatedPlayerList()
     {
-        if (!IsOpenned())
+        if (!UIManager.Instance.IsOpenned(this))
         {
             return;
         }
@@ -481,7 +493,7 @@ public class RoomLobbyUI : UIBase<RoomLobbyUI>
 
     public void OnChangedMaster(Photon.Realtime.Player newMaster)
     {
-        if (!IsOpenned())
+        if (!UIManager.Instance.IsOpenned(this))
         {
             return;
         }

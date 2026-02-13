@@ -15,7 +15,6 @@ public interface IUIBase
     void Show();
     void Hide();
     void ConfirmHide(UnityAction onCompleted, bool force);
-    bool IsOpenned();
 }
 
 public abstract class UIBase<T> : MonoBehaviour, IUIBase where T : UIBase<T>
@@ -121,16 +120,6 @@ public abstract class UIBase<T> : MonoBehaviour, IUIBase where T : UIBase<T>
             onCompleted?.Invoke();
             Hide();
         });
-    }
-
-    public bool IsOpenned()
-    {
-        if (canvasGroup == null)
-        {
-            return false;
-        }
-
-        return canvasGroup.alpha > 0.999f && canvasGroup.isActiveAndEnabled;
     }
 
     /// <summary>

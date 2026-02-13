@@ -11,8 +11,9 @@ namespace Shurub
         [SerializeField] private Button settingButton;
         [SerializeField] private Button leaveButton;
 
-        protected override void OnAwake()
+        public override void Show()
         {
+            InGameManager.Instance.LocalPlayer.GetComponent<PlayerController>().playerInput.enabled = false;
             if (PhotonNetwork.IsMasterClient)
             {
                 playerManagementButton.interactable = true;
@@ -21,6 +22,14 @@ namespace Shurub
             {
                 playerManagementButton.interactable = false;
             }
+
+            base.Show();
+        }
+
+        public override void Hide()
+        {
+            InGameManager.Instance.LocalPlayer.GetComponent<PlayerController>().playerInput.enabled = true;
+            base.Hide();
         }
 
         private void OnClickResumeButton()
@@ -42,6 +51,11 @@ namespace Shurub
         {
             await UIManager.Instance.CheckAndMakeUI<SettingUI>(GameConstants.UI.SETTING_UI_PATH);
             UIManager.Instance.ShowUI<SettingUI>(hidePrev: false);
+        }
+
+        private void OnClickLeaveButton()
+        {
+            GameManager.Instance.GoToMain();
         }
     }
 }

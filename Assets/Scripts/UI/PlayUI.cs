@@ -11,23 +11,21 @@ public class PlayUI : UIBase<PlayUI>
     [SerializeField] private Button joinButton;
     [SerializeField] private Button tutorialButton;
 
-    //public override void Show()
-    //{
-    //    ProcessShow().Forget();
-    //}
+    public override void Show()
+    {
+        base.Show();
 
-    //private async UniTaskVoid ProcessShow()
-    //{
-    //    base.Show();
+        if (!PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.ConnectUsingSettings();
+            return;
+        }
 
-    //    hostButton.interactable = false;
-    //    joinButton.interactable = false;
-
-    //    await UniTask.WaitUntil(() => PhotonNetwork.InLobby, cancellationToken: this.GetCancellationTokenOnDestroy());
-
-    //    hostButton.interactable = true;
-    //    joinButton.interactable = true;
-    //}
+        if (!PhotonNetwork.InLobby && PhotonNetwork.NetworkClientState != Photon.Realtime.ClientState.JoiningLobby)
+        {
+            PhotonNetwork.JoinLobby();
+        }
+    }
 
     private void OnClickSingleButton()
     {

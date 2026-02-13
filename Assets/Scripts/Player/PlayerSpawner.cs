@@ -46,7 +46,7 @@ namespace Shurub
             );
 
             PhotonNetwork.LocalPlayer.TagObject = player;
-            GameManager.Instance.RegisterPlayer(player.GetComponent<Player>());
+            InGameManager.Instance.RegisterPlayer(player.GetComponent<Player>());
 
             isSpawned = true;
         }
@@ -75,7 +75,7 @@ namespace Shurub
                 Debug.LogError("pNum could not load");
             }
 
-            GameManager.Instance.LocalPlayer.transform.position = playerSpawnPointObject[myPNum].transform.position;
+            InGameManager.Instance.LocalPlayer.transform.position = playerSpawnPointObject[myPNum].transform.position;
         }
     }
 }

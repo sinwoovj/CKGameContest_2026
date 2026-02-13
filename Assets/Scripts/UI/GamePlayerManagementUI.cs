@@ -13,12 +13,29 @@ using UnityEngine.Events;
 
 public class GamePlayerManagementUI : UIBase<GamePlayerManagementUI>
 {
+    [SerializeField] private TMP_Text roomNameText;
     [SerializeField] private ToggleGroup playerListToggleGroup;
     [SerializeField] private PlayerInfoObj playerInfoPrefab;
 
     private List<PlayerInfoObj> playerInfoObjects = new List<PlayerInfoObj>();
 
     private Dictionary<string, PlayerStatus> playerStatusDict = new Dictionary<string, PlayerStatus>();
+
+    public override void Show()
+    {
+        roomNameText.text = PhotonNetwork.CurrentRoom.Name;
+        OnUpdatedPlayerList();
+
+        base.Show();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            UIManager.Instance.ReturnPrevUI();
+        }
+    }
 
     public void OnUpdatedPlayerList()
     {

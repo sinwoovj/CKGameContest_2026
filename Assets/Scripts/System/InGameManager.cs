@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 
 namespace Shurub
 {
-    public class GameManager : Singleton<GameManager>
+    public class InGameManager : Singleton<InGameManager>
     {
         protected override bool CheckDontDestroyOnLoad()
         {
@@ -115,13 +115,17 @@ namespace Shurub
         private void OpenResultUI()
         {
             GUIManager.Instance.UpdateTotalTimeUI();
-            GUIManager.Instance.ResultPanel.SetActive(true);
+
+            UIManager.Instance.ClearAllUIs();
+            UIManager.Instance.ShowUI<GameResultUI>();
+            //GUIManager.Instance.ResultPanel.SetActive(true);
         }
 
-        private void CloseResultUI()
-        {
-            GUIManager.Instance.ResultPanel.SetActive(false);
-        }
+        //private void CloseResultUI()
+        //{
+        //    UIManager.Instance.HideUI<GameResultUI>();
+        //    //GUIManager.Instance.ResultPanel.SetActive(false);
+        //}
 
         // Public Functions
 
@@ -157,7 +161,6 @@ namespace Shurub
             SetHP(maxHp);
             playTime = 0f;
             SetPlayTime(playTime);
-            CloseResultUI();
             LocalPlayer.GetComponent<Animator>().SetTrigger("Default");
             IngredientManager.Instance.ClearIngredient();
             TestManager.Instance.InstantiateTest();
@@ -257,30 +260,6 @@ namespace Shurub
             }
 
             return (float)PhotonNetwork.CurrentRoom.CustomProperties.Get(GameConstants.Network.GAME_PLAYTIME_KEY, -1f);
-        }
-
-        public void GoToMain()
-        {
-            //NetworkManager.Instance.SetGameState(GameState.Lobby);
-            NetworkManager.Instance.CurrentRoomState = GameState.Lobby;
-            PhotonNetwork.LeaveRoom();
-            UIManager.Instance.ClearAllUis();
-
-            SceneManager.Instance.LoadScene(GameConstants.Scene.MAIN_SCENE_NAME, (scene, mode) =>
-            {
-                UIManager.Instance.ShowUI<TitleUI>();
-            });
-        }
-
-        public void GoToRoomLobby()
-        {
-            NetworkManager.Instance.SetGameState(GameState.Lobby);
-            UIManager.Instance.ClearAllUis();
-
-            SceneManager.Instance.LoadScene(GameConstants.Scene.MAIN_SCENE_NAME, (scene, mode) =>
-            {
-                UIManager.Instance.ShowUI<RoomLobbyUI>();
-            });
         }
     }
 }

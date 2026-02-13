@@ -57,7 +57,7 @@ public class JoinRoomUI : UIBase<JoinRoomUI>
     {
         cachedAvailableRooms = roomList;
 
-        if (!IsOpenned())
+        if (!UIManager.Instance.IsOpenned(this))
         {
             return;
         }

@@ -8,6 +8,8 @@ using Photon.Pun.Demo.PunBasics;
 using Cysharp.Threading.Tasks;
 using Photon.Pun;
 using UnityEngine.EventSystems;
+using static UnityEngine.GraphicsBuffer;
+using System.Linq;
 
 namespace Shurub
 {
@@ -15,11 +17,13 @@ namespace Shurub
     {
         public bool IsInterrupted { get; private set; }
 
+        private bool isClearing = false;
         private bool isControlCool = false;
         private bool isCreating = false;
 
         private Dictionary<Type, IUIBase> uis = new Dictionary<Type, IUIBase>();
         private Stack<IUIBase> uiStack = new Stack<IUIBase>();
+        private HashSet<IUIBase> opennedUIs = new HashSet<IUIBase>();
 
         protected override void OnAwake()
         {
@@ -29,23 +33,6 @@ namespace Shurub
         protected override void OnDestroyed()
         {
             IsInterrupted = true;
-        }
-
-        public void ClearAllUis()
-        {
-            if (IsInterrupted)
-            {
-                return;
-            }
-
-            while (uiStack.Count > 0)
-            {
-                IUIBase ui = uiStack.Pop();
-                if (ui.IsOpenned())
-                {
-                    ui.Hide();
-                }
-            }
         }
 
         private void Update()
@@ -60,36 +47,82 @@ namespace Shurub
                 return;
             }
 
-            if (NetworkManager.Instance.CurrentRoomState == GameState.Lobby)
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if (Input.GetKeyDown(KeyCode.Escape))
+                if (NetworkManager.Instance.CurrentRoomState == GameState.None)
                 {
                     ReturnPrevUI();
+                }
+
+                if (NetworkManager.Instance.CurrentRoomState == GameState.Playing)
+                {
+                    GamePauseUI gamePauseUI = GetUI<GamePauseUI>();
+                    if (uiStack.Count > 0 && (uiStack.Peek() != gamePauseUI as IUIBase))
+                    {
+                        return;
+                    }
+
+                    if (IsOpenned(gamePauseUI))
+                    {
+                        HideUI<GamePauseUI>();
+                    }
+                    else
+                    {
+                        ShowUI<GamePauseUI>();
+                    }
                 }
             }
         }
 
-        public void RegisterUI<T>(T ui) where T : IUIBase
+        public void ClearAllUIs()
+        {
+            if (isClearing || IsInterrupted)
+            {
+                return;
+            }
+
+            isClearing = true;
+
+            opennedUIs.Clear();
+            while (uiStack.Count > 0)
+            {
+                uiStack.Pop().Hide();
+            }
+
+            isClearing = false;
+        }
+
+        public void RegisterUI<T>(T ui) where T : UIBase<T>, IUIBase
         {
             uis[typeof(T)] = ui;
         }
 
-        public void UnRegisterUI<T>() where T : IUIBase
+        public void UnRegisterUI<T>() where T : UIBase<T>, IUIBase
         {
             uis.Remove(typeof(T));
         }
 
-        public T GetUI<T>() where T : UIBase<T>
+        public T GetUI<T>() where T : UIBase<T>, IUIBase
         {
+            if (!uis.ContainsKey(typeof(T)))
+            {
+                return null;
+            }
+
             return uis[typeof(T)] as T;
         }
 
-        public bool HasUI<T>() where T : UIBase<T>
+        public bool HasUI<T>() where T : UIBase<T>, IUIBase
         {
             return uis.ContainsKey(typeof(T));
         }
 
-        public void ShowUI<T>(bool hidePrev = true, bool removePrev = false, bool force = false) where T : UIBase<T>
+        public bool IsOpenned<T>(T ui) where T : UIBase<T>, IUIBase
+        {
+            return opennedUIs.Contains(ui);
+        }
+
+        public void ShowUI<T>(bool hidePrev = true, bool removePrev = false, bool force = false) where T : UIBase<T>, IUIBase
         {
             if (IsInterrupted)
             {
@@ -111,28 +144,39 @@ namespace Shurub
                 return;
             }
 
-            if (uiStack.Count > 0 && uiStack.Peek() == nextUI)
+            if (uiStack.Count > 0 && opennedUIs.Contains(nextUI))
             {
                 return;
             }
 
             if (removePrev && uiStack.Count > 0)
             {
-                IUIBase curUI = uiStack.Pop();
+                IUIBase curUI = uiStack.Peek();
                 if (curUI.NeedConfirmWhenHide)
                 {
                     curUI.ConfirmHide(() =>
                     {
+                        uiStack.Pop();
+                        opennedUIs.Remove(curUI);
+
                         nextUI.Prepare();
+
                         uiStack.Push(nextUI);
+                        opennedUIs.Add(nextUI);
+
                         nextUI.Show();
                     }, force);
                 }
                 else
                 {
+                    uiStack.Pop();
+
                     curUI.Hide();
                     nextUI.Prepare();
+
                     uiStack.Push(nextUI);
+                    opennedUIs.Add(nextUI);
+
                     nextUI.Show();
                 }
 
@@ -147,7 +191,10 @@ namespace Shurub
                     curUI.ConfirmHide(() =>
                     {
                         nextUI.Prepare();
+
                         uiStack.Push(nextUI);
+                        opennedUIs.Add(nextUI);
+
                         nextUI.Show();
                     }, force);
                 }
@@ -155,18 +202,23 @@ namespace Shurub
                 {
                     curUI.Hide();
                     nextUI.Prepare();
+
                     uiStack.Push(nextUI);
+                    opennedUIs.Add(nextUI);
+
                     nextUI.Show();
                 }
             }
             else
             {
                 uiStack.Push(nextUI);
+                opennedUIs.Add(nextUI);
+
                 nextUI.Show();
             }
         }
 
-        public void HideUI<T>(bool force = false) where T : UIBase<T>
+        public void HideUI<T>(bool force = false) where T : UIBase<T>, IUIBase
         {
             if (IsInterrupted)
             {
@@ -183,21 +235,32 @@ namespace Shurub
                 CalcControlCool().Forget();
             }
 
-            if (uis.TryGetValue(typeof(T), out IUIBase ui))
+            if (uis.TryGetValue(typeof(T), out IUIBase targetUI))
             {
-                if (uiStack.Count < 1)
+                IUIBase curUI = uiStack.Peek();
+                if (!opennedUIs.Contains(targetUI))
                 {
                     return;
                 }
 
-                IUIBase curUI = uiStack.Pop();
-                if (curUI.NeedConfirmWhenHide)
+                if (uiStack.Peek() != targetUI)
                 {
-                    curUI.ConfirmHide(null, force);
+                    Debug.LogWarning($"{typeof(T).Name}는 최상단 UI가 아님");
+                    return;
+                }
+
+                if (targetUI.NeedConfirmWhenHide)
+                {
+                    targetUI.ConfirmHide(() =>
+                    {
+                        uiStack.Pop();
+                        opennedUIs.Remove(targetUI);
+                    }, force);
                 }
                 else
                 {
-                    curUI.Hide();
+                    opennedUIs.Remove(targetUI);
+                    targetUI.Hide();
                 }
             }
         }
@@ -230,6 +293,8 @@ namespace Shurub
             {
                 curUI.ConfirmHide(() =>
                 {
+                    opennedUIs.Remove(curUI);
+
                     IUIBase removed = uiStack.Pop();
                     IUIBase prevUI = uiStack.Peek();
 
@@ -239,6 +304,8 @@ namespace Shurub
             }
             else
             {
+                opennedUIs.Remove(curUI);
+
                 IUIBase removed = uiStack.Pop();
                 IUIBase prevUI = uiStack.Peek();
 
@@ -252,7 +319,7 @@ namespace Shurub
         /// 모든 씬에서 존재해야 하는 UI는 DDO 사용 시 씬이 바뀌면 UIManager와의 연결이 풀립니다. 따라서 null check 후 Instantiate
         /// </summary>
         /// <returns></returns>
-        public async UniTask CheckAndMakeUI<T>(string path) where T : UIBase<T>
+        public async UniTask CheckAndMakeUI<T>(string path) where T : UIBase<T>, IUIBase
         {
             if (IsInterrupted)
             {

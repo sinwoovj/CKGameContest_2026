@@ -3,6 +3,7 @@
     public enum GameState
     {
         Invalid = -1,   // 이거 나오면 비상
+        None,           
         Lobby,          // 로비
         Boot,           // 게임 실행 직후
         Loading,        // 씬/리소스 로딩

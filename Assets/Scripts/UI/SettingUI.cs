@@ -30,8 +30,8 @@ namespace Shurub
             sfxSlider.onValueChanged.AddListener(OnValueChangedSfxSlider);
 
             resolutionDropdown.value = 0;
-            bgmSlider.value = 1f;
-            sfxSlider.value = 1f;
+            bgmSlider.value = 0.5f;
+            sfxSlider.value = 0.5f;
         }
 
         private void OnValueChangedResolutionDropdown(int value)

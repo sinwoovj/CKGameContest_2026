@@ -19,11 +19,10 @@ namespace Shurub
         public AudioClip Clip;
         public bool Loop;
 
-        [Range(0f, 1f)] public float DefaultVolume = 1f;
-        [Range(0.1f, 3f)] public float DefaultPitch = 1f;
+        [Range(0f, 1f)] public float Volume = 1f;
     }
 
-    public class SoundManager : Singleton<SoundManager>
+    public class SoundManager : SingletonPun<SoundManager>
     {
         [SerializeField] private AudioMixer audioMixer;
 
@@ -33,29 +32,16 @@ namespace Shurub
         [SerializeField] private Sound[] sounds;
 
         private Dictionary<string, Sound> soundDictionary = new Dictionary<string, Sound>();
-        private Dictionary<SoundType, AudioMixerGroup> audioMixerGroups = new Dictionary<SoundType, AudioMixerGroup>();
 
         protected override void OnAwake()
         {
-            foreach (SoundType type in Enum.GetValues(typeof(SoundType)))
-            {
-                AudioMixerGroup[] groups = audioMixer.FindMatchingGroups($"Master/{type}");
-                if (groups.Length > 0)
-                {
-                    audioMixerGroups[type] = groups[0];
-                }
-            }
-
-            bgmAudioSource.outputAudioMixerGroup = audioMixerGroups[SoundType.BGM];
-            sfxAudioSource.outputAudioMixerGroup = audioMixerGroups[SoundType.SFX];
-
             for (int i = 0; i < sounds.Length; i++)
             {
                 soundDictionary[sounds[i].Name] = sounds[i];
             }
         }
 
-        public void Play(string name, float volume = 1f)
+        public void Play(string name)
         {
             if (!soundDictionary.TryGetValue(name, out Sound sound))
             {
@@ -68,11 +54,11 @@ namespace Shurub
                 case SoundType.BGM:
                     bgmAudioSource.clip = sound.Clip;
                     bgmAudioSource.loop = sound.Loop;
-                    bgmAudioSource.volume = volume;
+                    bgmAudioSource.volume = sound.Volume;
                     bgmAudioSource.Play();
                     break;
                 case SoundType.SFX:
-                    sfxAudioSource.volume = volume;
+                    sfxAudioSource.volume = sound.Volume;
                     sfxAudioSource.PlayOneShot(soundDictionary[name].Clip);
                     break;
                 default:
@@ -118,6 +104,7 @@ namespace Shurub
         /// <param name="value">0 ~ 1 사이</param>
         public void SetAudioMixerVolume(SoundType type, float value)
         {
+            //float volume = Mathf.Log10(Mathf.Max(0.0001f, value)) * 20f;
             float volume = (value * 10f) * 8f - 80f;
             string parameterName = type.ToString();
 
