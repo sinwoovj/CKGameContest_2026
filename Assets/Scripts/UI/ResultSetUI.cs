@@ -8,8 +8,6 @@ namespace Shurub
     public class ResultSetUI : MonoBehaviourPun
     {
         [SerializeField]
-        private List<Sprite> setSprites;
-        [SerializeField]
         private Image setImage;
         public void SetPos(Vector3 pos)
         {
@@ -17,7 +15,7 @@ namespace Shurub
         }
         public void SetSprite(int setType)
         {
-            setImage.sprite = setSprites[setType];
+            setImage.sprite = IngredientManager.Instance.setSprites[setType];
         }
         public void SetActive(bool val)
         {

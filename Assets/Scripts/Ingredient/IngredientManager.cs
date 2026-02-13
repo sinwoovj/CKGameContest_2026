@@ -35,6 +35,9 @@ namespace Shurub
 
         private static readonly List<Ingredient> ingredients = new List<Ingredient>();
 
+        public List<Sprite> ingredientSprites;
+        public List<Sprite> setSprites;
+
         private void Awake()
         {
             if (Instance != null)
@@ -95,6 +98,20 @@ namespace Shurub
             }
 
             ingredients.Clear();
+        }
+        public bool IsProcessed(IngredientType type)
+        {
+            switch (type)
+            {
+                case IngredientType.Lettuce:
+                case IngredientType.Apple:
+                case IngredientType.Rice:
+                case IngredientType.Meat:
+                case IngredientType.Fish:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         // 외부 조회용

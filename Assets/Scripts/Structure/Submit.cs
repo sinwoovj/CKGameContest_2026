@@ -11,23 +11,72 @@ namespace Shurub
         protected override bool IsInteractable => true;
         protected override bool CanInteract(int playerViewId)
         {
-            PlayerController pc = PhotonView.Find(playerViewId)
-                                            ?.GetComponent<PlayerController>();
-            if (pc.heldIngredient == null) //음식이 담긴 접시를 들고있는가?
+            PhotonView pv = PhotonView.Find(playerViewId);
+            if (pv == null) return false;
+
+            PlayerController pc = pv.GetComponent<PlayerController>();
+            if (pc == null) return false;
+
+            // 아무것도 안 들고 있음
+            if (pc.heldIngredient == null)
             {
-                //빈 손임
-                Debug.Log("빈 손임");
+                Debug.Log("Submit: 빈 손");
                 return false;
             }
+
+            // 세트가 아님
+            if (pc.heldIngredient.setType == IngredientManager.SetType.Count)
+            {
+                Debug.Log("Submit: 세트가 아님");
+                return false;
+            }
+
             return true;
         }
         protected override void InstantInteract(int playerViewId)
         {
-            //오더리스트에 해당하는 음식을 들고 있는가?
+            PhotonView pv = PhotonView.Find(playerViewId);
+            if (pv == null) return;
 
-            //성공적으로 음식 제출 시...
+            PlayerController pc = pv.GetComponent<PlayerController>();
+            if (pc == null) return;
+
+            if (pc.heldIngredient == null)
+            {
+                OnInteractionCanceled(playerViewId);
+                return;
+            }
+
+            int recipeType = (int)pc.heldIngredient.setType;
+
+            // Master에게 제출 요청
+            SubmitFunc(recipeType);
+
+            // 시각적/입력 상 성공 처리
             OnInteractionSuccess(playerViewId);
-            //아니라면 Failed 호출
+        }
+        public void SubmitFunc(int recipeType)
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                OrderManager.Instance.ProcessSubmit(recipeType);
+            }
+            else
+            {
+                photonView.RPC(
+                    nameof(RPC_RequestSubmit),
+                    RpcTarget.MasterClient,
+                    recipeType
+                );
+            }
+        }
+
+        [PunRPC]
+        void RPC_RequestSubmit(int recipeType, PhotonMessageInfo info)
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+
+            OrderManager.Instance.ProcessSubmit(recipeType);
         }
         protected override void OnInteractionStart(int playerViewId)
         {

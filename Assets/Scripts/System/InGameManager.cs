@@ -43,7 +43,6 @@ namespace Shurub
         float hpTickTimer;
         const float HP_TICK_INTERVAL = 2f; // per 2s
         const int HP_DECREASE = -1;
-        const float HP_SUBMIT_REWARD = 5f;
 
         // Monohaviour Functions
 
@@ -164,6 +163,8 @@ namespace Shurub
             IngredientManager.Instance.ClearIngredient();
             TestManager.Instance.InstantiateTest();
             PlayerUIManager.Instance.ClearPlateUI();
+            OrderUIManager.Instance.ClearOrder();
+            OrderManager.Instance.Init();
         }
 
         public float GetHP()
@@ -207,11 +208,6 @@ namespace Shurub
             //ht[GameConstants.Network.GAME_HP_KEY] = curHp;
 
             PhotonNetwork.CurrentRoom.SetCustomProperties(ht);
-        }
-
-        public void SubmitFood()
-        {
-            ChangeHP(HP_SUBMIT_REWARD);
         }
 
         public void DecreaseHP()
