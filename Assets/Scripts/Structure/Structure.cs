@@ -13,9 +13,7 @@ namespace Shurub
         private float progress = 0f;
         public GameObject progressUIPrefab;
         public InteractionState state = InteractionState.Idle;
-        protected int currentPlayerViewId;
         protected InteractionProcess currentProcess;
-        protected PlayerController currPC;
 
         // Reference Components
         protected Rigidbody2D rb;
@@ -32,11 +30,6 @@ namespace Shurub
             // 로컬 플레이어만 요청
             if (!player.photonView.IsMine) return;
 
-            if (photonView.ViewID == 0)
-            {
-                PhotonNetwork.AllocateViewID(photonView);
-            }
-
             if (state != InteractionState.Idle)
             {
                 //이미 다른 클라이언트가 상호작용 중
@@ -47,7 +40,7 @@ namespace Shurub
             {
                 photonView.RPC(
                     nameof(RPC_InstantInteract),
-                    RpcTarget.MasterClient,
+                    RpcTarget.All,
                     player.photonView.ViewID
                 );
             }
@@ -63,31 +56,24 @@ namespace Shurub
         [PunRPC]
         protected void RPC_InstantInteract(int playerViewId)
         {
-            if (!PhotonNetwork.IsMasterClient)
-                return;
-
             // 검사
             PhotonView playerView = PhotonView.Find(playerViewId);
             if (playerView == null)
                 return;
 
-            currentPlayerViewId = playerViewId;
-
-            currPC = PhotonView.Find(playerViewId).GetComponent<PlayerController>();
-
             // 조건 확인
             PlayerController player = playerView.GetComponent<PlayerController>();
-            if (!CanInteract())
+            if (!CanInteract(playerViewId))
             {
-                EndInteraction();
+                EndInteraction(playerViewId);
                 return;
             }
 
             OnInteractionStart(playerViewId);
 
-            InstantInteract();
+            InstantInteract(playerViewId);
         }
-        protected virtual void InstantInteract() { }
+        protected virtual void InstantInteract(int playerViewId) { }
         [PunRPC]
         protected void RPC_RequestInteract(int playerViewId)
         {
@@ -98,22 +84,17 @@ namespace Shurub
             if (playerView == null)
                 return;
 
-            currentPlayerViewId = playerViewId;
-
-            currPC = PhotonView.Find(playerViewId).GetComponent<PlayerController>();
-
             if (currentProcess != null || state != InteractionState.Idle)
             {
-                EndInteraction();
+                EndInteraction(playerViewId);
                 return;
             }
 
-
             // 조건 확인
             PlayerController player = playerView.GetComponent<PlayerController>();
-            if (!CanInteract())
+            if (!CanInteract(playerViewId))
             {
-                EndInteraction();
+                EndInteraction(playerViewId);
                 return;
             }
 
@@ -121,74 +102,174 @@ namespace Shurub
 
             // BakeProcess 생성
             currentProcess = CreateProcess();
+
+            photonView.RPC(nameof(RPC_StartProcess), RpcTarget.All, playerViewId);
+
+        }
+        public void HoldInteract(PlayerController player)
+        {
+            // 로컬 플레이어만 요청
+            if (!player.photonView.IsMine) return;
+
+            if (state != InteractionState.Idle)
+            {
+                //이미 다른 클라이언트가 상호작용 중
+                return;
+            }
+
+            if (Kind == InteractionKind.Instant)
+            {
+                photonView.RPC(
+                    nameof(RPC_HoldInstantInteract),
+                    RpcTarget.All,
+                    player.photonView.ViewID
+                );
+            }
+            else
+            {
+                photonView.RPC(
+                    nameof(RPC_HoldRequestInteract),
+                    RpcTarget.MasterClient,
+                    player.photonView.ViewID
+                );
+            }
+        }
+        [PunRPC]
+        protected void RPC_HoldInstantInteract(int playerViewId)
+        {
+            // 검사
+            PhotonView playerView = PhotonView.Find(playerViewId);
+            if (playerView == null)
+                return;
+
+            // 조건 확인
+            PlayerController player = playerView.GetComponent<PlayerController>();
+            if (!CanHoldInteract(playerViewId))
+            {
+                EndInteraction(playerViewId);
+                return;
+            }
+
+            OnInteractionStart(playerViewId);
+
+            HoldInstantInteract(playerViewId);
+        }
+        protected virtual void HoldInstantInteract(int playerViewId) { InstantInteract(playerViewId); }
+        [PunRPC]
+        protected void RPC_HoldRequestInteract(int playerViewId)
+        {
+            if (!PhotonNetwork.IsMasterClient)
+                return;
+
+            PhotonView playerView = PhotonView.Find(playerViewId);
+            if (playerView == null)
+                return;
+
+            if (currentProcess != null || state != InteractionState.Idle)
+            {
+                EndInteraction(playerViewId);
+                return;
+            }
+
+            // 조건 확인
+            PlayerController player = playerView.GetComponent<PlayerController>();
+            if (!CanHoldInteract(playerViewId))
+            {
+                EndInteraction(playerViewId);
+                return;
+            }
+
+            OnInteractionStart(playerViewId);
+
+            // BakeProcess 생성
+            currentProcess = CreateProcess();
+
+            photonView.RPC(nameof(RPC_StartProcess), RpcTarget.All, playerViewId);
+
+        }
+        [PunRPC]
+        protected void RPC_StartProcess(int playerViewId)
+        {
+            if (currentProcess == null)
+                currentProcess = CreateProcess();
+
             currentProcess.StartProcess(playerViewId, this);
         }
         public void InteractProcess(int playerViewId)
         {
             photonView.RPC(
                 nameof(RPC_InteractProcess),
-                RpcTarget.MasterClient,
+                RpcTarget.All,
                 playerViewId
             );
         }
         [PunRPC]
         protected void RPC_InteractProcess(int playerViewId)
         {
-            if (!PhotonNetwork.IsMasterClient)
-                return;
-
             if (currentProcess == null)
                 return;
 
-            if (currentPlayerViewId != playerViewId)
-                return; // 다른 사람이 실행 못 함
-            
-            currentProcess.InteractProcess();
+            currentProcess.InteractProcess(playerViewId);
+        }
+        public void HoldInteractProcess(int playerViewId)
+        {
+            photonView.RPC(
+                nameof(RPC_HoldInteractProcess),
+                RpcTarget.All,
+                playerViewId
+            );
+        }
+        [PunRPC]
+        protected void RPC_HoldInteractProcess(int playerViewId)
+        {
+            if (currentProcess == null)
+                return;
+
+            currentProcess.InteractProcess(playerViewId);
+        }
+        [PunRPC]
+        public void RPC_SendTimingResult(int playerViewId, bool success)
+        {
+            if (currentProcess == null) return;
+            ((BakeProcess)currentProcess).ApplyTimingResult(playerViewId, success);
         }
         public void RequestCancel(int playerViewId)
         {
             photonView.RPC(
                 nameof(RPC_RequestCancel),
-                RpcTarget.MasterClient,
+                RpcTarget.All,
                 playerViewId
             );
         }
         [PunRPC]
         protected void RPC_RequestCancel(int playerViewId)
         {
-            if (!PhotonNetwork.IsMasterClient) return;
             if (currentProcess == null) return;
-            if (currentPlayerViewId != playerViewId) return; // 다른 사람이 취소 못 함
 
-            currentProcess.CanceledProcess();
+            currentProcess.CanceledProcess(playerViewId);
         }
-        protected abstract bool CanInteract();
+        protected virtual bool CanInteract(int playerViewId) { return false; }
+        protected virtual bool CanHoldInteract(int playerViewId) { return false; }
         protected virtual InteractionProcess CreateProcess() { return null; }
         public void ClearProcess()
         {
             currentProcess = null;
         }
-        public void UpdateProgress(float _progress)
+        public void UpdateProgress(int playerViewId, float _progress, bool active)
         {
-            if (!PhotonNetwork.IsMasterClient)
-                return;
-
-            progress = _progress;
-
             photonView.RPC(
-                nameof(RPC_SyncState),
+                nameof(RPC_UpdateProgress),
                 RpcTarget.All,
-                currentPlayerViewId,
-                Progress,
-                (int)state,
-                photonView.ViewID
+                playerViewId,
+                _progress,
+                photonView.ViewID,
+                active
             );
         }
         [PunRPC]
-        protected void RPC_SyncState(int playerViewId, float progress, int newState, int structureViewId)
+        protected void RPC_UpdateProgress(int playerViewId, float _progress, int structureViewId, bool active)
         {
-            state = (InteractionState)newState;
-
+            progress = _progress;
             PlayerController pc = PhotonView.Find(playerViewId)
                                             ?.GetComponent<PlayerController>();
             if (pc == null) return;
@@ -200,29 +281,34 @@ namespace Shurub
                       ?.GetComponent<IInteractable>();
             pc.EnsureProcessUI();   // 있으면 패스, 없으면 생성
             pc.progressUI.SetProgress(progress);
-            pc.progressUI.SetActive(state == InteractionState.InProgress);
+            pc.progressUI.SetActive(active);
+        }
+        [PunRPC]
+        protected void RPC_SyncState(int newState)
+        {
+            state = (InteractionState)newState;
         }
         protected virtual void OnInteractionStart(int playerViewId) // 애니메이션·이펙트 전환용 함수
         {
-            // State 동기화 및 UI 동기화
-            photonView.RPC(
-                nameof(RPC_SyncState),
-                RpcTarget.All,
-                currentPlayerViewId,
-                Progress,
-                (int)InteractionState.InProgress,
-                photonView.ViewID
-            );
+            if(Kind == InteractionKind.Process)
+            {
+                photonView.RPC(
+                    nameof(RPC_SyncState),
+                    RpcTarget.All,
+                    (int)InteractionState.InProgress
+                );
+                UpdateProgress(playerViewId, 0f, true);
+            }
         }
-        public virtual void OnInteractionSuccess()
+        public virtual void OnInteractionSuccess(int playerViewId)
         {
             photonView.RPC(
                 nameof(RPC_OnInteractionSuccess),
                 RpcTarget.All,
-                currentPlayerViewId
+                playerViewId
             );
 
-            EndInteraction();
+            EndInteraction(playerViewId);
         }
         [PunRPC]
         protected virtual void RPC_OnInteractionSuccess(int playerViewId)
@@ -230,15 +316,15 @@ namespace Shurub
             //animator.SetTrigger("Success");
             //successEffect.Play();
         }
-        public virtual void OnInteractionFailed()
+        public virtual void OnInteractionFailed(int playerViewId)
         {
             photonView.RPC(
                 nameof(RPC_OnInteractionFailed),
                 RpcTarget.All,
-                currentPlayerViewId
+                playerViewId
             );
 
-            EndInteraction();
+            EndInteraction(playerViewId);
         }
         [PunRPC]
         protected virtual void RPC_OnInteractionFailed(int playerViewId)
@@ -246,15 +332,15 @@ namespace Shurub
             //animator.SetTrigger("Failed");
             //failedEffect.Play();
         }
-        public virtual void OnInteractionCanceled()
+        public virtual void OnInteractionCanceled(int playerViewId)
         {
             photonView.RPC(
                 nameof(RPC_OnInteractionCanceled),
                 RpcTarget.All,
-                currentPlayerViewId
+                playerViewId
             );
 
-            EndInteraction();
+            EndInteraction(playerViewId);
         }
         [PunRPC]
         protected virtual void RPC_OnInteractionCanceled(int playerViewId)
@@ -262,18 +348,36 @@ namespace Shurub
             //animator.SetTrigger("Canceled");
             //canceledEffect.Play();
         }
-        protected virtual void EndInteraction()
+        protected virtual void EndInteraction(int playerViewId)
         {
+            if (Kind == InteractionKind.Process)
+            {
+                photonView.RPC(
+                    nameof(RPC_SyncState),
+                    RpcTarget.All,
+                    (int)InteractionState.Idle
+                );
+                UpdateProgress(playerViewId, 0, false);
+            }
             photonView.RPC(
-                nameof(RPC_SyncState),
+                nameof(RPC_EndInteraction),
                 RpcTarget.All,
-                currentPlayerViewId,
-                Progress,
-                (int)InteractionState.Idle,
-                photonView.ViewID
+                playerViewId
             );
-            currentPlayerViewId = 0;
-            currPC = null;
+        }
+        [PunRPC]
+        protected virtual void RPC_EndInteraction(int playerViewId)
+        {
+            PlayerController pc = PhotonView.Find(playerViewId)
+                                            ?.GetComponent<PlayerController>();
+
+            if (pc != null)
+            {
+                Debug.Log("pc.currentInteractable = null");
+                pc.currentInteractable = null;
+            }
+            
+            currentProcess = null;
         }
     }
 }

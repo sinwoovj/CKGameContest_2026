@@ -91,7 +91,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 3
   m_Sprite: {fileID: -5475400410876511930, guid: 5311151729d72ab42b20642b1406596c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -100,7 +100,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &2572142689916849078
@@ -163,8 +163,9 @@ MonoBehaviour:
   moveInput: {x: 0, y: 0}
   moveDir: {x: 0, y: -1}
   isWalking: 0
-  progressUIPrefab: {fileID: 5078066084531250378, guid: ec837823ce241154988b296f31bed7d9, type: 3}
+  progressUIPrefab: {fileID: 4126666739965337986, guid: 041ac653d3b935b46891e981c43399cb, type: 3}
   progressUI: {fileID: 0}
+  isProgressUI: 0
 --- !u!114 &499160806948557619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -479,8 +480,11 @@ MonoBehaviour:
     SynchronizeType: 1
     Name: IsWalking
   - Type: 9
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: Default
+  - Type: 4
+    SynchronizeType: 1
+    Name: IsCarry
   m_SynchronizeLayers:
   - SynchronizeType: 1
     LayerIndex: 0

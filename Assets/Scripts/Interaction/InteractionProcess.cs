@@ -1,4 +1,5 @@
 ﻿using Photon.Pun;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 namespace Shurub
@@ -17,27 +18,27 @@ namespace Shurub
             currentPlayerViewId = playerViewId;
             owner = structure; 
         }
-        public abstract void InteractProcess();
+        public abstract void InteractProcess(int playerViewId);
 
-        public virtual void CanceledProcess()
+        public virtual void CanceledProcess(int playerViewId)
         {
-            owner.OnInteractionCanceled();
+            owner.OnInteractionCanceled(playerViewId);
             state = InteractionState.Canceled;
-            EndProcess();
+            EndProcess(playerViewId);
         }
-        public virtual void FailedProcess()
+        public virtual void FailedProcess(int playerViewId)
         {
-            owner.OnInteractionFailed();
+            owner.OnInteractionFailed(playerViewId);
             state = InteractionState.Failed;
-            EndProcess();
+            EndProcess(playerViewId);
         }
-        public virtual void SuccessProcess()
+        public virtual void SuccessProcess(int playerViewId)
         {
-            owner.OnInteractionSuccess();
+            owner.OnInteractionSuccess(playerViewId);
             state = InteractionState.Success;
-            EndProcess();
+            EndProcess(playerViewId);
         }
-        protected void EndProcess()
+        protected virtual void EndProcess(int playerViewId)
         {
             if (owner == null) return;
             owner.ClearProcess(); // currentProcess = null

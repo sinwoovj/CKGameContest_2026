@@ -45,3 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIManager
   pausePanel: {fileID: 0}
+  resultPanel: {fileID: 0}
+  HPUIObj: {fileID: 0}
+  playTimeText: {fileID: 0}
+  totalTimeText: {fileID: 0}
+  countDownText: {fileID: 0}

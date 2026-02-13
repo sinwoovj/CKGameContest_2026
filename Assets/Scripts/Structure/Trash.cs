@@ -9,9 +9,11 @@ namespace Shurub
         public override InteractionKind Kind => InteractionKind.Instant;
         protected override string StructureName => "Trash";
         protected override bool IsInteractable => true;
-        protected override bool CanInteract()
+        protected override bool CanInteract(int playerViewId)
         {
-            if (currPC.heldIngredient == null) //재료를 들고있는가?
+            PlayerController pc = PhotonView.Find(playerViewId)
+                                            ?.GetComponent<PlayerController>();
+            if (pc.heldIngredient == null) //재료를 들고있는가?
             {
                 //재료를 들고 있지 않음
                 Debug.Log("재료를 들고 있지 않음");
@@ -19,10 +21,13 @@ namespace Shurub
             }
             return true;
         }
-        protected override void InstantInteract()
+        protected override void InstantInteract(int playerViewId)
         {
-            currPC.RemoveIngredient();
-            OnInteractionSuccess();
+            PlayerController pc = PhotonView.Find(playerViewId)
+                                            ?.GetComponent<PlayerController>();
+            if (pc == null) return;
+            pc.RemoveIngredient();
+            OnInteractionSuccess(playerViewId);
         }
         [PunRPC]
         protected override void OnInteractionStart(int playerViewId)

@@ -44,3 +44,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f238c05410e7ec14b87d6ce949e91f6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shurub.BakeProcess
+  timingUIPrefab: {fileID: 4890273793771605853, guid: c369f4a42383691408d075bfdbadf953, type: 3}

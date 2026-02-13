@@ -16,8 +16,23 @@ namespace Shurub
             "Prefabs/Ingredient/Fish",
             "Prefabs/Ingredient/Ice",
             "Prefabs/Ingredient/Water",
+            "Prefabs/Ingredient/Plate",
         };
-        public enum IngredientType { Lettuce, Apple, Rice, Meat, Fish, Ice, Water, Count };
+        private static readonly string[] setPrefabPaths = {
+            "Prefabs/Set/Salad",
+            "Prefabs/Set/Steak",
+            "Prefabs/Set/Steak_Set",
+            "Prefabs/Set/Special_Steak_Set",
+            "Prefabs/Set/Baked_Fish",
+            "Prefabs/Set/Baked_Fish_Set",
+            "Prefabs/Set/Special_Baked_Fish_Set",
+            "Prefabs/Set/Ice_Water",
+            "Prefabs/Set/Apple_Juice",
+            "Prefabs/Set/Strange",
+        };
+        public enum IngredientType { Lettuce, Apple, Rice, Meat, Fish, Ice, Water, Plate, Count };
+        public enum SetType { Salad, Steak, SteakSet, SpecialSteakSet, BakedFish, BakedFishSet, SpecialBakedFishSet, IceWater, AppleJuice, Strange, Count };
+
         private static readonly List<Ingredient> ingredients = new List<Ingredient>();
 
         private void Awake()
@@ -32,10 +47,15 @@ namespace Shurub
         }
 
         // 생성
-        public void InstantiateIngredient(IngredientType type, Vector3 pos)
+        public GameObject InstantiateIngredient(IngredientType type, Vector3 pos)
         {
-            if (!PhotonNetwork.IsMasterClient) return;
-            PhotonNetwork.Instantiate(ingredientPrefabPaths[(int)type], pos, Quaternion.identity);
+            if (!PhotonNetwork.IsMasterClient) return null;
+            return PhotonNetwork.Instantiate(ingredientPrefabPaths[(int)type], pos, Quaternion.identity);
+        }
+        public GameObject InstantiateSet(SetType type, Vector3 pos)
+        {
+            if (!PhotonNetwork.IsMasterClient) return null;
+            return PhotonNetwork.Instantiate(setPrefabPaths[(int)type], pos, Quaternion.identity);
         }
 
         // 삭제

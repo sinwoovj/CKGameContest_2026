@@ -9,19 +9,70 @@ namespace Shurub
         public override InteractionKind Kind => InteractionKind.Instant;
         protected override string StructureName => "Pantry";
         protected override bool IsInteractable => true;
-        protected override bool CanInteract()
+        public GameObject platePrefab;
+        protected override bool CanInteract(int playerViewId)
         {
-            if (currPC.heldIngredient != null) //재료나 접시를 들고있는가?
+            PlayerController pc = PhotonView.Find(playerViewId)
+                                            ?.GetComponent<PlayerController>();
+            if (pc.heldIngredient != null) //빈 손이 아닌가?
             {
-                //빈 손이 아님
                 Debug.Log("빈 손이 아님");
                 return false;
             }
             return true;
         }
-        protected override void InstantInteract()
+        protected override void InstantInteract(int playerViewId)
         {
-            //접시를 획득함
+            PhotonView playerPV = PhotonView.Find(playerViewId);
+            if (playerPV == null) return;
+
+            if (!playerPV.IsMine) return;
+            PlayerController pc = playerPV.GetComponent<PlayerController>();
+            if (pc == null) return;
+
+            photonView.RPC(
+                nameof(RPC_RequestPlateSpawn),
+               RpcTarget.MasterClient,
+               playerViewId
+            );
+            OnInteractionSuccess(playerViewId);
+        }
+        [PunRPC]
+        private void RPC_RequestPlateSpawn(int playerViewId)
+        {
+            Debug.Log("Spawn Plate by Master");
+
+            PhotonView playerPV = PhotonView.Find(playerViewId);
+            if (playerPV == null) return;
+
+            PlayerController pc = playerPV.GetComponent<PlayerController>();
+            if (pc == null) return;
+
+            GameObject plateObj =
+                IngredientManager.Instance.InstantiateIngredient(
+                    IngredientManager.IngredientType.Plate,
+                    pc.transform.position
+                );
+
+            if (plateObj == null) return;
+
+            photonView.RPC(
+                nameof(RPC_RequestGetIngredient),
+               playerPV.Owner,
+               playerViewId,
+               plateObj.GetPhotonView().ViewID
+            );
+        }
+        [PunRPC]
+        private void RPC_RequestGetIngredient(int playerViewId, int ingredientViewId)
+        {
+            PhotonView playerPV = PhotonView.Find(playerViewId);
+            if (playerPV == null) return;
+
+            PlayerController pc = playerPV.GetComponent<PlayerController>();
+            if (pc == null) return;
+
+            pc.GetIngredient(ingredientViewId);
         }
         protected override void OnInteractionStart(int playerViewId)
         {

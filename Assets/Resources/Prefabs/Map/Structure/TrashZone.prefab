@@ -82,7 +82,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.5245282, g: 0, b: 0, a: 1}
   m_FlipX: 0
@@ -179,6 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 281d6013488505e48b07e07a496e4c29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shurub.Trash
+  progressUIPrefab: {fileID: 0}
   state: 0
 --- !u!114 &768925060655227285
 MonoBehaviour:

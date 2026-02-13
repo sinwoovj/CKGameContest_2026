@@ -9,9 +9,11 @@ namespace Shurub
         public override InteractionKind Kind => InteractionKind.Instant;
         protected override string StructureName => "Submit";
         protected override bool IsInteractable => true;
-        protected override bool CanInteract()
+        protected override bool CanInteract(int playerViewId)
         {
-            if (currPC.heldIngredient == null) //음식이 담긴 접시를 들고있는가?
+            PlayerController pc = PhotonView.Find(playerViewId)
+                                            ?.GetComponent<PlayerController>();
+            if (pc.heldIngredient == null) //음식이 담긴 접시를 들고있는가?
             {
                 //빈 손임
                 Debug.Log("빈 손임");
@@ -19,12 +21,12 @@ namespace Shurub
             }
             return true;
         }
-        protected override void InstantInteract()
+        protected override void InstantInteract(int playerViewId)
         {
             //오더리스트에 해당하는 음식을 들고 있는가?
 
             //성공적으로 음식 제출 시...
-            OnInteractionSuccess();
+            OnInteractionSuccess(playerViewId);
             //아니라면 Failed 호출
         }
         protected override void OnInteractionStart(int playerViewId)

@@ -2,6 +2,8 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
+using static Shurub.Ingredient;
 
 
 namespace Shurub
@@ -48,6 +50,8 @@ namespace Shurub
         [SerializeField]
         private GameObject progressUIPrefab;
         public ProgressUI progressUI = null;
+        public bool isProgressUI = false;
+
 
         private void Awake()
         {
@@ -74,7 +78,7 @@ namespace Shurub
 
                 if (chargeTimer >= throwChargeTime)
                 {
-                    ThrowIngredient();   // RPC
+                    ThrowIngredient();
                     StopCharging();
                 }
             }
@@ -104,19 +108,39 @@ namespace Shurub
             anim.SetFloat("InputX", moveInput.x);
             anim.SetFloat("InputY", moveInput.y);
             if(holdState == HoldState.Holding)
-                UpdateIngredientPosition(moveDir);
+                UpdateIngredient(moveDir);
         }
 
-        private void UpdateIngredientPosition(Vector2 moveDir)
+        private void UpdateIngredient(Vector2 moveDir)
         {
-
+            float x = moveDir.x;
+            float y = moveDir.y;
+            float newX = Mathf.Abs(x);
+            if(newX == 0)
+            {
+                newX = 0;
+            }
+            else if(newX < 1)
+            {
+                newX = 0.17f;
+            }
+            else
+            {
+                newX = 0.34f;
+            }
+            newX *= x < 0 ? -1 : 1;
+            Vector3 newPos = new Vector3(newX, -0.25f, 0);
+            newPos += transform.position;
+            heldIngredient.ChangeTransform(newPos);
+            heldIngredient.ChangeSpriteSortingOrder(y < 0 ? 4 : 2);
         }
+
         public void EnsureProcessUI()
         {
-            if (progressUI != null)
-                return;
-
-            progressUI = Instantiate(progressUIPrefab, gameObject.transform).GetComponent<ProgressUI>();
+            if (isProgressUI) return;
+            isProgressUI = true;
+            progressUI = Instantiate(progressUIPrefab, GameObject.Find("UIRootWorld").transform).GetComponent<ProgressUI>();
+            progressUI.Bind(transform);
         }
 
         public void InitAnim()
@@ -126,22 +150,41 @@ namespace Shurub
             anim.SetFloat("LastInputX", 0);
             anim.SetFloat("LastInputY", 0);
             anim.SetBool("IsWalking", false);
+            anim.SetBool("IsCarry", false);
             anim.SetTrigger("Default");
         }
 
         public void OnInteract(InputAction.CallbackContext context) // K
         {
-            if (!context.performed) return;
             if (!photonView.IsMine) return;
-
-            if (currentInteractable == null)
+            // 짧게 눌렀을 때
+            if (context.performed && context.interaction is TapInteraction)
             {
-                currentInteractable = DetectInteractable();
-                currentInteractable?.Interact(this);
+                Debug.Log("OnInteract called. Tab current: " + currentInteractable);
+                if (currentInteractable == null)
+                {
+                    currentInteractable = DetectInteractable();
+                    currentInteractable?.Interact(this);
+                }
+                else
+                {
+                    currentInteractable.InteractProcess(photonView.ViewID);
+                }
             }
-            else
+
+            // 일정 시간 이상 눌렀을 때
+            if (context.performed && context.interaction is HoldInteraction)
             {
-                currentInteractable.InteractProcess(photonView.ViewID);
+                Debug.Log("OnInteract called. Hold current: " + currentInteractable);
+                if (currentInteractable == null)
+                {
+                    currentInteractable = DetectInteractable();
+                    currentInteractable?.HoldInteract(this);
+                }
+                else
+                {
+                    currentInteractable.HoldInteractProcess(photonView.ViewID);
+                }
             }
         }
         private IInteractable DetectInteractable()
@@ -168,7 +211,7 @@ namespace Shurub
         public void OnPickUpOrThrow(InputAction.CallbackContext context) // L
         {
             if (!photonView.IsMine) return;
-
+            if (currentInteractable != null) return;
             if (context.started)
             {
                 if (holdState == HoldState.Empty)
@@ -187,7 +230,7 @@ namespace Shurub
 
                 if (chargeTimer < throwChargeTime)
                 {
-                    DropIngredient();
+                    DropIngredient((Vector2)transform.position, true);
                 }
 
                 StopCharging();
@@ -208,11 +251,33 @@ namespace Shurub
         public void RemoveIngredient()
         {
             IngredientManager.Instance.DestroyIngredient(heldIngredient);
+            anim.SetBool("IsCarry", false);
+
+            photonView.RPC(
+                nameof(RPC_RemoveIngredient),
+                RpcTarget.All
+            );
+        }
+        [PunRPC]
+        protected void RPC_RemoveIngredient()
+        {
             heldIngredient = null;
             holdState = HoldState.Empty;
         }
+        public void GetIngredient(int IngredientViewId)
+        {
+            if (holdState != HoldState.Empty)
+                return;
 
-        void TryPickIngredient()
+            photonView.RPC(
+                nameof(RPC_PickIngredient),
+                RpcTarget.All,
+                IngredientViewId
+            );
+            anim.SetBool("IsCarry", true);
+            UpdateIngredient(moveDir);
+        }
+        protected void TryPickIngredient()
         {
             if (holdState != HoldState.Empty)
                 return;
@@ -228,9 +293,11 @@ namespace Shurub
                 RpcTarget.All,
                 ingredient.photonView.ViewID
             );
+            anim.SetBool("IsCarry", true);
+            UpdateIngredient(moveDir);
         }
         [PunRPC]
-        void RPC_PickIngredient(int ingredientViewId)
+        protected void RPC_PickIngredient(int ingredientViewId)
         {
             PhotonView pv = PhotonView.Find(ingredientViewId);
             if (!pv) return;
@@ -249,7 +316,7 @@ namespace Shurub
             );
         }
 
-        void DropIngredient()
+        public void DropIngredient(Vector2 pos, bool val = false)
         {
             if (holdState != HoldState.Holding || heldIngredient == null)
                 return;
@@ -257,11 +324,13 @@ namespace Shurub
             photonView.RPC(
                 nameof(RPC_DropIngredient),
                 RpcTarget.All,
-                (Vector2)transform.position
+                pos,
+                val
             );
+            anim.SetBool("IsCarry", false);
         }
         [PunRPC]
-        void RPC_DropIngredient(Vector2 dropPos)
+        protected void RPC_DropIngredient(Vector2 dropPos, bool val)
         {
             if (heldIngredient == null)
                 return;
@@ -269,20 +338,22 @@ namespace Shurub
             heldIngredient.photonView.RPC(
                 nameof(Ingredient.RPC_Drop),
                 RpcTarget.All,
-                dropPos
+                dropPos,
+                val
             );
 
             heldIngredient = null;
             holdState = HoldState.Empty;
         }
 
-        void ThrowIngredient()
+        public void ThrowIngredient()
         {
             if (holdState != HoldState.Holding || heldIngredient == null)
                 return;
 
             Vector2 dir = moveInput != Vector2.zero ? moveInput : moveLastInput;
 
+            anim.SetBool("IsCarry", false);
             photonView.RPC(
                 nameof(RPC_ThrowIngredient),
                 RpcTarget.All,
@@ -291,7 +362,7 @@ namespace Shurub
             );
         }
         [PunRPC]
-        void RPC_ThrowIngredient(Vector2 dir, float power)
+        protected void RPC_ThrowIngredient(Vector2 dir, float power)
         {
             if (heldIngredient == null)
                 return;
