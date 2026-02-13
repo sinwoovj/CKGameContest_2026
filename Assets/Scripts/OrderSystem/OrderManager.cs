@@ -55,6 +55,8 @@ namespace Shurub
         }
         public void Init()
         {
+            if (!PhotonNetwork.IsMasterClient) return;
+
             currentOrders.Clear();
             spawnTimer = 0;
         }

@@ -136,6 +136,7 @@ namespace Shurub
                     GameInit();
                     SetPlayerInput(false);
                     NetworkManager.Instance.SetGameState(GameState.Ready);
+                    SoundManager.Instance.Play("InGameBGM");
                     break;
                 case GameState.Ready:
                     //카운트 다운

@@ -8,7 +8,6 @@ using Photon.Pun.Demo.PunBasics;
 using Cysharp.Threading.Tasks;
 using Photon.Pun;
 using UnityEngine.EventSystems;
-using static UnityEngine.GraphicsBuffer;
 using System.Linq;
 
 namespace Shurub
