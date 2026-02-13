@@ -4589,12 +4589,12 @@ MonoBehaviour:
     Type: 0
     Clip: {fileID: 8300000, guid: 37073d735f1cad34ead8417316afe8fc, type: 3}
     Loop: 1
-    Volume: 0.1
+    Volume: 0.5
   - Name: InGameBGM
     Type: 0
     Clip: {fileID: 8300000, guid: 4f74091965117904789a4adde1b57cbc, type: 3}
     Loop: 1
-    Volume: 0.1
+    Volume: 0.5
 --- !u!1 &401945131
 GameObject:
   m_ObjectHideFlags: 0
