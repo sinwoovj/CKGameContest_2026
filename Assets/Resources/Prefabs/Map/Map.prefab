@@ -2932,6 +2932,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PortalZone_1 (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4241944759550938872, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -3220,6 +3228,14 @@ PrefabInstance:
     - target: {fileID: 935373589139367146, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_Name
       value: PortalZone_1 (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4241944759550938872, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x
@@ -3617,7 +3633,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: warpPosition.y
-      value: 6
+      value: 6.5
       objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x
@@ -3848,6 +3864,14 @@ PrefabInstance:
     - target: {fileID: 935373589139367146, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_Name
       value: PortalZone_1 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4241944759550938872, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x
@@ -5388,6 +5412,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PortalZone_1 (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4241944759550938872, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -6474,6 +6506,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PortalZone_1 (10)
       objectReference: {fileID: 0}
+    - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4241944759550938872, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x
       value: 7.9997997
@@ -7352,6 +7392,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PortalZone_1 (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4241944759550938872, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -7432,7 +7480,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: warpPosition.y
-      value: 28
+      value: 28.5
       objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x
@@ -7507,6 +7555,14 @@ PrefabInstance:
     - target: {fileID: 935373589139367146, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_Name
       value: PortalZone_1 (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4241944759550938872, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x
@@ -8218,6 +8274,14 @@ PrefabInstance:
     - target: {fileID: 935373589139367146, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_Name
       value: PortalZone_1 (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4241944759550938872, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x
@@ -9600,8 +9664,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: warpPosition.x
+      value: 11.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: warpPosition.y
-      value: 11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x
@@ -9833,6 +9901,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: PortalZone_1 (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4241944759550938872, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -10037,8 +10113,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
+      propertyPath: warpPosition.x
+      value: -11.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3034025709677291296, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: warpPosition.y
-      value: -11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8602017182000297017, guid: 7392cf79bc9c2e4468a8b4ddb9efa3e0, type: 3}
       propertyPath: m_LocalScale.x

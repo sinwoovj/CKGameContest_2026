@@ -31,13 +31,13 @@ namespace Shurub
 
                 if (direction == Direction.Horizontal)
                 {
-                    playerController.WarpTo(new Vector3(playerController.transform.position.x, warpPosition.y, 0f));
+                    playerController.WarpTo(new Vector3(warpPosition.x, playerController.transform.position.y, 0f));
                     return;
                 }
 
                 if (direction == Direction.Vertical)
                 {
-                    playerController.WarpTo(new Vector3(warpPosition.x, playerController.transform.position.y, 0f));
+                    playerController.WarpTo(new Vector3(playerController.transform.position.x, warpPosition.y, 0f));
                     return;
                 }
             }
