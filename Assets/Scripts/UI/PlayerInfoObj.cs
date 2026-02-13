@@ -8,14 +8,6 @@ namespace Shurub
 {
     public class PlayerInfoObj : MonoBehaviour
     {
-        public enum Status
-        {
-            Invalid = -1,
-            NotReady = 0,
-            Ready = 1,
-            Busy = 2
-        }
-
         [SerializeField] private Toggle infoToggle;
         [SerializeField] private Button kickButton;
         [SerializeField] private Image statusImage;
@@ -49,11 +41,11 @@ namespace Shurub
                 });
             }
 
-            statusImage.color = (Status)(int)player.CustomProperties.Get(GameConstants.Network.PLAYER_STATUS_KEY, Status.Invalid) switch
+            statusImage.color = (PlayerStatus)(int)player.CustomProperties.Get(GameConstants.Network.PLAYER_STATUS_KEY, -1) switch
             {
-                Status.NotReady => (Color)new Color32(117, 117, 117, 255),
-                Status.Ready => (Color)new Color32(126, 217, 87, 255),
-                Status.Busy => (Color)new Color32(255, 45, 45, 255),
+                PlayerStatus.NotReady => (Color)new Color32(117, 117, 117, 255),
+                PlayerStatus.Ready => (Color)new Color32(126, 217, 87, 255),
+                PlayerStatus.Busy => (Color)new Color32(255, 45, 45, 255),
                 _ => (Color)new Color32(255, 255, 255, 255),
             };
         }

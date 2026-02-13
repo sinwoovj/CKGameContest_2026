@@ -4,18 +4,13 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TutorialUI : UIBase
+public class TutorialUI : UIBase<TutorialUI>
 {
     [SerializeField] private Button gameRuleOpenButton;
     [SerializeField] private Button controlOpenButton;
 
     [SerializeField] private Button gameRuleCloseButton;
     [SerializeField] private Button controlCloseButton;
-
-    protected override void Init()
-    {
-        UIManager.Instance.RegisterUI(this);
-    }
 
     public override void Show()
     {
@@ -34,11 +29,11 @@ public class TutorialUI : UIBase
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                NetworkManager.Instance.SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.Ready);
+                NetworkManager.Instance.SetPlayerStatus(PhotonNetwork.LocalPlayer, PlayerStatus.Ready);
             }
             else
             {
-                NetworkManager.Instance.SetLobbyPlayerStatus(PhotonNetwork.LocalPlayer, PlayerInfoObj.Status.NotReady);
+                NetworkManager.Instance.SetPlayerStatus(PhotonNetwork.LocalPlayer, PlayerStatus.NotReady);
             }
         }
 

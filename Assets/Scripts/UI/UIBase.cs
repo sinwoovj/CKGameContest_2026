@@ -7,7 +7,17 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public abstract class UIBase : MonoBehaviour
+public interface IUIBase
+{
+    bool NeedConfirmWhenHide { get; }
+
+    void Prepare();
+    void Show();
+    void Hide();
+    void ConfirmHide(UnityAction onCompleted, bool force);
+}
+
+public abstract class UIBase<T> : MonoBehaviour, IUIBase where T : UIBase<T>
 {
     //public virtual bool CheckDontDestroyOnLoad()
     //{
@@ -17,7 +27,7 @@ public abstract class UIBase : MonoBehaviour
     protected CanvasGroup canvasGroup;
 
     public virtual bool NeedConfirmWhenHide => false;
-    protected virtual string ConfirmTitle => "확인";
+    protected virtual string ConfirmTitle => "";
     protected virtual string ConfirmMessage => "";
     protected virtual UnityAction OnConfirmed => null;
 
@@ -28,10 +38,28 @@ public abstract class UIBase : MonoBehaviour
 
     private void Awake()
     {
+        UIManager.Instance.RegisterUI(this as T);
+
         Prepare();
         AutoBind();
         AutoConnectButtons();
-        Init();
+        OnAwake();
+    }
+
+    private void OnDestroy()
+    {
+        UIManager.Instance.UnRegisterUI<T>();
+        OnDestroyed();
+    }
+
+    protected virtual void OnAwake()
+    {
+
+    }
+
+    protected virtual void OnDestroyed()
+    {
+
     }
 
     private void CanvasSetup()
@@ -42,8 +70,6 @@ public abstract class UIBase : MonoBehaviour
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
     }
-
-    protected abstract void Init();
 
     public void Prepare()
     {
@@ -94,16 +120,6 @@ public abstract class UIBase : MonoBehaviour
             onCompleted?.Invoke();
             Hide();
         });
-    }
-
-    public bool IsOpenned()
-    {
-        if (canvasGroup == null)
-        {
-            return false;
-        }
-
-        return canvasGroup.alpha > 0.999f && canvasGroup.isActiveAndEnabled;
     }
 
     /// <summary>

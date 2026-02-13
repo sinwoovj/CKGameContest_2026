@@ -12,6 +12,7 @@ namespace Shurub
 {
     public class NetworkManager : SingletonPun<NetworkManager>
     {
+        public bool IsInitialized { get; private set; }
         public bool IsConnecting { get; private set; }
 
         public GameState CurrentRoomState { get; set; }
@@ -19,20 +20,23 @@ namespace Shurub
 
         private Dictionary<string, RoomInfo> availableRooms = new Dictionary<string, RoomInfo>();
 
-        [RuntimeInitializeOnLoadMethod]
-        static void InitilizedOnLoaded()
+        public void Init()
         {
-            PhotonNetwork.AutomaticallySyncScene = true;
+            if (IsInitialized)
+            {
+                return;
+            }
+
+            IsInitialized = true;
+
+            PhotonNetwork.AutomaticallySyncScene = false;
             PhotonNetwork.IsMessageQueueRunning = true;
             PhotonNetwork.GameVersion = Application.version;
             PhotonNetwork.SendRate = 60;
             PhotonNetwork.SerializationRate = 60;
             PhotonNetwork.NickName = Guid.NewGuid().ToString()[..4];
 
-            UIManager.Instance.ClearAllUis();
-            UIManager.Instance.ShowUI<TitleUI>();
-
-            Instance.Connect();
+            Connect();
         }
 
         public override void OnConnectedToMaster()
@@ -84,7 +88,11 @@ namespace Shurub
                 }
             }
 
-            UIManager.Instance.GetUI<JoinRoomUI>().OnUpdatedRoomList(availableRooms.Values.ToList());
+            if (UIManager.Instance.HasUI<JoinRoomUI>())
+            {
+                UIManager.Instance.GetUI<JoinRoomUI>().OnUpdatedRoomList(availableRooms.Values.ToList());
+            }
+
             Debug.Log($"입장 가능한 방 개수: {availableRooms.Count}");
         }
 
@@ -141,12 +149,13 @@ namespace Shurub
 
         public override void OnJoinedRoom()
         {
-            int status = PhotonNetwork.IsMasterClient ? (int)PlayerInfoObj.Status.Ready : (int)PlayerInfoObj.Status.NotReady;
+            int status = PhotonNetwork.IsMasterClient ? (int)PlayerStatus.Ready : (int)PlayerStatus.NotReady;
             PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
             {
                 { GameConstants.Network.PLAYER_STATUS_KEY, status }
             });
 
+            SetGameState(GameState.Lobby);
             UIManager.Instance.ShowUI<RoomLobbyUI>();
             Debug.Log("방 입장 완료.");
         }
@@ -155,6 +164,7 @@ namespace Shurub
         {
             PhotonNetwork.LocalPlayer.TagObject = null;
             PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable());
+            UIManager.Instance.ShowUI<PlayUI>();
 
             Debug.Log("방 퇴장 완료.");
         }
@@ -167,9 +177,9 @@ namespace Shurub
                 if (CurrentRoomState != newState)
                 {
                     CurrentRoomState = newState;
-                    if (GameManager.HasInstance)
+                    if (InGameManager.HasInstance)
                     {
-                        GameManager.Instance.OnGameStateChanged(CurrentRoomState);
+                        InGameManager.Instance.OnGameStateChanged(CurrentRoomState);
                     }
                 }
 
@@ -178,7 +188,9 @@ namespace Shurub
                     PhotonNetwork.CurrentRoom.IsOpen = false;
                     PhotonNetwork.CurrentRoom.IsVisible = false;
 
-                    UIManager.Instance.HideUI<RoomLobbyUI>(force: true);
+                    SetPlayerStatus(PhotonNetwork.LocalPlayer, PlayerStatus.Playing);
+
+                    UIManager.Instance.ClearAllUIs();
                     SceneManager.Instance.LoadLevel("InGame");
                 }
 
@@ -196,7 +208,7 @@ namespace Shurub
 
             if (properties.TryGetValue(GameConstants.Network.GAME_HP_KEY, out object hp))
             {
-                GameManager.Instance.currentHp = (float)hp;
+                InGameManager.Instance.currentHp = (float)hp;
                 GUIManager.Instance.UpdateHPUI();
             }
 
@@ -205,22 +217,29 @@ namespace Shurub
                 GUIManager.Instance.UpdateTimeUI();
             }
 
-            UIManager.Instance.GetUI<RoomLobbyUI>().OnUpdatedCustomProperties(properties);
+            if (UIManager.Instance.HasUI<RoomLobbyUI>())
+            {
+                UIManager.Instance.GetUI<RoomLobbyUI>().OnUpdatedCustomProperties(properties);
+            }
         }
 
         public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
         {
-            if (PhotonNetwork.IsMasterClient)
+            if (!InGameManager.HasInstance)
             {
-                ReassignPlayerNumbers();
-                if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
+                if (PhotonNetwork.IsMasterClient)
                 {
-                    PhotonNetwork.CurrentRoom.IsOpen = false;
-                    PhotonNetwork.CurrentRoom.IsVisible = false;
+                    ReassignPlayerNumbers();
+                    if (PhotonNetwork.CurrentRoom.PlayerCount == PhotonNetwork.CurrentRoom.MaxPlayers)
+                    {
+                        PhotonNetwork.CurrentRoom.IsOpen = false;
+                        PhotonNetwork.CurrentRoom.IsVisible = false;
+                    }
                 }
+
+                UIManager.Instance.GetUI<RoomLobbyUI>().OnUpdatedPlayerList();
             }
 
-            UIManager.Instance.GetUI<RoomLobbyUI>().OnUpdatedPlayerList();
             Debug.LogFormat("플레이어가 입장함. Id: {0}, 플레이어 수: {1}", newPlayer.UserId, PhotonNetwork.PlayerList.Length);
         }
 
@@ -233,13 +252,20 @@ namespace Shurub
 
             if (PhotonNetwork.InRoom)
             {
-                if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount < PhotonNetwork.CurrentRoom.MaxPlayers)
+                if (InGameManager.HasInstance)
                 {
-                    PhotonNetwork.CurrentRoom.IsOpen = true;
-                    PhotonNetwork.CurrentRoom.IsVisible = true;
+                    UIManager.Instance.GetUI<GamePlayerManagementUI>().OnUpdatedPlayerList();
                 }
+                else
+                {
+                    if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount < PhotonNetwork.CurrentRoom.MaxPlayers)
+                    {
+                        PhotonNetwork.CurrentRoom.IsOpen = true;
+                        PhotonNetwork.CurrentRoom.IsVisible = true;
+                    }
 
-                UIManager.Instance.GetUI<RoomLobbyUI>().OnUpdatedPlayerList();
+                    UIManager.Instance.GetUI<RoomLobbyUI>().OnUpdatedPlayerList();
+                }
             }
 
             Debug.LogFormat("플레이어가 퇴장함. Id: {0}, 플레이어 수: {1}", otherPlayer.UserId, PhotonNetwork.PlayerList.Length);
@@ -248,7 +274,11 @@ namespace Shurub
         public override void OnMasterClientSwitched(Photon.Realtime.Player newMasterClient)
         {
             ReassignPlayerNumbers();
-            UIManager.Instance.GetUI<RoomLobbyUI>().OnChangedMaster(newMasterClient);
+            if (UIManager.Instance.HasUI<RoomLobbyUI>())
+            {
+                UIManager.Instance.GetUI<RoomLobbyUI>().OnChangedMaster(newMasterClient);
+            }
+
             Debug.LogFormat("마스터 클라이언트가 변경됨. Id: {0}", newMasterClient.UserId);
         }
 
@@ -280,7 +310,7 @@ namespace Shurub
             });
         }
 
-        public void SetLobbyPlayerStatus(Photon.Realtime.Player target, PlayerInfoObj.Status status)
+        public void SetPlayerStatus(Photon.Realtime.Player target, PlayerStatus status)
         {
             if (!PhotonNetwork.InRoom || !PhotonNetwork.PlayerList.Contains(target))
             {
@@ -304,7 +334,7 @@ namespace Shurub
 
                 if (targetPlayer == PhotonNetwork.LocalPlayer)
                 {
-                    if (GameManager.HasInstance && PlayerSpawner.HasInstance)
+                    if (InGameManager.HasInstance && PlayerSpawner.HasInstance)
                     {
                         int myPNum;
                         if (changedProps.TryGetValue(GameConstants.Network.PLAYER_NUMBER_KEY, out object value))
@@ -324,15 +354,29 @@ namespace Shurub
                         PhotonNetwork.LeaveRoom();
                         ModalManager.Instance.OpenNewModal("", "방에서 강제퇴장 되었습니다.", disableNo: true);
 
-                        if (UIManager.Instance.GetUI<TutorialUI>().IsOpenned())
+                        if (UIManager.Instance.HasUI<TutorialUI>())
                         {
-                            UIManager.Instance.HideUI<TutorialUI>(force: true);
+                            if (UIManager.Instance.IsOpenned(UIManager.Instance.GetUI<TutorialUI>()))
+                            {
+                                UIManager.Instance.HideUI<TutorialUI>(force: true);
+                            }
                         }
-                        UIManager.Instance.ShowUI<PlayUI>(removePrev: true, force: true);
+
+                        if (InGameManager.HasInstance)
+                        {
+                            GameManager.Instance.GoToMain();
+                        }
+                        else
+                        {
+                            UIManager.Instance.ShowUI<PlayUI>(removePrev: true, force: true);
+                        }
                     }
                 }
 
-                UIManager.Instance.GetUI<RoomLobbyUI>().OnUpdatedPlayerList();
+                if (UIManager.Instance.HasUI<RoomLobbyUI>())
+                {
+                    UIManager.Instance.GetUI<RoomLobbyUI>().OnUpdatedPlayerList();
+                }
             }
         }
 

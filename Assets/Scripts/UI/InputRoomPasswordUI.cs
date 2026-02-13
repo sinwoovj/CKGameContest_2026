@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Shurub
 {
-    public class InputRoomPasswordUI : UIBase
+    public class InputRoomPasswordUI : UIBase<InputRoomPasswordUI>
     {
         private RoomInfo targetRoom;
 
@@ -19,10 +19,8 @@ namespace Shurub
 
         private bool isJoining = false;
 
-        protected override void Init()
+        protected override void OnAwake()
         {
-            UIManager.Instance.RegisterUI(this);
-
             passwordInput.onValidateInput += CharUtils.ValidatePasswordChar;
             showPasswordToggle.onValueChanged.RemoveAllListeners();
             showPasswordToggle.onValueChanged.AddListener(OnValueChangedShowPasswordToggle);

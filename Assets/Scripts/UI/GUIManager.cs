@@ -12,22 +12,20 @@ namespace Shurub
             return false;
         }
 
-        [SerializeField] private GameObject pausePanel;
-        [SerializeField] private GameObject resultPanel;
+        //[SerializeField] private GameObject pausePanel;
+        //[SerializeField] private GameObject resultPanel;
         [SerializeField] private GameObject HPUIObj;
         [SerializeField] private TextMeshProUGUI playTimeText;
         [SerializeField] private TextMeshProUGUI totalTimeText;
         [SerializeField] private TextMeshProUGUI countDownText;
 
-        public GameObject ResultPanel => resultPanel;
+        //public GameObject ResultPanel => resultPanel;
 
         // CountDown Variables...
         private string[] countDownStr = { "시작", "1", "2", "3" };
         private bool isCountDown = false;
         private float countDownTime = 0f;
         private int countDownNum = 0;
-
-        public bool IsPaused { get; private set; }
 
         void Start()
         {
@@ -36,10 +34,6 @@ namespace Shurub
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape) && NetworkManager.Instance.CurrentRoomState == GameState.Playing)
-            {
-                SetPausePanel();
-            }
             if (isCountDown)
             {
                 countDownTime += -Time.deltaTime;
@@ -60,47 +54,42 @@ namespace Shurub
 
         // Button Fucntions...
 
-        public void SetPausePanel()
-        {
-            IsPaused = !IsPaused;
-            pausePanel.SetActive(IsPaused);
-            GameManager.Instance.LocalPlayer.GetComponent<PlayerController>().playerInput.enabled = !IsPaused;
-        }
+        //public void SetPausePanel()
+        //{
+        //    IsPaused = !IsPaused;
+        //    pausePanel.SetActive(IsPaused);
+        //    GameManager.Instance.LocalPlayer.GetComponent<PlayerController>().playerInput.enabled = !IsPaused;
+        //}
 
-        public void OpenPausePanel()
-        {
-            if (!IsPaused)
-            {
-                IsPaused = true;
-                pausePanel.SetActive(IsPaused);
-                GameManager.Instance.LocalPlayer.GetComponent<PlayerController>().playerInput.enabled = !IsPaused;
-            }
-        }
+        //public void OpenPausePanel()
+        //{
+        //    if (!IsPaused)
+        //    {
+        //        IsPaused = true;
+        //        pausePanel.SetActive(IsPaused);
+        //        GameManager.Instance.LocalPlayer.GetComponent<PlayerController>().playerInput.enabled = !IsPaused;
+        //    }
+        //}
 
-        public void ClosePausePanel()
-        {
-            if (IsPaused)
-            {
-                IsPaused = false;
-                pausePanel.SetActive(IsPaused);
-                GameManager.Instance.LocalPlayer.GetComponent<PlayerController>().playerInput.enabled = !IsPaused;
-            }
-        }
+        //public void ClosePausePanel()
+        //{
+        //    if (IsPaused)
+        //    {
+        //        IsPaused = false;
+        //        pausePanel.SetActive(IsPaused);
+        //        GameManager.Instance.LocalPlayer.GetComponent<PlayerController>().playerInput.enabled = !IsPaused;
+        //    }
+        //}
 
-        public void RetryGame()
-        {
-            NetworkManager.Instance.SetGameState(GameState.Retry);
-        }
+        //public void GoToPlayerManagement()
+        //{
 
-        public void GoToPlayerManagement()
-        {
+        //}
 
-        }
+        //public void GoToSettings()
+        //{
 
-        public void GoToSettings()
-        {
-
-        }
+        //}
 
         public void GoToMain()
         {
@@ -150,13 +139,13 @@ namespace Shurub
         public void InitHPUI()
         {
             HPUIObj.GetComponent<Slider>().interactable = false;
-            HPUIObj.GetComponent<Slider>().maxValue = GameManager.Instance.maxHp;
-            HPUIObj.GetComponent<Slider>().value = GameManager.Instance.maxHp;
+            HPUIObj.GetComponent<Slider>().maxValue = InGameManager.Instance.maxHp;
+            HPUIObj.GetComponent<Slider>().value = InGameManager.Instance.maxHp;
         }
 
         public void UpdateHPUI()
         {
-            HPUIObj.GetComponent<Slider>().value = GameManager.Instance.GetHP();
+            HPUIObj.GetComponent<Slider>().value = InGameManager.Instance.GetHP();
         }
 
         public void InitTimeUI()
@@ -166,13 +155,13 @@ namespace Shurub
 
         public void UpdateTimeUI()
         {
-            float time = GameManager.Instance.GetPlayTime();
+            float time = InGameManager.Instance.GetPlayTime();
             playTimeText.text = $"{(int)(time / 60):00} : {(int)(time % 60):00}";
         }
 
         public void UpdateTotalTimeUI()
         {
-            float time = GameManager.Instance.GetPlayTime();
+            float time = InGameManager.Instance.GetPlayTime();
             totalTimeText.text = $"[Total Time: {(int)(time / 60):00}:{(int)(time % 60):00}]";
         }
     }
