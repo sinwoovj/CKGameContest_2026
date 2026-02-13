@@ -221,3 +221,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IceWater
   sprites: []
   holdState: 0
+  state: 0

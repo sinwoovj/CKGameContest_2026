@@ -6,5 +6,5 @@ public class Meat : Ingredient
     public override string IngredientName => "Meat";
     public override bool IsCuttable => false;
     public override bool IsBakable => true;
-    public override IngredientManager.IngredientType kindOfIngredient => IngredientManager.IngredientType.Meat;
+    public override IngredientManager.IngredientType ingredientType => IngredientManager.IngredientType.Meat;
 }

@@ -11,8 +11,8 @@ namespace Shurub
         public virtual string IngredientName => "Ingredient";
         public virtual bool IsCuttable => false;
         public virtual bool IsBakable => false;
-        public virtual IngredientManager.IngredientType kindOfIngredient => IngredientManager.IngredientType.Count;
-        public virtual IngredientManager.SetType kindOfSet => IngredientManager.SetType.Count;
+        public virtual IngredientManager.IngredientType ingredientType => IngredientManager.IngredientType.Count;
+        public virtual IngredientManager.SetType setType => IngredientManager.SetType.Count;
 
         public Sprite[] sprites; //IngredientState 순서에 맞춰서 스프라이트 패치
 
@@ -31,8 +31,7 @@ namespace Shurub
             burned = 2,
             unCookable = 3 // set, plate
         }
-        public virtual IngredientState State => state;
-        private IngredientState state = IngredientState.unCooked;
+        public IngredientState state = IngredientState.unCooked;
 
         private const float STOP_SPEED = 0.1f;
         private const float STOP_TIME = 0.2f;
@@ -143,6 +142,40 @@ namespace Shurub
         {
             gameObject.SetActive(val);
         }
+        public virtual void SetScale(float ratio)
+        {
+            photonView.RPC(
+                nameof(RPC_SetScale),
+                RpcTarget.All,
+                ratio
+            );
+        }
+        [PunRPC]
+        protected virtual void RPC_SetScale(float ratio)
+        {
+            gameObject.transform.localScale = originalScale * ratio;
+        }
+
+        // 테이블 위에 고정
+        public void SetOnTable(Transform setPoint)
+        {
+            transform.position = setPoint.position;
+            transform.rotation = setPoint.rotation;
+
+            rb.simulated = false;
+            col.enabled = false;
+            rb.angularVelocity = 0;
+
+            // 플레이어 감지 안되게 레이어 변경
+            gameObject.layer = LayerMask.NameToLayer("OnTable");
+        }
+        public void UnSetOnTable()
+        {
+            rb.simulated = true;
+            col.enabled = true;
+
+            gameObject.layer = LayerMask.NameToLayer("Ingredient");
+        }
 
         public virtual void OnCooked()
         {
@@ -184,7 +217,7 @@ namespace Shurub
         }
 
         [PunRPC]
-        public virtual void RPC_Drop(Vector2 worldPos)
+        public virtual void RPC_Drop(Vector2 worldPos, bool val)
         {
             holdState = HoldState.World;
 
@@ -194,8 +227,11 @@ namespace Shurub
             transform.rotation = Quaternion.identity;
             transform.localScale = originalScale;
 
-            rb.simulated = true;
-            col.enabled = true;
+            if (val)
+            {
+                rb.simulated = true;
+                col.enabled = true;
+            }
         }
 
         [PunRPC]
@@ -212,5 +248,8 @@ namespace Shurub
             if (photonView.IsMine) 
                 rb.AddForce(dir.normalized * force, ForceMode2D.Impulse);
         }
+
+        public bool IsSet() => setType != IngredientManager.SetType.Count;
+        public bool IsCooked() => state == IngredientState.cooked;
     }
 }

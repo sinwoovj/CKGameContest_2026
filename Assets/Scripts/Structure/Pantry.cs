@@ -57,14 +57,14 @@ namespace Shurub
             if (plateObj == null) return;
 
             photonView.RPC(
-                nameof(RPC_RequestGetPlate),
+                nameof(RPC_RequestGetIngredient),
                playerPV.Owner,
                playerViewId,
                plateObj.GetPhotonView().ViewID
             );
         }
         [PunRPC]
-        private void RPC_RequestGetPlate(int playerViewId, int plateViewId)
+        private void RPC_RequestGetIngredient(int playerViewId, int ingredientViewId)
         {
             PhotonView playerPV = PhotonView.Find(playerViewId);
             if (playerPV == null) return;
@@ -72,7 +72,7 @@ namespace Shurub
             PlayerController pc = playerPV.GetComponent<PlayerController>();
             if (pc == null) return;
 
-            pc.GetPlate(plateViewId);
+            pc.GetIngredient(ingredientViewId);
         }
         protected override void OnInteractionStart(int playerViewId)
         {

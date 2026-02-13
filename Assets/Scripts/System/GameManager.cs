@@ -160,6 +160,7 @@ namespace Shurub
             LocalPlayer.GetComponent<Animator>().SetTrigger("Default");
             IngredientManager.Instance.ClearIngredient();
             TestManager.Instance.InstantiateTest();
+            PlayerUIManager.Instance.ClearPlateUI();
         }
 
         public float GetHP()

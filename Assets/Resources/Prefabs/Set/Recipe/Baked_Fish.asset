@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Recipe
   recipeName: "\uC0DD\uC120\uAD6C\uC774"
   requiredIngredients: 04000000
-  result: {fileID: 791661959370561837, guid: d70e990e6068e574a867c31d39de9f1b, type: 3}
+  setType: 4

@@ -8,5 +8,5 @@ public class Recipe : ScriptableObject
 {
     public string recipeName;
     public List<IngredientManager.IngredientType> requiredIngredients;
-    public GameObject result;
+    public IngredientManager.SetType setType;
 }

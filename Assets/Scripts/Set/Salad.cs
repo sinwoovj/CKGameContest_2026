@@ -4,6 +4,9 @@ using UnityEngine;
 public class Salad : Ingredient
 {
     public override string IngredientName => "Salad";
-    public override IngredientState State => IngredientState.unCookable;
-    public override IngredientManager.SetType kindOfSet => IngredientManager.SetType.Salad;
+    public override IngredientManager.SetType setType => IngredientManager.SetType.Salad;
+    private void Start()
+    {
+        state = IngredientState.unCookable;
+    }
 }

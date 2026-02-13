@@ -7,8 +7,8 @@ public class TimingUI : MonoBehaviour
     private Slider timingSlider;
     [SerializeField]
     private Slider pointSlider;
-    private const float POINT_INTERVAL = 0.05f;
-    private const float SUCCESSZONE_INTERVAL = 0.05f;
+    private const float POINT_INTERVAL = 0.1f;
+    private const float SUCCESSZONE_INTERVAL = 0.1f;
     [Range(0f, 1f)]
     public float speed = 1f;
     private float timer;

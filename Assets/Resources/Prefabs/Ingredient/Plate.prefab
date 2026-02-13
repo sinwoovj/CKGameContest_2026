@@ -221,13 +221,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Plate
   sprites: []
   holdState: 0
+  state: 0
   allRecipes:
-  - {fileID: 11400000, guid: bb7eadee80f8f91489465cad5201d780, type: 2}
-  - {fileID: 11400000, guid: 0240053f5dddf3641b614fe7e708e50f, type: 2}
-  - {fileID: 11400000, guid: da44b4a655ac3cf4b8f5ddbda8c37b1e, type: 2}
-  - {fileID: 11400000, guid: 3ce498e42b8f62b4b94a0a306951e44f, type: 2}
   - {fileID: 11400000, guid: 8d32d390f3fad344fbdcbecdd85b790b, type: 2}
-  - {fileID: 11400000, guid: 7ecb236a3e1831340b1481ca8d24cf0e, type: 2}
-  - {fileID: 11400000, guid: c04fd2b2bd7982a40ab4e7c18098dc70, type: 2}
   - {fileID: 11400000, guid: 99525a011800b8c4ab4b17d836b40e2d, type: 2}
   - {fileID: 11400000, guid: 931af8bd78caad54fbbbdec90fa5211c, type: 2}
+  - {fileID: 11400000, guid: c04fd2b2bd7982a40ab4e7c18098dc70, type: 2}
+  - {fileID: 11400000, guid: 0240053f5dddf3641b614fe7e708e50f, type: 2}
+  - {fileID: 11400000, guid: da44b4a655ac3cf4b8f5ddbda8c37b1e, type: 2}
+  - {fileID: 11400000, guid: 7ecb236a3e1831340b1481ca8d24cf0e, type: 2}
+  - {fileID: 11400000, guid: bb7eadee80f8f91489465cad5201d780, type: 2}
+  - {fileID: 11400000, guid: 3ce498e42b8f62b4b94a0a306951e44f, type: 2}
+  ingredients: 
+  ingredientList: 

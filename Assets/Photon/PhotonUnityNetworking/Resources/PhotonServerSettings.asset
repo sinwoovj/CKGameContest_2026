@@ -76,6 +76,30 @@ MonoBehaviour:
   - RPC_RemoveIngredient
   - RPC_RequestPlateSpawn
   - RPC_RequestGetPlate
+  - RPC_HoldInstantInteract
+  - RPC_HoldInteractProcess
+  - RPC_HoldRequestInteract
+  - RPC_AddIngredient
+  - RPC_GetIngredient
+  - RPC_RequestGetIngredient
+  - RPC_RequestSetSpawn
+  - RPC_SetIngredient
+  - RPC_SubtractIngredient
+  - RPC_AddToPlate
+  - RPC_PlaceItem
+  - RPC_TakeItem
+  - RPC_TakePlate
+  - RPC_TakePlateIngredient
+  - RPC_CookPlate
+  - RPC_GiveCookedSet
+  - RPC_SetScale
+  - RPC_Bind
+  - RPC_ResultSetUISpawn
+  - RPC_DestroyResultSetUI
+  - RPC_ResultSetUISetActive
+  - RPC_ResultSetUISetSprite
+  - RPC_RemovePlateUI
+  - RPC_UpdatePlateUI
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

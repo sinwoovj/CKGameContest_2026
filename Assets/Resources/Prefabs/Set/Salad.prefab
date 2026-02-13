@@ -221,3 +221,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Salad
   sprites: []
   holdState: 0
+  state: 0

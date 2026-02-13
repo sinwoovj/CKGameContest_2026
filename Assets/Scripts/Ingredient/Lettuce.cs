@@ -7,6 +7,6 @@ namespace Shurub
         public override string IngredientName => "Lettuce";
         public override bool IsCuttable => true;
         public override bool IsBakable => false;
-        public override IngredientManager.IngredientType kindOfIngredient => IngredientManager.IngredientType.Lettuce;
+        public override IngredientManager.IngredientType ingredientType => IngredientManager.IngredientType.Lettuce;
     }
 }

@@ -2,7 +2,7 @@
 - Project name: CKGameContest_2026
 - Unity version: Unity 6000.2.12f1
 - Active game object:
-  - Name: Player(Clone)
-  - Tag: Player
-  - Layer: Player
+  - Name: TableZone (1)
+  - Tag: Structure
+  - Layer: Structure
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->

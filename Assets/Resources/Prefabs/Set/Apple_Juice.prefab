@@ -221,3 +221,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AppleJuice
   sprites: []
   holdState: 0
+  state: 0

@@ -222,3 +222,4 @@ MonoBehaviour:
   sprites:
   - {fileID: 21300000, guid: 9ff8c10b2f8b63e4bac0816cef84a81a, type: 3}
   holdState: 0
+  state: 0

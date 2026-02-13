@@ -150,6 +150,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &525803410
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 525803411}
+  - component: {fileID: 525803412}
+  m_Layer: 0
+  m_Name: PlayerUIManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &525803411
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 525803410}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.91488, y: 3.91418, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &525803412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 525803410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b42eaca666f6da4691c836671f53db3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerUIManager
+  ResultSetUIPrefab: {fileID: 6318067765999587189, guid: 40b2816b98860ea46a7a72517a09ef7e, type: 3}
 --- !u!114 &552590328 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7702404097555102946, guid: ae27fc476269d444ca5e3fe87d69960d, type: 3}
@@ -3289,6 +3334,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Shurub.Table
   progressUIPrefab: {fileID: 0}
   state: 0
+  setIngredient: {fileID: 0}
 --- !u!1 &7590262140555797236
 GameObject:
   m_ObjectHideFlags: 0
@@ -3323,6 +3369,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Shurub.Table
   progressUIPrefab: {fileID: 0}
   state: 0
+  setIngredient: {fileID: 0}
 --- !u!4 &7696905518546626889
 Transform:
   m_ObjectHideFlags: 0
@@ -3728,3 +3775,4 @@ SceneRoots:
   - {fileID: 1998090580}
   - {fileID: 1350519364}
   - {fileID: 2129115741}
+  - {fileID: 525803411}

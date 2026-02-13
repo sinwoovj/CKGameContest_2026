@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 using static Shurub.Ingredient;
 
 
@@ -50,6 +51,7 @@ namespace Shurub
         private GameObject progressUIPrefab;
         public ProgressUI progressUI = null;
         public bool isProgressUI = false;
+
 
         private void Awake()
         {
@@ -154,17 +156,35 @@ namespace Shurub
 
         public void OnInteract(InputAction.CallbackContext context) // K
         {
-            if (!context.performed) return;
             if (!photonView.IsMine) return;
-            Debug.Log("OnInteract called. current: " + currentInteractable);
-            if (currentInteractable == null)
+            // 짧게 눌렀을 때
+            if (context.performed && context.interaction is TapInteraction)
             {
-                currentInteractable = DetectInteractable();
-                currentInteractable?.Interact(this);
+                Debug.Log("OnInteract called. Tab current: " + currentInteractable);
+                if (currentInteractable == null)
+                {
+                    currentInteractable = DetectInteractable();
+                    currentInteractable?.Interact(this);
+                }
+                else
+                {
+                    currentInteractable.InteractProcess(photonView.ViewID);
+                }
             }
-            else
+
+            // 일정 시간 이상 눌렀을 때
+            if (context.performed && context.interaction is HoldInteraction)
             {
-                currentInteractable.InteractProcess(photonView.ViewID);
+                Debug.Log("OnInteract called. Hold current: " + currentInteractable);
+                if (currentInteractable == null)
+                {
+                    currentInteractable = DetectInteractable();
+                    currentInteractable?.HoldInteract(this);
+                }
+                else
+                {
+                    currentInteractable.HoldInteractProcess(photonView.ViewID);
+                }
             }
         }
         private IInteractable DetectInteractable()
@@ -210,7 +230,7 @@ namespace Shurub
 
                 if (chargeTimer < throwChargeTime)
                 {
-                    DropIngredient();
+                    DropIngredient((Vector2)transform.position, true);
                 }
 
                 StopCharging();
@@ -244,7 +264,7 @@ namespace Shurub
             heldIngredient = null;
             holdState = HoldState.Empty;
         }
-        public void GetPlate(int plateViewId)
+        public void GetIngredient(int IngredientViewId)
         {
             if (holdState != HoldState.Empty)
                 return;
@@ -252,7 +272,7 @@ namespace Shurub
             photonView.RPC(
                 nameof(RPC_PickIngredient),
                 RpcTarget.All,
-                plateViewId
+                IngredientViewId
             );
             anim.SetBool("IsCarry", true);
             UpdateIngredient(moveDir);
@@ -296,7 +316,7 @@ namespace Shurub
             );
         }
 
-        protected void DropIngredient()
+        public void DropIngredient(Vector2 pos, bool val = false)
         {
             if (holdState != HoldState.Holding || heldIngredient == null)
                 return;
@@ -304,12 +324,13 @@ namespace Shurub
             photonView.RPC(
                 nameof(RPC_DropIngredient),
                 RpcTarget.All,
-                (Vector2)transform.position
+                pos,
+                val
             );
             anim.SetBool("IsCarry", false);
         }
         [PunRPC]
-        protected void RPC_DropIngredient(Vector2 dropPos)
+        protected void RPC_DropIngredient(Vector2 dropPos, bool val)
         {
             if (heldIngredient == null)
                 return;
@@ -317,14 +338,15 @@ namespace Shurub
             heldIngredient.photonView.RPC(
                 nameof(Ingredient.RPC_Drop),
                 RpcTarget.All,
-                dropPos
+                dropPos,
+                val
             );
 
             heldIngredient = null;
             holdState = HoldState.Empty;
         }
 
-        protected void ThrowIngredient()
+        public void ThrowIngredient()
         {
             if (holdState != HoldState.Holding || heldIngredient == null)
                 return;
