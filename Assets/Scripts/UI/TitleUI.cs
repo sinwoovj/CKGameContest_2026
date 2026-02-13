@@ -18,7 +18,6 @@ public class TitleUI : UIBase<TitleUI>
 
     public override void Hide()
     {
-        SoundManager.Instance.StopBGM();
         base.Hide();
     }
 

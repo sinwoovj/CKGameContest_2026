@@ -185,6 +185,8 @@ namespace Shurub
 
                 if (newState == GameState.Boot)
                 {
+                    SoundManager.Instance.StopBGM();
+
                     PhotonNetwork.CurrentRoom.IsOpen = false;
                     PhotonNetwork.CurrentRoom.IsVisible = false;
 

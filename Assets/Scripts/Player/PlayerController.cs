@@ -307,6 +307,16 @@ namespace Shurub
             holdState = HoldState.Empty;
         }
 
+        public void WarpTo(Vector3 pos)
+        {
+            photonView.RPC(nameof(WarpToRPC), RpcTarget.All, pos);
+        }
+
+        [PunRPC]
+        void WarpToRPC(Vector3 pos)
+        {
+            transform.position = pos;
+        }
     }
 
 }
