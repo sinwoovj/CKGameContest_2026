@@ -2517,6 +2517,10 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 70
       objectReference: {fileID: 0}
+    - target: {fileID: 884001724154504803, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
+      propertyPath: sceneViewId
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 996450803109185720, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
       propertyPath: sceneViewId
       value: 50
@@ -2673,6 +2677,10 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 26
       objectReference: {fileID: 0}
+    - target: {fileID: 3791991719470626931, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
+      propertyPath: sceneViewId
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4068113128801447951, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
       propertyPath: sceneViewId
       value: 27
@@ -2781,6 +2789,10 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 46
       objectReference: {fileID: 0}
+    - target: {fileID: 7185381894593188224, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
+      propertyPath: sceneViewId
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7486927177744481504, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
       propertyPath: sceneViewId
       value: 68
@@ -2796,6 +2808,10 @@ PrefabInstance:
     - target: {fileID: 7757868659607688684, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
       propertyPath: sceneViewId
       value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 7815130546851411397, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
+      propertyPath: sceneViewId
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8057387556429585332, guid: 82ff4164dbcf88d4ab3bd946b1a1ed60, type: 3}
       propertyPath: sceneViewId
@@ -8558,8 +8574,8 @@ Camera:
   m_GameObject: {fileID: 2056239115}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.1509434, g: 0.1509434, b: 0.1509434, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
