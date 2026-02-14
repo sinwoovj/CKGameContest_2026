@@ -46,15 +46,11 @@ namespace Shurub
             zoneViewId = zoneId;
         }
 
-        private void OnTriggerExit(Collider other)
+        private void OnTriggerExit2D(Collider2D other)
         {
             if (!photonView.IsMine) return;
 
-            IngredientZone zone =
-                PhotonView.Find(zoneViewId)?.GetComponent<IngredientZone>();
-
-            if (zone == null) return;
-            if (other.gameObject != zone.gameObject) return;
+            if (!other.CompareTag("IngredientZone")) return;
 
             photonView.RPC(
                 nameof(RPC_NotifyExit),
@@ -64,7 +60,7 @@ namespace Shurub
         }
 
         [PunRPC]
-        void RPC_NotifyExit(int ingredientViewId)
+        protected void RPC_NotifyExit(int ingredientViewId)
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
@@ -117,7 +113,7 @@ namespace Shurub
 
         protected virtual void OnDestroy()
         {
-            IngredientManager.Destroy(this);
+            IngredientManager.DestroyImmediate(this);
         }
 
         public virtual void OnStopped()

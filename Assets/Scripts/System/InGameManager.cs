@@ -134,8 +134,6 @@ namespace Shurub
             {
                 case GameState.Loading:
                     GameInit();
-                    SetPlayerInput(false);
-                    UIManager.Instance.ClearAllUIs();
                     NetworkManager.Instance.SetGameState(GameState.Ready);
                     SoundManager.Instance.Play("InGameBGM");
                     break;
@@ -159,11 +157,14 @@ namespace Shurub
         {
             PlayerSpawner.Instance.ReSpawnPlayer();
             SetHP(maxHp);
+            ZoneManager.Instance.ResetAllZones();
             playTime = 0f;
             SetPlayTime(playTime);
+            SetPlayerInput(false);
+            UIManager.Instance.ClearAllUIs();
             LocalPlayer.GetComponent<Animator>().SetTrigger("Default");
             IngredientManager.Instance.ClearIngredient();
-            TestManager.Instance.InstantiateTest();
+            //TestManager.Instance.InstantiateTest();
             PlayerUIManager.Instance.ClearPlateUI();
             OrderUIManager.Instance.ClearOrder();
             OrderManager.Instance.Init();

@@ -106,6 +106,7 @@ MonoBehaviour:
   - RPC_RequestSubmit
   - RPC_UpdateOrderTime
   - RPC_NotifyExit
+  - RPC_ResetAllZones
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

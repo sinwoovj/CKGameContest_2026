@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Ingredient
   - Structure
+  - Bullet
+  - IngredientZone
   layers:
   - Default
   - TransparentFX

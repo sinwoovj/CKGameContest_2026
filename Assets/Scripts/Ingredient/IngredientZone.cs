@@ -8,27 +8,22 @@ namespace Shurub
     {
         [SerializeField] private IngredientManager.IngredientType ingredientType;
         [SerializeField] private int maxCount = 5;
-        [SerializeField] private Vector3 spawnAreaSize;
+        [SerializeField] private BoxCollider2D zoneCollider;
 
         private HashSet<int> ingredientViewIds = new();
-
-        private void Update()
+        private void Awake()
         {
-            if(NetworkManager.Instance.CurrentRoomState == GameState.Loading)
-            {
-                Init();
-            }
+            ZoneManager.Instance.Register(this);
         }
-
-        public void Init()
+        private void Start()
         {
             if (PhotonNetwork.IsMasterClient)
             {
-                ingredientViewIds.Clear();
-                SpawnUntilFull();
+                Fill();
             }
         }
-        void SpawnUntilFull()
+
+        void Fill()
         {
             if (!PhotonNetwork.IsMasterClient) return;
 
@@ -40,7 +35,7 @@ namespace Shurub
 
         void SpawnOne()
         {
-            Vector3 pos = GetRandomPositionInZone();
+            Vector2 pos = GetRandomPositionInZone();
             GameObject obj = IngredientManager.Instance.InstantiateIngredient(ingredientType, pos);
 
             int viewId = obj.GetPhotonView().ViewID;
@@ -49,13 +44,12 @@ namespace Shurub
             obj.GetComponent<Ingredient>().SetZone(photonView.ViewID);
         }
 
-        Vector3 GetRandomPositionInZone()
+        Vector2 GetRandomPositionInZone()
         {
-            Vector3 center = transform.position;
-            return center + new Vector3(
-                Random.Range(-spawnAreaSize.x / 2, spawnAreaSize.x / 2),
-                0f,
-                Random.Range(-spawnAreaSize.z / 2, spawnAreaSize.z / 2)
+            Bounds b = zoneCollider.bounds;
+            return new Vector2(
+                Random.Range(b.min.x, b.max.x),
+                Random.Range(b.min.y, b.max.y)
             );
         }
 
@@ -65,8 +59,24 @@ namespace Shurub
             if (!PhotonNetwork.IsMasterClient) return;
 
             if (!ingredientViewIds.Remove(ingredientViewId)) return;
+            Debug.Log("NotifyIngredientExit()");
+            Fill();
+        }
+        public void ResetZone()
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
 
-            SpawnUntilFull();
+            foreach (int viewId in ingredientViewIds)
+            {
+                PhotonView pv = PhotonView.Find(viewId);
+                if (pv != null)
+                {
+                    IngredientManager.Instance.DestroyIngredient(pv.GetComponent<Ingredient>());
+                }
+            }
+
+            ingredientViewIds.Clear();
+            Fill();
         }
     }
 }
