@@ -135,6 +135,7 @@ namespace Shurub
                 case GameState.Loading:
                     GameInit();
                     SetPlayerInput(false);
+                    UIManager.Instance.ClearAllUIs();
                     NetworkManager.Instance.SetGameState(GameState.Ready);
                     SoundManager.Instance.Play("InGameBGM");
                     break;

@@ -39,6 +39,40 @@ namespace Shurub
 
         private Vector3 originalScale;
 
+        private int zoneViewId;
+
+        public void SetZone(int zoneId)
+        {
+            zoneViewId = zoneId;
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (!photonView.IsMine) return;
+
+            IngredientZone zone =
+                PhotonView.Find(zoneViewId)?.GetComponent<IngredientZone>();
+
+            if (zone == null) return;
+            if (other.gameObject != zone.gameObject) return;
+
+            photonView.RPC(
+                nameof(RPC_NotifyExit),
+                RpcTarget.MasterClient,
+                photonView.ViewID
+            );
+        }
+
+        [PunRPC]
+        void RPC_NotifyExit(int ingredientViewId)
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+
+            IngredientZone zone =
+                PhotonView.Find(zoneViewId)?.GetComponent<IngredientZone>();
+
+            zone?.NotifyIngredientExit(ingredientViewId);
+        }
         // Monohaviour Functions
         protected virtual void Awake()
         {
